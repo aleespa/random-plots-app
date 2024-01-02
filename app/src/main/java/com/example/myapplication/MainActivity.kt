@@ -4,6 +4,7 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -33,26 +34,28 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.form_layout)
 
-        // Initialize Python (You should call this only once in your app)
         if (!Python.isStarted()) {
             Python.start(AndroidPlatform(this))
         }
 
         val generateButton = findViewById<Button>(R.id.generateButton)
         val imageView = findViewById<ImageView>(R.id.imageView)
+        val textViewResult = findViewById<TextView>(R.id.textViewResult)
+
 
         generateButton.setOnClickListener {
-            // Call the generate_image function to generate a new plot each time
             val py = Python.getInstance()
             val mainModule = py.getModule("main")
-            val imageBase64 = mainModule.callAttr("generate").toJava(String::class.java)
+            val result = mainModule.callAttr("generate").asList()
+
 
             // Decode the base64 image to bytes
-            val imageBytes = Base64.getDecoder().decode(imageBase64.toByteArray())
+            val imageBytes = Base64.getDecoder().decode(result[0].toString().toByteArray())
 
             // Convert bytes to a Bitmap and display it in the ImageView
             val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
             imageView.setImageBitmap(bitmap)
+            textViewResult.text = result[1].toString()
         }
     }
 }

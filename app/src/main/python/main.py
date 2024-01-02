@@ -60,5 +60,5 @@ def generate():
     y = Z.imag
     buffer = generate_plot(x, y)
     image_data = base64.b64encode(buffer.getvalue()).decode('utf-8')
-    return image_data
+    return image_data, "Today"
 

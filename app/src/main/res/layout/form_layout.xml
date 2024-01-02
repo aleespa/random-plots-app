@@ -4,8 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
     android:background="#f4efe9"
+    android:duplicateParentState="false"
+    android:padding="20dp"
+    android:visibility="visible"
     tools:context=".MainActivity">
 
     <!-- ImageView to display the generated image -->
@@ -14,17 +16,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:scaleType="fitCenter"
-        android:adjustViewBounds="true" />
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter" />
 
     <!-- "Generate" button at the bottom -->
     <Button
         android:id="@+id/generateButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Generate"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="16dp"
+        android:text="Generate" />
+
+    <TextView
+        android:id="@+id/textViewResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textSize="16sp"
+        android:textColor="#000000" />
 
 </RelativeLayout>
