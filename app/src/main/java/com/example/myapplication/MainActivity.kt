@@ -56,36 +56,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-@Composable
-fun GreetingWithButton(name: String, modifier: Modifier = Modifier) {
-    var textColor by remember { mutableStateOf(Color.Black) }
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "Hello $name!",
-            color = textColor,
-            fontWeight = FontWeight(600)
-        )
-        Button(onClick = {
-            textColor = Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat(), 1f)
-        },
-            shape = RectangleShape) {
-            Text("Change Color")
-        }
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingWithButtonPreview() {
-
-    MyApplicationTheme {
-        GreetingWithButton("Android")
-    }
-}
