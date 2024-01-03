@@ -19,12 +19,12 @@ def vectorized_sample_complex_pairs(sample_size: int):
     return pairs
 
 
-def calculate_matrix(t: np.array, r1):
-    return np.array([[1j, -1, 1, 1, 1j],
-                     [-1, 1, 0, r1, 1],
+def calculate_matrix(t: np.array, r1, r2):
+    return np.array([[1j, -1, 1, r2, 1j],
+                     [-1, 1, 0, 0, 1],
                      [t[1], r1+1, -1j, r1*2, 1j],
                      [1j, t[0], 1j, 1j, 1j],
-                     [1j,2, -1, -1, 1j]])
+                     [1j,2, -1, -r1, 1j]])
 
 
 def calculate_eigenvalues(x: np.array):
@@ -55,7 +55,8 @@ def generate():
     sample_size = 20000
     sample = vectorized_sample_complex_pairs(sample_size)
     r1 = np.random.uniform(-1, 1) + np.random.uniform(-1, 1) * 1j
-    Z = np.array([calculate_eigenvalues(calculate_matrix(t, r1)) for t in sample]).ravel()
+    r2 = np.random.uniform(-1, 1) + np.random.uniform(-1, 1) * 1j
+    Z = np.array([calculate_eigenvalues(calculate_matrix(t, r1, r2)) for t in sample]).ravel()
     x = Z.real
     y = Z.imag
     buffer = generate_plot(x, y)

@@ -5,9 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#f4efe9"
-    android:duplicateParentState="false"
     android:padding="20dp"
-    android:visibility="visible"
     tools:context=".MainActivity">
 
     <!-- ImageView to display the generated image -->
@@ -19,21 +17,33 @@
         android:adjustViewBounds="true"
         android:scaleType="fitCenter" />
 
-    <!-- "Generate" button at the bottom -->
+    <!-- "Generate" button above the "Wallpaper" button -->
     <Button
         android:id="@+id/generateButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@id/wallpaperButton"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
         android:text="Generate" />
 
+    <!-- "Wallpaper" button at the bottom -->
+    <Button
+        android:id="@+id/wallpaperButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="Wallpaper" />
+
+    <!-- TextView for additional information -->
     <TextView
         android:id="@+id/textViewResult"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_above="@id/generateButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
         android:textSize="16sp"
         android:textColor="#000000" />
 
