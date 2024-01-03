@@ -16,9 +16,12 @@ import android.provider.MediaStore
 import android.util.DisplayMetrics
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.RelativeLayout
+import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.chaquo.python.Python
@@ -42,7 +45,7 @@ class MainActivity : ComponentActivity() {
 
         val screenWidth: Int
         val screenHeight: Int
-
+        var darkModeBool = false
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             // For Android 11 (API level 30) and above
             val windowMetrics = windowManager.currentWindowMetrics
@@ -65,16 +68,34 @@ class MainActivity : ComponentActivity() {
         val imageView = findViewById<ImageView>(R.id.imageView)
         val textViewResult = findViewById<TextView>(R.id.textViewResult)
         val wallpaperButton = findViewById<TextView>(R.id.wallpaperButton)
+        val mainLayout = findViewById<RelativeLayout>(R.id.mainLayout)
+        val switchDarkMode = findViewById<Switch>(R.id.switchDarkMode)
 
         cachedBitmap?.let {
             imageView.setImageBitmap(it)
         }
 
+        switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                // Apply dark mode colors
+                mainLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.darkModeBackground))
+                textViewResult.setTextColor(ContextCompat.getColor(this, R.color.darkModeTextColor))
+                switchDarkMode.setTextColor(ContextCompat.getColor(this, R.color.darkModeTextColor))
+                darkModeBool = true
+                // ... Update other UI elements as needed
+            } else {
+                // Apply light mode colors
+                mainLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.lightModeBackground))
+                textViewResult.setTextColor(ContextCompat.getColor(this, R.color.lightModeTextColor))
+                switchDarkMode.setTextColor(ContextCompat.getColor(this, R.color.lightModeTextColor))
+                // ... Update other UI elements as needed
+            }
+        }
 
         generateButton.setOnClickListener {
             val py = Python.getInstance()
             val mainModule = py.getModule("main")
-            val result = mainModule.callAttr("generate").asList()
+            val result = mainModule.callAttr("generate", darkModeBool).asList()
 
 
             // Decode the base64 image to bytes
