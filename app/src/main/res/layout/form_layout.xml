@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:id="@+id/mainLayout" xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout android:id="@+id/mainLayout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,41 +13,51 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:text="Dark Mode" />
-    <!-- ImageView to display the generated image -->
+        android:text="@string/dark_mode"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:adjustViewBounds="true"
-        android:scaleType="fitCenter" />
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/image_generated" />
 
-    <!-- "Generate" button above the "Wallpaper" button -->
-    <Button
-        android:id="@+id/generateButton"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        style="?android:attr/buttonBarStyle"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/wallpaperButton"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="16dp"
-        android:text="Generate" />
-
-    <!-- "Wallpaper" button at the bottom -->
-    <Button
-        android:id="@+id/wallpaperButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_above="@id/imageView"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="Wallpaper" />
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:orientation="horizontal">
 
-    <!-- TextView for additional information -->
+        <Button
+            android:id="@+id/generateButton"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/generate"
+            android:textAllCaps="false"
+            android:textColor="@color/lightModeButton1"
+            />
+        <Button
+            android:id="@+id/wallpaperButton"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/wallpaper"
+            android:textAllCaps="false" />
+    </LinearLayout>
+
     <TextView
         android:id="@+id/textViewResult"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@id/generateButton"
+        android:layout_above="@id/linearLayout"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="16dp"
         android:textSize="16sp"

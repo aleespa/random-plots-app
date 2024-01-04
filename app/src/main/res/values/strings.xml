@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Random Plots</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="generate">Generate Random Plot</string>
+    <string name="wallpaper">Set as wallpaper</string>
+    <string name="image_generated">Image Generated</string>
 </resources>

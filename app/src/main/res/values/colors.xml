@@ -12,4 +12,13 @@
     <color name="darkModeBackground">#000000</color>
     <color name="lightModeTextColor">#000000</color>
     <color name="darkModeTextColor">#f4f0e7</color>
+
+
+    <color name="lightModeButton1">#003b79</color>
+    <color name="lightModeButton2">#007879</color>
+
+
+    <color name="darkModeButton1">#99b0c9</color>
+    <color name="darkModeButton2">#b2d6d6</color>
+
 </resources>

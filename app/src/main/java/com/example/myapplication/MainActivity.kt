@@ -81,14 +81,17 @@ class MainActivity : ComponentActivity() {
                 mainLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.darkModeBackground))
                 textViewResult.setTextColor(ContextCompat.getColor(this, R.color.darkModeTextColor))
                 switchDarkMode.setTextColor(ContextCompat.getColor(this, R.color.darkModeTextColor))
+                generateButton.setTextColor(ContextCompat.getColor(this, R.color.darkModeButton1))
+                wallpaperButton.setTextColor(ContextCompat.getColor(this, R.color.darkModeButton2))
                 darkModeBool = true
                 // ... Update other UI elements as needed
             } else {
-                // Apply light mode colors
                 mainLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.lightModeBackground))
                 textViewResult.setTextColor(ContextCompat.getColor(this, R.color.lightModeTextColor))
                 switchDarkMode.setTextColor(ContextCompat.getColor(this, R.color.lightModeTextColor))
-                // ... Update other UI elements as needed
+                generateButton.setTextColor(ContextCompat.getColor(this, R.color.lightModeButton1))
+                wallpaperButton.setTextColor(ContextCompat.getColor(this, R.color.lightModeButton2))
+                darkModeBool = false
             }
         }
 
