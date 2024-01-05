@@ -12,7 +12,7 @@ import android.graphics.Point
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.widget.Button
+import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.Switch
@@ -25,7 +25,6 @@ import androidx.core.content.ContextCompat
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.materialswitch.MaterialSwitch
 import java.io.File
 import java.io.FileOutputStream
 import java.util.Base64
@@ -38,7 +37,7 @@ class MainActivity : ComponentActivity() {
         private var cachedBitmap: Bitmap? = null
     }
 
-    @SuppressLint("UseSwitchCompatOrMaterialCode")
+    @SuppressLint("UseSwitchCompatOrMaterialCode", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         checkAndRequestPermissions()
@@ -120,6 +119,17 @@ class MainActivity : ComponentActivity() {
             imageUri = saveImageToInternalStorage(bitmap, this)
 
 
+        }
+        infoButton.setOnClickListener{
+            if (imageView.visibility == View.GONE) {
+                imageView.visibility = View.VISIBLE
+                textViewResult.visibility = View.GONE
+                infoButton.text = "+ Info"
+            } else {
+                imageView.visibility = View.GONE
+                textViewResult.visibility = View.VISIBLE
+                infoButton.text = "View"
+            }
         }
         wallpaperButton.setOnClickListener {
             val localImageUri = imageUri
