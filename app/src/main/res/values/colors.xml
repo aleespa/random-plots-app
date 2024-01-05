@@ -14,11 +14,21 @@
     <color name="darkModeTextColor">#f4f0e7</color>
 
 
-    <color name="lightModeButton1">#003b79</color>
-    <color name="lightModeButton2">#007879</color>
+    <color name="lightModeTextButton1">#5E6968</color>
+    <color name="lightModeTextButton2">#695E5F</color>
+    <color name="lightModeTextButton3">#1c2866</color>
+
+    <color name="lightModeButton1">#BCD2D0</color>
+    <color name="lightModeButton2">#c3bebf</color>
+    <color name="lightModeButton3">#b5c1ff</color>
 
 
-    <color name="darkModeButton1">#99b0c9</color>
-    <color name="darkModeButton2">#b2d6d6</color>
+    <color name="darkModeTextButton1">#BCD2D0</color>
+    <color name="darkModeTextButton2">#c3bebf</color>
+    <color name="darkModeTextButton3">#b5c1ff</color>
+
+    <color name="darkModeButton1">#5E6968</color>
+    <color name="darkModeButton2">#695E5F</color>
+    <color name="darkModeButton3">#1c2866</color>
 
 </resources>

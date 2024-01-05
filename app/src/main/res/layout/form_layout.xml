@@ -14,6 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
+        android:checked="false"
         android:text="@string/dark_mode"
         tools:ignore="UseSwitchCompatOrMaterialXml" />
 
@@ -52,20 +53,9 @@
                 android:textSize="16sp" />
         </FrameLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/materialButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            app:cornerRadius="25dp"
-            android:layout_gravity="top|end"
-            android:textAllCaps="false"
-            android:text="@string/info"
-            android:backgroundTint="@color/teal_700" />
-
     </androidx.cardview.widget.CardView>
-
     <LinearLayout
-        android:id="@+id/linearLayout"
+        android:id="@+id/linearLayout1"
         style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -73,27 +63,47 @@
         android:layout_alignParentBottom="true"
         android:layout_centerVertical="true"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="vertical">
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/generateButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/generate"
+        android:textAllCaps="false"
+        android:textColor="@color/lightModeTextButton1"
+        android:backgroundTint="@color/lightModeButton1"
+        />
 
-        <Button
-            android:id="@+id/generateButton"
-            style="?android:attr/buttonBarButtonStyle"
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        style="?android:attr/buttonBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/infoButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/generate"
+            android:text="@string/more_info"
             android:textAllCaps="false"
-            android:textColor="@color/lightModeButton1"
-            />
-        <Button
+            android:layout_marginStart="20dp"
+            android:textColor="@color/lightModeTextButton3"
+            android:backgroundTint="@color/lightModeButton3"/>
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/wallpaperButton"
-            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/wallpaper"
             android:textAllCaps="false"
-            android:layout_marginStart="40dp"/>
-    </LinearLayout>
+            android:layout_marginStart="20dp"
+            android:textColor="@color/lightModeTextButton2"
+            android:backgroundTint="@color/lightModeButton2"/>
 
+
+    </LinearLayout>
+</LinearLayout>
 
 
 </RelativeLayout>

@@ -1,9 +1,9 @@
 package com.example.myapplication
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.WallpaperManager
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -12,8 +12,6 @@ import android.graphics.Point
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
-import android.util.DisplayMetrics
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.RelativeLayout
@@ -21,11 +19,13 @@ import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.appcompat.app.AppCompatDelegate
+import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.materialswitch.MaterialSwitch
 import java.io.File
 import java.io.FileOutputStream
 import java.util.Base64
@@ -38,6 +38,7 @@ class MainActivity : ComponentActivity() {
         private var cachedBitmap: Bitmap? = null
     }
 
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         checkAndRequestPermissions()
@@ -64,10 +65,12 @@ class MainActivity : ComponentActivity() {
         if (!Python.isStarted()) {
             Python.start(AndroidPlatform(this))
         }
-        val generateButton = findViewById<Button>(R.id.generateButton)
+        val generateButton = findViewById<MaterialButton>(R.id.generateButton)
+        val wallpaperButton = findViewById<MaterialButton>(R.id.wallpaperButton)
+        val infoButton = findViewById<MaterialButton>(R.id.infoButton)
         val imageView = findViewById<ImageView>(R.id.imageView)
+        val cardView = findViewById<CardView>(R.id.cardView)
         val textViewResult = findViewById<TextView>(R.id.textViewResult)
-        val wallpaperButton = findViewById<TextView>(R.id.wallpaperButton)
         val mainLayout = findViewById<RelativeLayout>(R.id.mainLayout)
         val switchDarkMode = findViewById<Switch>(R.id.switchDarkMode)
 
@@ -81,16 +84,24 @@ class MainActivity : ComponentActivity() {
                 mainLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.darkModeBackground))
                 textViewResult.setTextColor(ContextCompat.getColor(this, R.color.darkModeTextColor))
                 switchDarkMode.setTextColor(ContextCompat.getColor(this, R.color.darkModeTextColor))
-                generateButton.setTextColor(ContextCompat.getColor(this, R.color.darkModeButton1))
-                wallpaperButton.setTextColor(ContextCompat.getColor(this, R.color.darkModeButton2))
+                generateButton.setTextColor(ContextCompat.getColor(this, R.color.darkModeTextButton1))
+                generateButton.setBackgroundColor(ContextCompat.getColor(this, R.color.darkModeButton1))
+                wallpaperButton.setTextColor(ContextCompat.getColor(this, R.color.darkModeTextButton2))
+                wallpaperButton.setBackgroundColor(ContextCompat.getColor(this, R.color.darkModeButton2))
+                infoButton.setTextColor(ContextCompat.getColor(this, R.color.darkModeTextButton3))
+                infoButton.setBackgroundColor(ContextCompat.getColor(this, R.color.darkModeButton3))
                 darkModeBool = true
                 // ... Update other UI elements as needed
             } else {
                 mainLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.lightModeBackground))
                 textViewResult.setTextColor(ContextCompat.getColor(this, R.color.lightModeTextColor))
                 switchDarkMode.setTextColor(ContextCompat.getColor(this, R.color.lightModeTextColor))
-                generateButton.setTextColor(ContextCompat.getColor(this, R.color.lightModeButton1))
-                wallpaperButton.setTextColor(ContextCompat.getColor(this, R.color.lightModeButton2))
+                generateButton.setTextColor(ContextCompat.getColor(this, R.color.lightModeTextButton1))
+                generateButton.setBackgroundColor(ContextCompat.getColor(this, R.color.lightModeButton1))
+                wallpaperButton.setTextColor(ContextCompat.getColor(this, R.color.lightModeTextButton2))
+                wallpaperButton.setBackgroundColor(ContextCompat.getColor(this, R.color.lightModeButton2))
+                infoButton.setTextColor(ContextCompat.getColor(this, R.color.lightModeTextButton3))
+                infoButton.setBackgroundColor(ContextCompat.getColor(this, R.color.lightModeButton3))
                 darkModeBool = false
             }
         }
@@ -100,17 +111,14 @@ class MainActivity : ComponentActivity() {
             val mainModule = py.getModule("main")
             val result = mainModule.callAttr("generate", darkModeBool).asList()
 
-
-            // Decode the base64 image to bytes
             val imageBytes = Base64.getDecoder().decode(result[0].toString().toByteArray())
 
-            // Convert bytes to a Bitmap and display it in the ImageView
             val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
             cachedBitmap = bitmap
             imageView.setImageBitmap(bitmap)
             textViewResult.text = result[1].toString()
-
             imageUri = saveImageToInternalStorage(bitmap, this)
+
 
         }
         wallpaperButton.setOnClickListener {
@@ -153,5 +161,4 @@ class MainActivity : ComponentActivity() {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), STORAGE_PERMISSION_CODE)
         }
     }
-
 }
