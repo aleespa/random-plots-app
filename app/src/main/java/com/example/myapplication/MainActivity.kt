@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.WallpaperManager
 import android.content.Context
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
@@ -72,37 +73,46 @@ class MainActivity : ComponentActivity() {
         val textViewResult = findViewById<TextView>(R.id.textViewResult)
         val mainLayout = findViewById<RelativeLayout>(R.id.mainLayout)
         val switchDarkMode = findViewById<Switch>(R.id.switchDarkMode)
-
+        val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         cachedBitmap?.let {
             imageView.setImageBitmap(it)
         }
-
-        switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
+        fun darkModeSet(){
+            mainLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.darkModeBackground))
+            textViewResult.setTextColor(ContextCompat.getColor(this, R.color.darkModeTextColor))
+            switchDarkMode.setTextColor(ContextCompat.getColor(this, R.color.darkModeTextColor))
+            generateButton.setTextColor(ContextCompat.getColor(this, R.color.darkModeTextButton1))
+            generateButton.setBackgroundColor(ContextCompat.getColor(this, R.color.darkModeButton1))
+            wallpaperButton.setTextColor(ContextCompat.getColor(this, R.color.darkModeTextButton2))
+            wallpaperButton.setBackgroundColor(ContextCompat.getColor(this, R.color.darkModeButton2))
+            infoButton.setTextColor(ContextCompat.getColor(this, R.color.darkModeTextButton3))
+            infoButton.setBackgroundColor(ContextCompat.getColor(this, R.color.darkModeButton3))
+            darkModeBool = true
+        }
+        fun lightModeSet(){
+            mainLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.lightModeBackground))
+            textViewResult.setTextColor(ContextCompat.getColor(this, R.color.lightModeTextColor))
+            switchDarkMode.setTextColor(ContextCompat.getColor(this, R.color.lightModeTextColor))
+            generateButton.setTextColor(ContextCompat.getColor(this, R.color.lightModeTextButton1))
+            generateButton.setBackgroundColor(ContextCompat.getColor(this, R.color.lightModeButton1))
+            wallpaperButton.setTextColor(ContextCompat.getColor(this, R.color.lightModeTextButton2))
+            wallpaperButton.setBackgroundColor(ContextCompat.getColor(this, R.color.lightModeButton2))
+            infoButton.setTextColor(ContextCompat.getColor(this, R.color.lightModeTextButton3))
+            infoButton.setBackgroundColor(ContextCompat.getColor(this, R.color.lightModeButton3))
+            darkModeBool = false
+        }
+        switchDarkMode.isChecked = currentNightMode == Configuration.UI_MODE_NIGHT_YES;
+        switchDarkMode.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-                // Apply dark mode colors
-                mainLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.darkModeBackground))
-                textViewResult.setTextColor(ContextCompat.getColor(this, R.color.darkModeTextColor))
-                switchDarkMode.setTextColor(ContextCompat.getColor(this, R.color.darkModeTextColor))
-                generateButton.setTextColor(ContextCompat.getColor(this, R.color.darkModeTextButton1))
-                generateButton.setBackgroundColor(ContextCompat.getColor(this, R.color.darkModeButton1))
-                wallpaperButton.setTextColor(ContextCompat.getColor(this, R.color.darkModeTextButton2))
-                wallpaperButton.setBackgroundColor(ContextCompat.getColor(this, R.color.darkModeButton2))
-                infoButton.setTextColor(ContextCompat.getColor(this, R.color.darkModeTextButton3))
-                infoButton.setBackgroundColor(ContextCompat.getColor(this, R.color.darkModeButton3))
-                darkModeBool = true
-                // ... Update other UI elements as needed
+                darkModeSet()
             } else {
-                mainLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.lightModeBackground))
-                textViewResult.setTextColor(ContextCompat.getColor(this, R.color.lightModeTextColor))
-                switchDarkMode.setTextColor(ContextCompat.getColor(this, R.color.lightModeTextColor))
-                generateButton.setTextColor(ContextCompat.getColor(this, R.color.lightModeTextButton1))
-                generateButton.setBackgroundColor(ContextCompat.getColor(this, R.color.lightModeButton1))
-                wallpaperButton.setTextColor(ContextCompat.getColor(this, R.color.lightModeTextButton2))
-                wallpaperButton.setBackgroundColor(ContextCompat.getColor(this, R.color.lightModeButton2))
-                infoButton.setTextColor(ContextCompat.getColor(this, R.color.lightModeTextButton3))
-                infoButton.setBackgroundColor(ContextCompat.getColor(this, R.color.lightModeButton3))
-                darkModeBool = false
+                lightModeSet()
             }
+        }
+        if (currentNightMode == Configuration.UI_MODE_NIGHT_YES) {
+            darkModeSet()
+        } else {
+            lightModeSet()
         }
 
         generateButton.setOnClickListener {
@@ -171,4 +181,5 @@ class MainActivity : ComponentActivity() {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), STORAGE_PERMISSION_CODE)
         }
     }
+
 }
