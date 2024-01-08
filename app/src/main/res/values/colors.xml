@@ -12,6 +12,9 @@
     <color name="darkModeBackground">#000000</color>
     <color name="lightModeTextColor">#000000</color>
     <color name="darkModeTextColor">#f4f0e7</color>
+    <color name="colorBackground">#000000</color>
+    <color name="splashBackground">#000000</color>
+    <color name="statusBarColor">#5e4fa2</color>
 
 
     <color name="lightModeTextButton1">#5E6968</color>
