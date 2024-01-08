@@ -22,7 +22,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
-import com.example.myapplication.R
 import com.google.android.material.button.MaterialButton
 import ru.noties.jlatexmath.JLatexMathView
 import java.io.File
