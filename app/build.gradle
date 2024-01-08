@@ -55,6 +55,10 @@ android {
 
 
 dependencies {
+    implementation 'ru.noties:jlatexmath-android:0.2.0'
+    implementation 'ru.noties:jlatexmath-android-font-cyrillic:0.2.0'
+    implementation 'ru.noties:jlatexmath-android-font-greek:0.2.0'
+
     implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
     implementation 'androidx.activity:activity-compose:1.8.2'

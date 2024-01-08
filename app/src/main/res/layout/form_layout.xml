@@ -11,7 +11,7 @@
     <Switch
         android:id="@+id/switchDarkMode"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:checked="false"
@@ -42,14 +42,15 @@
                 android:visibility="visible"
                 android:contentDescription="@string/image_generated"
                 android:scaleType="fitCenter" />
-            <TextView
-                android:id="@+id/textViewResult"
+            <ru.noties.jlatexmath.JLatexMathView
+                android:id="@+id/j_latex_math_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:textColor="#000000"
+                app:jlmv_alignVertical="center"
+                app:jlmv_alignHorizontal="center"
                 android:visibility="gone"
-                android:textSize="16sp" />
+                app:jlmv_textSize="16sp" />
+
         </FrameLayout>
 
     </androidx.cardview.widget.CardView>

@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.randomplots
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -10,23 +10,21 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
-import android.graphics.Point
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.Switch
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
+import com.example.myapplication.R
 import com.google.android.material.button.MaterialButton
+import ru.noties.jlatexmath.JLatexMathView
 import java.io.File
 import java.io.FileOutputStream
 import java.util.Base64
@@ -39,7 +37,7 @@ class MainActivity : ComponentActivity() {
         private var cachedBitmap: Bitmap? = null
     }
 
-    @SuppressLint("UseSwitchCompatOrMaterialCode", "SetTextI18n")
+    @SuppressLint("UseSwitchCompatOrMaterialCode", "SetTextI18n", "MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         checkAndRequestPermissions()
@@ -54,19 +52,19 @@ class MainActivity : ComponentActivity() {
         val wallpaperButton = findViewById<MaterialButton>(R.id.wallpaperButton)
         val infoButton = findViewById<MaterialButton>(R.id.infoButton)
         val imageView = findViewById<ImageView>(R.id.imageView)
-        val textViewResult = findViewById<TextView>(R.id.textViewResult)
         val mainLayout = findViewById<RelativeLayout>(R.id.mainLayout)
         val switchDarkMode = findViewById<Switch>(R.id.switchDarkMode)
         val instagramLink: ImageView = findViewById(R.id.instagramLink)
-
+        val latexView = findViewById<JLatexMathView>(R.id.j_latex_math_view)
         val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         cachedBitmap?.let {
             imageView.setImageBitmap(it)
         }
         fun darkModeSet(){
             mainLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.darkModeBackground))
-            textViewResult.setTextColor(ContextCompat.getColor(this, R.color.darkModeTextColor))
             switchDarkMode.setTextColor(ContextCompat.getColor(this, R.color.darkModeTextColor))
+            latexView.setBackgroundColor(ContextCompat.getColor(this, R.color.darkModeBackground))
+            latexView.textColor(ContextCompat.getColor(this, R.color.darkModeTextColor))
             generateButton.setTextColor(ContextCompat.getColor(this, R.color.darkModeTextButton1))
             generateButton.setBackgroundColor(ContextCompat.getColor(this, R.color.darkModeButton1))
             wallpaperButton.setTextColor(ContextCompat.getColor(this, R.color.darkModeTextButton2))
@@ -78,8 +76,9 @@ class MainActivity : ComponentActivity() {
         }
         fun lightModeSet(){
             mainLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.lightModeBackground))
-            textViewResult.setTextColor(ContextCompat.getColor(this, R.color.lightModeTextColor))
             switchDarkMode.setTextColor(ContextCompat.getColor(this, R.color.lightModeTextColor))
+            latexView.setBackgroundColor(ContextCompat.getColor(this, R.color.lightModeBackground))
+            latexView.textColor(ContextCompat.getColor(this, R.color.lightModeTextColor))
             generateButton.setTextColor(ContextCompat.getColor(this, R.color.lightModeTextButton1))
             generateButton.setBackgroundColor(ContextCompat.getColor(this, R.color.lightModeButton1))
             wallpaperButton.setTextColor(ContextCompat.getColor(this, R.color.lightModeTextButton2))
@@ -89,7 +88,22 @@ class MainActivity : ComponentActivity() {
             instagramLink.setColorFilter(ContextCompat.getColor(this, R.color.lightModeTextButton2))
             darkModeBool = false
         }
+        fun generateRandomPlot(){
+            val py = Python.getInstance()
+            val mainModule = py.getModule("main")
+            val result = mainModule.callAttr("generate", darkModeBool).asList()
+
+            val imageBytes = Base64.getDecoder().decode(result[0].toString().toByteArray())
+
+            val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+            cachedBitmap = bitmap
+            imageView.setImageBitmap(bitmap)
+            latexView.setLatex(result[1].toString())
+            imageUri = saveImageToInternalStorage(bitmap, this)
+        }
+
         switchDarkMode.isChecked = currentNightMode == Configuration.UI_MODE_NIGHT_YES;
+
         switchDarkMode.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 darkModeSet()
@@ -102,30 +116,18 @@ class MainActivity : ComponentActivity() {
         } else {
             lightModeSet()
         }
-
         generateButton.setOnClickListener {
-            val py = Python.getInstance()
-            val mainModule = py.getModule("main")
-            val result = mainModule.callAttr("generate", darkModeBool).asList()
-
-            val imageBytes = Base64.getDecoder().decode(result[0].toString().toByteArray())
-
-            val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-            cachedBitmap = bitmap
-            imageView.setImageBitmap(bitmap)
-            textViewResult.text = result[1].toString()
-            imageUri = saveImageToInternalStorage(bitmap, this)
-
-
+            generateRandomPlot()
         }
+
         infoButton.setOnClickListener{
             if (imageView.visibility == View.GONE) {
                 imageView.visibility = View.VISIBLE
-                textViewResult.visibility = View.GONE
+                latexView.visibility = View.GONE
                 infoButton.text = "+ Info"
             } else {
                 imageView.visibility = View.GONE
-                textViewResult.visibility = View.VISIBLE
+                latexView.visibility = View.VISIBLE
                 infoButton.text = "View"
             }
         }
@@ -154,6 +156,8 @@ class MainActivity : ComponentActivity() {
         }
 
     }
+
+
     @SuppressLint("QueryPermissionsNeeded")
     private fun openInstagramProfile() {
         val instagramUri = Uri.parse("http://instagram.com/random_plot")
