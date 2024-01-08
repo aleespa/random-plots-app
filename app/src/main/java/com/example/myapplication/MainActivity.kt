@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.WallpaperManager
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
@@ -44,23 +45,7 @@ class MainActivity : ComponentActivity() {
         checkAndRequestPermissions()
         setContentView(R.layout.form_layout)
 
-        val screenWidth: Int
-        val screenHeight: Int
         var darkModeBool = false
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            // For Android 11 (API level 30) and above
-            val windowMetrics = windowManager.currentWindowMetrics
-            val bounds = windowMetrics.bounds
-            screenWidth = bounds.width()
-            screenHeight = bounds.height()
-        } else {
-            // For older versions
-            val size = Point()
-            @Suppress("DEPRECATION")
-            windowManager.defaultDisplay.getSize(size)
-            screenWidth = size.x
-            screenHeight = size.y
-        }
 
         if (!Python.isStarted()) {
             Python.start(AndroidPlatform(this))
@@ -69,10 +54,11 @@ class MainActivity : ComponentActivity() {
         val wallpaperButton = findViewById<MaterialButton>(R.id.wallpaperButton)
         val infoButton = findViewById<MaterialButton>(R.id.infoButton)
         val imageView = findViewById<ImageView>(R.id.imageView)
-        val cardView = findViewById<CardView>(R.id.cardView)
         val textViewResult = findViewById<TextView>(R.id.textViewResult)
         val mainLayout = findViewById<RelativeLayout>(R.id.mainLayout)
         val switchDarkMode = findViewById<Switch>(R.id.switchDarkMode)
+        val instagramLink: ImageView = findViewById(R.id.instagramLink)
+
         val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         cachedBitmap?.let {
             imageView.setImageBitmap(it)
@@ -87,6 +73,7 @@ class MainActivity : ComponentActivity() {
             wallpaperButton.setBackgroundColor(ContextCompat.getColor(this, R.color.darkModeButton2))
             infoButton.setTextColor(ContextCompat.getColor(this, R.color.darkModeTextButton3))
             infoButton.setBackgroundColor(ContextCompat.getColor(this, R.color.darkModeButton3))
+            instagramLink.setColorFilter(ContextCompat.getColor(this, R.color.darkModeTextButton2))
             darkModeBool = true
         }
         fun lightModeSet(){
@@ -99,6 +86,7 @@ class MainActivity : ComponentActivity() {
             wallpaperButton.setBackgroundColor(ContextCompat.getColor(this, R.color.lightModeButton2))
             infoButton.setTextColor(ContextCompat.getColor(this, R.color.lightModeTextButton3))
             infoButton.setBackgroundColor(ContextCompat.getColor(this, R.color.lightModeButton3))
+            instagramLink.setColorFilter(ContextCompat.getColor(this, R.color.lightModeTextButton2))
             darkModeBool = false
         }
         switchDarkMode.isChecked = currentNightMode == Configuration.UI_MODE_NIGHT_YES;
@@ -161,9 +149,25 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        instagramLink.setOnClickListener {
+            openInstagramProfile()
+        }
 
     }
-    fun saveImageToInternalStorage(bitmap: Bitmap, context: Context): Uri {
+    @SuppressLint("QueryPermissionsNeeded")
+    private fun openInstagramProfile() {
+        val instagramUri = Uri.parse("http://instagram.com/random_plot")
+        val intent = Intent(Intent.ACTION_VIEW, instagramUri)
+
+        if (intent.resolveActivity(packageManager) != null) {
+            intent.setPackage("com.instagram.android")
+            startActivity(intent)
+        } else {
+            intent.data = Uri.parse("http://instagram.com/random_plot")
+            startActivity(intent)
+        }
+    }
+    private fun saveImageToInternalStorage(bitmap: Bitmap, context: Context): Uri {
         // Use the app's internal storage
         val directory = context.cacheDir
         val file = File(directory, "shared_image.png")  // Name of the image file

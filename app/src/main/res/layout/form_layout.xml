@@ -99,7 +99,14 @@
             android:layout_marginStart="20dp"
             android:textColor="@color/lightModeTextButton2"
             android:backgroundTint="@color/lightModeButton2"/>
-
+        <ImageView
+            android:id="@+id/instagramLink"
+            android:src="@drawable/instagram_logo"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="20dp"
+            android:contentDescription="@string/instagram"
+            app:tint="@color/lightModeTextButton1"/>
 
     </LinearLayout>
 </LinearLayout>
