@@ -1,5 +1,9 @@
 package com.example.randomplots.screens
 
+import android.annotation.SuppressLint
+import android.view.ViewGroup
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +20,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,6 +38,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.randomplots.R
 import com.example.randomplots.create.generateRandomPlot
+import org.scilab.forge.jlatexmath.TeXFormula
+import ru.noties.jlatexmath.JLatexMathView
+import androidx.compose.ui.viewinterop.AndroidView
 
 @Composable
 fun Create() {
@@ -61,6 +69,12 @@ fun Create() {
             if (!rotated){
                 ImageWithNullFallback(imageBitmapState.value)
             } else {
+                LaTeXMathView(
+                    latex="This is a test",
+                    backgroundColor = MaterialTheme.colorScheme.surface.toString(),
+                    fontColor = MaterialTheme.colorScheme.primary.toString()
+                )
+                Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = "This is a test",
                     modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -74,7 +88,7 @@ fun Create() {
                     .align(Alignment.CenterHorizontally),
                 onClick = { imageBitmapState.value = generateRandomPlot() }) {
                 Text(
-                    text = "Generate \n Random Plot",
+                    text = "Generate\nRandom Plot",
                     textAlign = TextAlign.Center,
                 )
             }
@@ -85,12 +99,12 @@ fun Create() {
                 horizontalArrangement = Arrangement.Center,
             ) {
                 ExtendedFloatingActionButton(onClick = { /* do something */ }) {
-                    Text(text = "More info")
+                    Text(text = "Save to\ngallery")
                 }
                 Spacer(Modifier.width(10.dp))
                 ExtendedFloatingActionButton(onClick = { /* do something */ }) {
                     Text(
-                        text = "Set as \n wallpaper",
+                        text = "Set as\n wallpaper",
                         textAlign = TextAlign.Center,
                     )
                 }
@@ -115,6 +129,52 @@ fun ImageWithNullFallback(imageBitmap: ImageBitmap?) {
     )
 }
 
+
+@SuppressLint("SetJavaScriptEnabled")
+@Composable
+fun LaTeXMathView(latex: String, backgroundColor: String, fontColor: String) {
+    AndroidView(factory = { context ->
+        WebView(context).apply {
+            loadDataWithBaseURL(
+                null, getHTML(latex, backgroundColor, fontColor),
+                "text/html",
+                "UTF-8",
+                null)
+            webViewClient = WebViewClient()
+        }
+    })
+}
+
+private fun getHTML(latex: String, backgroundColor: String, fontColor: String): String {
+    return """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {
+                    background-color: $backgroundColor;
+                    color: $fontColor;
+                }
+            </style>
+            <link rel="stylesheet" type="text/css" href="file:///android_asset/css/jlatexmath-core.css">
+            <script src="file:///android_asset/js/jlatexmath.js"></script>
+        </head>
+        <body>
+            <span id="mathField">$latex</span>
+            <script type="text/javascript">
+                var mathField = document.getElementById("mathField");
+                var options = {
+                    displayMode: true,
+                    fontSize: 20,
+                    latex: mathField.innerHTML
+                };
+                var latexNode = new Latex(options);
+                mathField.parentNode.insertBefore(latexNode, mathField.nextSibling);
+            </script>
+        </body>
+        </html>
+    """.trimIndent()
+}
 
 @Preview
 @Composable
