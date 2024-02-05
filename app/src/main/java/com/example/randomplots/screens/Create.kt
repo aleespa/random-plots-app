@@ -1,8 +1,10 @@
 package com.example.randomplots.screens
 
+import android.graphics.Color
 import android.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -44,6 +46,13 @@ fun Create() {
         mutableStateOf(false)
     }
     val imageBitmapState = remember { mutableStateOf<ImageBitmap?>(null) }
+    val latexString = remember {
+        mutableStateOf<String>("")
+    }
+    val isSystemInDarkTheme = isSystemInDarkTheme()
+
+    // Define text colors for dark and light themes
+    val textColor = if (isSystemInDarkTheme) Color.WHITE else Color.BLACK
 
     Column (
         modifier = Modifier
@@ -66,7 +75,8 @@ fun Create() {
                 ImageWithNullFallback(imageBitmapState.value)
             }else{
                 LatexMathView(
-                    latexString = "\\( \\int_{\\partial \\Omega} \\mathbf{F} \\cdot d\\mathbf{r} = \\int_{\\Omega} (\\nabla \\times \\mathbf{F}) \\cdot d\\mathbf{S}\n \\)"
+                    latexString = latexString.value,
+                    textColor = textColor
                 )
             }
         }
@@ -74,7 +84,10 @@ fun Create() {
             ElevatedButton(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally),
-                onClick = { imageBitmapState.value = generateRandomPlot() }) {
+                onClick = {
+                    val result  = generateRandomPlot()
+                    imageBitmapState.value = result.first
+                    latexString.value = result.second}) {
                 Text(
                     text = "Generate\nRandom Plot",
                     textAlign = TextAlign.Center,
@@ -118,7 +131,7 @@ fun ImageWithNullFallback(imageBitmap: ImageBitmap?) {
 }
 
 @Composable
-fun LatexMathView(latexString: String) {
+fun LatexMathView(latexString: String, textColor: Int) {
     AndroidView(
         modifier = Modifier
             .width(IntrinsicSize.Max)
@@ -133,8 +146,8 @@ fun LatexMathView(latexString: String) {
                 .textSize(70F)
                 .padding(8)
                 .align(JLatexMathDrawable.ALIGN_RIGHT)
-                .color(-0x1000000)
-                .build();
+                .color(textColor)
+                .build()
             view.setLatexDrawable(drawable)
         }
     )
