@@ -21,18 +21,3 @@ fun generateRandomPlot(): Pair<ImageBitmap?, String>{
         result[1].toString()
     )
 }
-
-
-//fun generateRandomPlot(){
-//    val py = Python.getInstance()
-//    val mainModule = py.getModule("main")
-//    val result = mainModule.callAttr("generate", darkModeBool).asList()
-//
-//    val imageBytes = Base64.getDecoder().decode(result[0].toString().toByteArray())
-//
-//    val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-//    cachedBitmap = bitmap
-//    imageView.setImageBitmap(bitmap)
-//    latexView.setLatex(result[1].toString())
-//    imageUri = saveImageToInternalStorage(bitmap, this)
-//}
