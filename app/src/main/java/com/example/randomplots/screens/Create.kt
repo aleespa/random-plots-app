@@ -1,9 +1,6 @@
 package com.example.randomplots.screens
 
-import android.annotation.SuppressLint
-import android.view.ViewGroup
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +17,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,11 +32,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.example.randomplots.R
 import com.example.randomplots.create.generateRandomPlot
-import org.scilab.forge.jlatexmath.TeXFormula
+import ru.noties.jlatexmath.JLatexMathDrawable
 import ru.noties.jlatexmath.JLatexMathView
-import androidx.compose.ui.viewinterop.AndroidView
 
 @Composable
 fun Create() {
@@ -68,19 +64,11 @@ fun Create() {
         ) {
             if (!rotated){
                 ImageWithNullFallback(imageBitmapState.value)
-            } else {
-                LaTeXMathView(
-                    latex="This is a test",
-                    backgroundColor = MaterialTheme.colorScheme.surface.toString(),
-                    fontColor = MaterialTheme.colorScheme.primary.toString()
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "This is a test",
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+            }else{
+                LatexMathView(
+                    latexString = "\\( \\int_{\\partial \\Omega} \\mathbf{F} \\cdot d\\mathbf{r} = \\int_{\\Omega} (\\nabla \\times \\mathbf{F}) \\cdot d\\mathbf{S}\n \\)"
                 )
             }
-
         }
         Column {
             ElevatedButton(
@@ -129,52 +117,29 @@ fun ImageWithNullFallback(imageBitmap: ImageBitmap?) {
     )
 }
 
-
-@SuppressLint("SetJavaScriptEnabled")
 @Composable
-fun LaTeXMathView(latex: String, backgroundColor: String, fontColor: String) {
-    AndroidView(factory = { context ->
-        WebView(context).apply {
-            loadDataWithBaseURL(
-                null, getHTML(latex, backgroundColor, fontColor),
-                "text/html",
-                "UTF-8",
-                null)
-            webViewClient = WebViewClient()
+fun LatexMathView(latexString: String) {
+    AndroidView(
+        modifier = Modifier
+            .width(IntrinsicSize.Max)
+            .padding(10.dp),
+        factory = { context ->
+            JLatexMathView(context).apply {
+                visibility = View.VISIBLE
+            }
+        },
+        update = { view ->
+            val drawable = JLatexMathDrawable.builder(latexString)
+                .textSize(70F)
+                .padding(8)
+                .align(JLatexMathDrawable.ALIGN_RIGHT)
+                .color(-0x1000000)
+                .build();
+            view.setLatexDrawable(drawable)
         }
-    })
+    )
 }
 
-private fun getHTML(latex: String, backgroundColor: String, fontColor: String): String {
-    return """
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <style>
-                body {
-                    background-color: $backgroundColor;
-                    color: $fontColor;
-                }
-            </style>
-            <link rel="stylesheet" type="text/css" href="file:///android_asset/css/jlatexmath-core.css">
-            <script src="file:///android_asset/js/jlatexmath.js"></script>
-        </head>
-        <body>
-            <span id="mathField">$latex</span>
-            <script type="text/javascript">
-                var mathField = document.getElementById("mathField");
-                var options = {
-                    displayMode: true,
-                    fontSize: 20,
-                    latex: mathField.innerHTML
-                };
-                var latexNode = new Latex(options);
-                mathField.parentNode.insertBefore(latexNode, mathField.nextSibling);
-            </script>
-        </body>
-        </html>
-    """.trimIndent()
-}
 
 @Preview
 @Composable
