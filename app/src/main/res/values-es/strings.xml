@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Random Plots</string>
+    <string name="generate">"Generar\nRandom Plot"</string>
+    <string name="save">Guardar en\ngalería</string>
+    <string name="set_wallpaper">Definir como\nfondo de pantalla</string>
+</resources>

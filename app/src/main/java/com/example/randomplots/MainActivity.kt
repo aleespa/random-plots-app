@@ -1,15 +1,12 @@
 package com.example.randomplots
 
 import android.os.Bundle
-import android.view.View
-import android.view.ViewGroup
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
 import com.example.randomplots.screens.MainScreen
 import com.example.randomplots.ui.theme.MyApplicationTheme
-import ru.noties.jlatexmath.JLatexMathView
 
 
 class MainActivity : ComponentActivity() {
@@ -23,7 +20,6 @@ class MainActivity : ComponentActivity() {
                 MainScreen()
             }
         }
-
     }
 }
 //        checkAndRequestPermissions()

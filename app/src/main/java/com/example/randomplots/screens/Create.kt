@@ -1,11 +1,13 @@
 package com.example.randomplots.screens
 
+import android.app.WallpaperManager
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.provider.MediaStore
 import android.view.View
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -37,6 +39,7 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -93,7 +96,7 @@ fun Create() {
                     imageBitmapState.value = result.first
                     latexString.value = result.second}) {
                 Text(
-                    text = "Generate\nRandom Plot",
+                    text = stringResource(id = R.string.generate),
                     textAlign = TextAlign.Center,
                 )
             }
@@ -109,12 +112,18 @@ fun Create() {
                         saveBitmapToGallery(context, androidBitmap)
                     }
                 }) {
-                    Text(text = "Save to\ngallery")
+                    Text(
+                        text = stringResource(id = R.string.save),
+                        textAlign = TextAlign.Center
+                    )
                 }
                 Spacer(Modifier.width(10.dp))
-                ExtendedFloatingActionButton(onClick = { /* do something */ }) {
+                ExtendedFloatingActionButton(onClick = {
+                    val androidBitmap = imageBitmapState.value?.asAndroidBitmap()
+                    setWallpaper(context, androidBitmap)
+                }) {
                     Text(
-                        text = "Set as\n wallpaper",
+                        text = stringResource(id = R.string.set_wallpaper),
                         textAlign = TextAlign.Center,
                     )
                 }
@@ -169,11 +178,28 @@ fun GreetingPreview() {
     Create()
 }
 
-fun saveBitmapToGallery(context: Context, bitmap: Bitmap, displayName: String = "Image_${System.currentTimeMillis()}.png") {
+fun setWallpaper(context: Context,
+                 bitmap: Bitmap?) {
+    if (bitmap == null){
+        Toast.makeText(context, "Please generate an image first", Toast.LENGTH_SHORT).show()
+    } else {
+        try {
+            val wallpaperManager = WallpaperManager.getInstance(context)
+            wallpaperManager.setBitmap(bitmap)
+            Toast.makeText(context, "Wallpaper set successfully", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Toast.makeText(context, "Failed to set wallpaper", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+}
+fun saveBitmapToGallery(context: Context,
+                        bitmap: Bitmap,
+                        displayName: String = "Random_plot_${System.currentTimeMillis()}.png") {
     val values = ContentValues().apply {
         put(MediaStore.MediaColumns.DISPLAY_NAME, displayName)
         put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
-        put(MediaStore.MediaColumns.RELATIVE_PATH, "Pictures/MyAppImages")
+        put(MediaStore.MediaColumns.RELATIVE_PATH, "Pictures/RandomPlots")
     }
 
     val uri = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)

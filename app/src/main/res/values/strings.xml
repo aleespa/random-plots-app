@@ -1,12 +1,6 @@
 <resources>
     <string name="app_name">Random Plots</string>
-    <string name="dark_mode">Dark Mode</string>
-    <string name="generate">Generate \n Random Plot</string>
-    <string name="wallpaper">Set as \n wallpaper</string>
-    <string name="image_generated">Image Generated</string>
-    <string name="info">+</string>
-    <string name="todo">TODO</string>
-    <string name="more_info">+ Info</string>
-    <string name="open_instagram">Open Instagram</string>
-    <string name="instagram">Link to instagram\n</string>
+    <string name="generate">Generate\\nRandom Plot</string>
+    <string name="save">Save to\\ngallery</string>
+    <string name="set_wallpaper">Set as\nwallpaper</string>
 </resources>
