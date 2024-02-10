@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -62,12 +61,10 @@ fun Create() {
     val textColor = if (isSystemInDarkTheme) Color.WHITE else Color.BLACK
     val context = LocalContext.current
     Column (
-        modifier = Modifier
-            .fillMaxSize(), // Adjust padding as needed
+        modifier = Modifier,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-
-        Spacer(Modifier.width(30.dp))
+        Spacer(Modifier.height(80.dp))
         ElevatedCard(
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 6.dp
@@ -87,6 +84,7 @@ fun Create() {
                 )
             }
         }
+        Spacer(Modifier.height(70.dp))
         Column {
             ElevatedButton(
                 modifier = Modifier
@@ -128,7 +126,6 @@ fun Create() {
                     )
                 }
             }
-            Spacer(Modifier.height(90.dp))
         }
 
     }
@@ -181,14 +178,14 @@ fun GreetingPreview() {
 fun setWallpaper(context: Context,
                  bitmap: Bitmap?) {
     if (bitmap == null){
-        Toast.makeText(context, "Please generate an image first", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, R.string.generate_img_first, Toast.LENGTH_SHORT).show()
     } else {
         try {
             val wallpaperManager = WallpaperManager.getInstance(context)
             wallpaperManager.setBitmap(bitmap)
-            Toast.makeText(context, "Wallpaper set successfully", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.wallpaper_set, Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
-            Toast.makeText(context, "Failed to set wallpaper", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.wallpaper_fail, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -207,6 +204,7 @@ fun saveBitmapToGallery(context: Context,
         context.contentResolver.openOutputStream(it).use { outputStream ->
             if (outputStream != null) {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                Toast.makeText(context, R.string.save_success, Toast.LENGTH_SHORT).show()
             }
         }
     }

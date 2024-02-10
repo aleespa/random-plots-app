@@ -7,7 +7,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -15,7 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.company.test.BottomBarScreen
+import com.example.randomplots.BottomBarScreen
 import com.company.test.screens.Gallery
 import com.company.test.screens.Settings
 
@@ -44,7 +44,7 @@ fun BottomBar(navController: NavHostController){
         screens.forEach  { screen ->
             NavigationBarItem(
                 icon = { Icon(screen.icon, contentDescription = null) },
-                label = { Text(screen.title) },
+                label = { Text(stringResource(id = screen.titleResourceId)) },
                 selected = currentDestination?.hierarchy?.any{
                     it.route == screen.route
                 } == true,

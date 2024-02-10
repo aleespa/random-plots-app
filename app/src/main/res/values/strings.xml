@@ -3,4 +3,11 @@
     <string name="generate">Generate\\nRandom Plot</string>
     <string name="save">Save to\\ngallery</string>
     <string name="set_wallpaper">Set as\nwallpaper</string>
+    <string name="generate_img_first">Generate a plot first</string>
+    <string name="wallpaper_set">Wallpaper set successfully</string>
+    <string name="wallpaper_fail">Failed to set wallpaper</string>
+    <string name="save_success">Plot saved successfully</string>
+    <string name="create">Create</string>
+    <string name="gallery">Gallery</string>
+    <string name="settings">Settings</string>
 </resources>

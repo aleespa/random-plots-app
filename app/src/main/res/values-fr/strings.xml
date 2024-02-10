@@ -4,4 +4,11 @@
     <string name="generate">Générer\nRandom Plot</string>
     <string name="save">Enregistrer dans\nla galerie</string>
     <string name="set_wallpaper">Définir comme\nfond d\'écran</string>
+    <string name="generate_img_first">Générer un graphique d\'abord</string>
+    <string name="wallpaper_set">Fond d\'écran défini avec succès</string>
+    <string name="wallpaper_fail">Impossible de définir le fond d\'écran</string>
+    <string name="save_success">Graphique enregistré avec succès</string>
+    <string name="create">Créer</string>
+    <string name="gallery">Galerie</string>
+    <string name="settings">Paramétres</string>
 </resources>
