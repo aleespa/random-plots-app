@@ -4,7 +4,7 @@ import base64
 
 import numpy as np
 from matplotlib import pyplot as plt
-
+import time
 
 def vectorized_sample_complex_pairs(sample_size: int):
     # Sample 2n random angles from 0 to 2*pi (2 for each pair)

@@ -21,22 +21,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
@@ -51,19 +51,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.alejandro.randomplots.R
 import com.alejandro.randomplots.create.generateRandomPlot
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import ru.noties.jlatexmath.JLatexMathDrawable
 import ru.noties.jlatexmath.JLatexMathView
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun Create() {
     var rotated by remember {
         mutableStateOf(false)
     }
+    var loading by remember {
+        mutableStateOf(false)
+    }
     val imageBitmapState = remember { mutableStateOf<ImageBitmap?>(null) }
     val latexString = remember {
         mutableStateOf<String>("")
     }
-    val isSystemInDarkTheme = isSystemInDarkTheme()
     val textColor = MaterialTheme.colorScheme.onBackground
     val context = LocalContext.current
     Column (
@@ -76,14 +82,28 @@ fun Create() {
                 defaultElevation = 6.dp
             ),
             modifier = Modifier
-                .fillMaxWidth() // Match the width of the screen
+                .fillMaxWidth()
                 .aspectRatio(1f)
                 .padding(10.dp)
                 .align(Alignment.CenterHorizontally)
                 .clickable { rotated = !rotated },
         ) {
             if (!rotated){
-                ImageWithNullFallback(imageBitmapState.value)
+                if (loading) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            color = MaterialTheme.colorScheme.secondary,
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant)
+                    }
+                } else{
+                    ImageWithNullFallback(imageBitmapState.value)
+                }
+
             }else{
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -105,9 +125,15 @@ fun Create() {
                 elevation = FloatingActionButtonDefaults.elevation(10.dp),
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 onClick = {
-                    val result  = generateRandomPlot()
-                    imageBitmapState.value = result.first
-                    latexString.value = result.second}) {
+                    loading = true
+                    // Introduce a delay before starting the long-running operation
+                    CoroutineScope(Dispatchers.Main).launch {
+                        delay(1) // Adjust delay time as needed
+                        val result = generateRandomPlot()
+                        imageBitmapState.value = result.first
+                        latexString.value = result.second
+                        loading = false
+                    }}) {
                 Text(
                     text = stringResource(id = R.string.generate),
                     textAlign = TextAlign.Center,
