@@ -1,4 +1,4 @@
-package com.example.randomplots.ui.theme
+package com.alejandro.randomplots.ui.theme
 
 import android.app.Activity
 import android.os.Build

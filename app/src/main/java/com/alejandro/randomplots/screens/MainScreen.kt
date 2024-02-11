@@ -1,4 +1,4 @@
-package com.example.randomplots.screens
+package com.alejandro.randomplots.screens
 import android.annotation.SuppressLint
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -15,7 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.randomplots.BottomBarScreen
+import com.alejandro.randomplots.BottomBarScreen
 import com.company.test.screens.Gallery
 import com.company.test.screens.Settings
 

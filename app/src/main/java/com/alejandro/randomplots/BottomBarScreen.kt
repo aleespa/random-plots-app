@@ -1,4 +1,4 @@
-package com.example.randomplots
+package com.alejandro.randomplots
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create

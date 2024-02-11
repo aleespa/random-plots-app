@@ -1,12 +1,12 @@
-package com.example.randomplots
+package com.alejandro.randomplots
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
-import com.example.randomplots.screens.MainScreen
-import com.example.randomplots.ui.theme.MyApplicationTheme
+import com.alejandro.randomplots.screens.MainScreen
+import com.alejandro.randomplots.ui.theme.MyApplicationTheme
 
 
 class MainActivity : ComponentActivity() {

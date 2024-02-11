@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.randomplots'
+    namespace 'com.alejandro.randomplots'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.example.randomplots"
+        applicationId "com.alejandro.randomplots"
         minSdk 29
         targetSdk 34
         versionCode 1
