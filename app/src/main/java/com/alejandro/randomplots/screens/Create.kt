@@ -4,7 +4,6 @@ import android.app.WallpaperManager
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.provider.MediaStore
 import android.view.View
 import android.widget.Toast
@@ -12,18 +11,23 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,9 +36,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -58,7 +64,7 @@ fun Create() {
         mutableStateOf<String>("")
     }
     val isSystemInDarkTheme = isSystemInDarkTheme()
-    val textColor = if (isSystemInDarkTheme) Color.WHITE else Color.BLACK
+    val textColor = MaterialTheme.colorScheme.onBackground
     val context = LocalContext.current
     Column (
         modifier = Modifier,
@@ -70,7 +76,8 @@ fun Create() {
                 defaultElevation = 6.dp
             ),
             modifier = Modifier
-                .width(IntrinsicSize.Max)
+                .fillMaxWidth() // Match the width of the screen
+                .aspectRatio(1f)
                 .padding(10.dp)
                 .align(Alignment.CenterHorizontally)
                 .clickable { rotated = !rotated },
@@ -78,17 +85,25 @@ fun Create() {
             if (!rotated){
                 ImageWithNullFallback(imageBitmapState.value)
             }else{
-                LatexMathView(
-                    latexString = latexString.value,
-                    textColor = textColor
-                )
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ){
+                    LatexMathView(
+                        latexString = latexString.value,
+                        textColor = textColor.toArgb()
+                    )
+                }
+
             }
         }
         Spacer(Modifier.height(70.dp))
         Column {
-            ElevatedButton(
+            ExtendedFloatingActionButton(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally),
+                elevation = FloatingActionButtonDefaults.elevation(10.dp),
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
                 onClick = {
                     val result  = generateRandomPlot()
                     imageBitmapState.value = result.first
@@ -104,10 +119,13 @@ fun Create() {
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
             ) {
-                ExtendedFloatingActionButton(onClick = {
-                    val androidBitmap = imageBitmapState.value?.asAndroidBitmap()
-                    if (androidBitmap != null) {
-                        saveBitmapToGallery(context, androidBitmap)
+                ExtendedFloatingActionButton(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    elevation = FloatingActionButtonDefaults.elevation(10.dp),
+                    onClick = {
+                        val androidBitmap = imageBitmapState.value?.asAndroidBitmap()
+                        if (androidBitmap != null) {
+                            saveBitmapToGallery(context, androidBitmap)
                     }
                 }) {
                     Text(
@@ -116,9 +134,13 @@ fun Create() {
                     )
                 }
                 Spacer(Modifier.width(10.dp))
-                ExtendedFloatingActionButton(onClick = {
-                    val androidBitmap = imageBitmapState.value?.asAndroidBitmap()
-                    setWallpaper(context, androidBitmap)
+                ExtendedFloatingActionButton(
+                    elevation = FloatingActionButtonDefaults.elevation(10.dp),
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    onClick = {
+                        val androidBitmap = imageBitmapState.value?.asAndroidBitmap()
+                        setWallpaper(context, androidBitmap)
+
                 }) {
                     Text(
                         text = stringResource(id = R.string.set_wallpaper),
