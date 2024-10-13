@@ -5,6 +5,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -44,7 +45,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.alejandro.randomplots.R
@@ -55,21 +55,34 @@ import ru.noties.jlatexmath.JLatexMathDrawable
 import ru.noties.jlatexmath.JLatexMathView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.withContext
+import java.io.IOException
+
 
 @Composable
-fun Create() {
+fun Create(viewModel: YourViewModel) {
+
+    Log.d("","Create ")
     var rotated by remember {
         mutableStateOf(false)
     }
     var loading by remember {
         mutableStateOf(false)
     }
-    val imageBitmapState = remember { mutableStateOf<ImageBitmap?>(null) }
+    val imageBitmapState = remember {
+        mutableStateOf<ImageBitmap?>(null)
+    }
     val latexString = remember {
         mutableStateOf<String>("")
     }
-    val textColor = MaterialTheme.colorScheme.onBackground
+    val isDarkTheme = isSystemInDarkTheme()
     val context = LocalContext.current
+
+
     Column (
         modifier = Modifier,
         verticalArrangement = Arrangement.SpaceBetween
@@ -108,8 +121,7 @@ fun Create() {
                     contentAlignment = Alignment.Center
                 ){
                     LatexMathView(
-                        latexString = latexString.value,
-                        textColor = textColor.toArgb()
+                        latexString = latexString.value
                     )
                 }
 
@@ -117,17 +129,19 @@ fun Create() {
         }
         Spacer(Modifier.height(70.dp))
         Column {
+
             ExtendedFloatingActionButton(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally),
                 elevation = FloatingActionButtonDefaults.elevation(10.dp),
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 onClick = {
+
                     loading = true
                     // Introduce a delay before starting the long-running operation
                     CoroutineScope(Dispatchers.Main).launch {
                         delay(1) // Adjust delay time as needed
-                        val result = generateRandomPlot()
+                        val result = generateRandomPlot(isDarkTheme)
                         imageBitmapState.value = result.first
                         latexString.value = result.second
                         loading = false
@@ -144,8 +158,8 @@ fun Create() {
                 horizontalArrangement = Arrangement.Center,
             ) {
                 ExtendedFloatingActionButton(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     elevation = FloatingActionButtonDefaults.elevation(10.dp),
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     onClick = {
                         val androidBitmap = imageBitmapState.value?.asAndroidBitmap()
                         if (androidBitmap != null) {
@@ -163,8 +177,10 @@ fun Create() {
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     onClick = {
                         val androidBitmap = imageBitmapState.value?.asAndroidBitmap()
-                        setWallpaper(context, androidBitmap)
-
+                        if (androidBitmap != null) {
+                            viewModel.setWallpaper(context, androidBitmap)
+                        }
+                        Log.d("","Wallpaper set")
                 }) {
                     Text(
                         text = stringResource(id = R.string.set_wallpaper),
@@ -192,7 +208,8 @@ fun ImageWithNullFallback(imageBitmap: ImageBitmap?) {
 }
 
 @Composable
-fun LatexMathView(latexString: String, textColor: Int) {
+fun LatexMathView(latexString: String) {
+    val textColor = MaterialTheme.colorScheme.onBackground.toArgb()
     AndroidView(
         modifier = Modifier
             .width(IntrinsicSize.Max)
@@ -215,27 +232,35 @@ fun LatexMathView(latexString: String, textColor: Int) {
 }
 
 
-@Preview
-@Composable
-fun GreetingPreview() {
-    Create()
-}
-
-fun setWallpaper(context: Context,
-                 bitmap: Bitmap?) {
-    if (bitmap == null){
+fun setWallpaper(context: Context, bitmap: Bitmap?) {
+    if (bitmap == null) {
         Toast.makeText(context, R.string.generate_img_first, Toast.LENGTH_SHORT).show()
-    } else {
+        return
+    }
+
+    // Move wallpaper setting to a background thread to avoid blocking the main thread
+    CoroutineScope(Dispatchers.IO).launch {
         try {
             val wallpaperManager = WallpaperManager.getInstance(context)
             wallpaperManager.setBitmap(bitmap)
-            Toast.makeText(context, R.string.wallpaper_set, Toast.LENGTH_SHORT).show()
+
+            // Show success message on the main thread
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, R.string.wallpaper_set, Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: IOException) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, R.string.wallpaper_fail, Toast.LENGTH_SHORT).show()
+            }
         } catch (e: Exception) {
-            Toast.makeText(context, R.string.wallpaper_fail, Toast.LENGTH_SHORT).show()
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, R.string.wallpaper_fail, Toast.LENGTH_SHORT).show()
+            }
         }
     }
-
 }
+
+
 fun saveBitmapToGallery(context: Context,
                         bitmap: Bitmap,
                         displayName: String = "Random_plot_${System.currentTimeMillis()}.png") {
@@ -255,3 +280,29 @@ fun saveBitmapToGallery(context: Context,
         }
     }
 }
+
+class YourViewModel : ViewModel() {
+    private val _loading = MutableLiveData(false)
+    val loading: LiveData<Boolean> get() = _loading
+
+    fun setWallpaper(context: Context, bitmap: Bitmap) {
+        _loading.postValue(true) // Use postValue instead of setValue
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val wallpaperManager = WallpaperManager.getInstance(context)
+                wallpaperManager.setBitmap(bitmap)
+                // Show success message
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, R.string.wallpaper_set, Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: IOException) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, R.string.wallpaper_fail, Toast.LENGTH_SHORT).show()
+                }
+            } finally {
+                _loading.postValue(false) // Also use postValue here
+            }
+        }
+    }
+}
+
