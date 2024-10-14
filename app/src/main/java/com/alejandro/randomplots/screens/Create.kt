@@ -56,15 +56,20 @@ import ru.noties.jlatexmath.JLatexMathView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.withContext
 import java.io.IOException
-
+import android.net.Uri
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 
 @Composable
-fun Create(viewModel: YourViewModel) {
+fun Create(viewModel: YourViewModel,
+           isDarkTheme: Boolean = isSystemInDarkTheme()) {
 
     Log.d("","Create ")
     var rotated by remember {
@@ -73,16 +78,14 @@ fun Create(viewModel: YourViewModel) {
     var loading by remember {
         mutableStateOf(false)
     }
+
     val imageBitmapState = remember {
         mutableStateOf<ImageBitmap?>(null)
     }
     val latexString = remember {
         mutableStateOf<String>("")
     }
-    val isDarkTheme = isSystemInDarkTheme()
     val context = LocalContext.current
-
-
     Column (
         modifier = Modifier,
         verticalArrangement = Arrangement.SpaceBetween
@@ -129,14 +132,12 @@ fun Create(viewModel: YourViewModel) {
         }
         Spacer(Modifier.height(70.dp))
         Column {
-
             ExtendedFloatingActionButton(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally),
                 elevation = FloatingActionButtonDefaults.elevation(10.dp),
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 onClick = {
-
                     loading = true
                     // Introduce a delay before starting the long-running operation
                     CoroutineScope(Dispatchers.Main).launch {
@@ -304,5 +305,6 @@ class YourViewModel : ViewModel() {
             }
         }
     }
+
 }
 

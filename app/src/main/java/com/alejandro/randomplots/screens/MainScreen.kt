@@ -1,5 +1,6 @@
 package com.alejandro.randomplots.screens
 import android.annotation.SuppressLint
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
@@ -69,7 +70,7 @@ fun BottomNavGraph(navController: NavHostController) {
         startDestination = BottomBarScreen.Create.route
     ) {
         composable(route = BottomBarScreen.Create.route) {
-            Create(YourViewModel())
+            Create(YourViewModel(), isSystemInDarkTheme())
         }
         composable(route = BottomBarScreen.Gallery.route) {
             Gallery()
