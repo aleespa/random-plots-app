@@ -4,6 +4,7 @@ import android.app.WallpaperManager
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
@@ -66,6 +67,10 @@ import android.net.Uri
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.graphics.asImageBitmap
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
 
 @Composable
 fun Create(viewModel: YourViewModel,
@@ -82,10 +87,15 @@ fun Create(viewModel: YourViewModel,
     val imageBitmapState = remember {
         mutableStateOf<ImageBitmap?>(null)
     }
+
     val latexString = remember {
         mutableStateOf<String>("")
     }
     val context = LocalContext.current
+    val savedBitmap = loadBitmapFromFile(context, "cache_front.png")
+    if (savedBitmap != null) {
+        imageBitmapState.value = savedBitmap.asImageBitmap()
+    }
     Column (
         modifier = Modifier,
         verticalArrangement = Arrangement.SpaceBetween
@@ -143,6 +153,11 @@ fun Create(viewModel: YourViewModel,
                     CoroutineScope(Dispatchers.Main).launch {
                         delay(1) // Adjust delay time as needed
                         val result = generateRandomPlot(isDarkTheme)
+                        val androidBitmap = result.first?.asAndroidBitmap()
+                        if (androidBitmap != null) {
+                            saveBitmapToFile(context, androidBitmap,
+                                "cache_front.png")
+                        }
                         imageBitmapState.value = result.first
                         latexString.value = result.second
                         loading = false
@@ -307,4 +322,39 @@ class YourViewModel : ViewModel() {
     }
 
 }
-
+fun saveBitmapToFile(context: Context, bitmap: Bitmap, filename: String){
+    try {
+        deleteFileIfExists(context, filename)
+        val file = File(context.filesDir, filename)
+        val outputStream = FileOutputStream(file)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+        outputStream.flush()
+        outputStream.close()
+    } catch (e: IOException) {
+        e.printStackTrace()
+        null
+    }
+}
+fun deleteFileIfExists(context: Context, filename: String) {
+    val file = File(context.filesDir, filename)
+    if (file.exists()) {
+        val deleted = file.delete() // Try to delete the file
+        if (!deleted) {
+            Log.e("FileDebug", "Failed to delete file: $filename")
+        }
+    }
+}
+fun loadBitmapFromFile(context: Context, filename: String): Bitmap? {
+    return try {
+        val file = File(context.filesDir, filename)
+        if (file.exists()) {
+            Log.d("","File exists")
+            BitmapFactory.decodeFile(file.absolutePath)
+        } else {
+            null // Return null if the file doesn't exist
+        }
+    } catch (e: IOException) {
+        e.printStackTrace()
+        null
+    }
+}
