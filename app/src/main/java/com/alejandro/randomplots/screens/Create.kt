@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
@@ -52,31 +54,20 @@ import com.alejandro.randomplots.R
 import com.alejandro.randomplots.create.generateRandomPlot
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import ru.noties.jlatexmath.JLatexMathDrawable
-import ru.noties.jlatexmath.JLatexMathView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.withContext
-import java.io.IOException
-import android.net.Uri
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.graphics.asImageBitmap
+import ru.noties.jlatexmath.JLatexMathDrawable
+import ru.noties.jlatexmath.JLatexMathView
 import java.io.File
-import java.io.FileNotFoundException
 import java.io.FileOutputStream
+import java.io.IOException
 
 @Composable
-fun Create(viewModel: YourViewModel,
-           isDarkTheme: Boolean = isSystemInDarkTheme()) {
+fun Create() {
 
     Log.d("","Create ")
+    val isDarkTheme = isSystemInDarkTheme()
     var rotated by remember {
         mutableStateOf(false)
     }
@@ -194,7 +185,7 @@ fun Create(viewModel: YourViewModel,
                     onClick = {
                         val androidBitmap = imageBitmapState.value?.asAndroidBitmap()
                         if (androidBitmap != null) {
-                            viewModel.setWallpaper(context, androidBitmap)
+                            setWallpaper(context, androidBitmap)
                         }
                         Log.d("","Wallpaper set")
                 }) {
@@ -297,31 +288,6 @@ fun saveBitmapToGallery(context: Context,
     }
 }
 
-class YourViewModel : ViewModel() {
-    private val _loading = MutableLiveData(false)
-    val loading: LiveData<Boolean> get() = _loading
-
-    fun setWallpaper(context: Context, bitmap: Bitmap) {
-        _loading.postValue(true) // Use postValue instead of setValue
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val wallpaperManager = WallpaperManager.getInstance(context)
-                wallpaperManager.setBitmap(bitmap)
-                // Show success message
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, R.string.wallpaper_set, Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: IOException) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, R.string.wallpaper_fail, Toast.LENGTH_SHORT).show()
-                }
-            } finally {
-                _loading.postValue(false) // Also use postValue here
-            }
-        }
-    }
-
-}
 fun saveBitmapToFile(context: Context, bitmap: Bitmap, filename: String){
     try {
         deleteFileIfExists(context, filename)
@@ -332,7 +298,6 @@ fun saveBitmapToFile(context: Context, bitmap: Bitmap, filename: String){
         outputStream.close()
     } catch (e: IOException) {
         e.printStackTrace()
-        null
     }
 }
 fun deleteFileIfExists(context: Context, filename: String) {
