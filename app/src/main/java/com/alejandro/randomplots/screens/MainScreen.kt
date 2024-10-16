@@ -70,7 +70,7 @@ fun BottomNavGraph(navController: NavHostController) {
         startDestination = BottomBarScreen.Create.route
     ) {
         composable(route = BottomBarScreen.Create.route) {
-            Create(YourViewModel(), isSystemInDarkTheme())
+            Create()
         }
         composable(route = BottomBarScreen.Gallery.route) {
             Gallery()
