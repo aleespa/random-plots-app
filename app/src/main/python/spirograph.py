@@ -43,7 +43,7 @@ def generate_plot(dark=False):
         fig.patch.set_facecolor('#f4f0e7')
 
     for _ in range(4):
-        a, b, c, d = sorted(np.random.randint(1, 24, 4))
+        a, b, c, d = sorted(np.random.randint(1, 26, 4))
         k, l = a / b, c / d
         if dark:
             color = cmap_dark(np.random.uniform())
