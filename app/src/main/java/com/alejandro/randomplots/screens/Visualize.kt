@@ -43,7 +43,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.alejandro.randomplots.R
+import com.alejandro.randomplots.tools.SettingsViewModel
 import com.alejandro.randomplots.tools.generateRandomPlot
 import com.alejandro.randomplots.tools.setWallpaper
 import com.alejandro.randomplots.tools.saveBitmapToFile
@@ -58,7 +61,6 @@ import ru.noties.jlatexmath.JLatexMathView
 
 @Composable
 fun Visualize() {
-
     Log.d("","Create ")
     val isDarkTheme = isSystemInDarkTheme()
     var rotated by remember {

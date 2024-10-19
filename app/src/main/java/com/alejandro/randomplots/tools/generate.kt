@@ -22,10 +22,11 @@ import java.io.IOException
 import java.util.Base64
 
 
-suspend fun generateRandomPlot(isDarkMode: Boolean): Pair<ImageBitmap?, String> = withContext(Dispatchers.IO) {
+suspend fun generateRandomPlot(isDarkMode: Boolean, script: String = "spirograph"):
+        Pair<ImageBitmap?, String> = withContext(Dispatchers.IO) {
     val py = Python.getInstance()
     val mainModule = py.getModule("main")
-    val result = mainModule.callAttr("generate", isDarkMode).asList()
+    val result = mainModule.callAttr("generate", isDarkMode, script).asList()
 
     val imageBytes = Base64.getDecoder().decode(result[0].toString().toByteArray())
 

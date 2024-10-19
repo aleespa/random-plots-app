@@ -17,7 +17,7 @@ sealed class BottomBarScreen (
         icon = Icons.Default.Build
     )
     data object Visualize : BottomBarScreen(
-        route = "create",
+        route = "visualize",
         titleResourceId = R.string.visualize,
         icon = Icons.Default.Create
     )
