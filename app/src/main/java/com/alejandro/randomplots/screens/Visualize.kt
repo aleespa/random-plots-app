@@ -44,11 +44,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.alejandro.randomplots.R
-import com.alejandro.randomplots.create.generateRandomPlot
-import com.alejandro.randomplots.create.setWallpaper
-import com.alejandro.randomplots.create.saveBitmapToFile
-import com.alejandro.randomplots.create.saveBitmapToGallery
-import com.alejandro.randomplots.create.loadBitmapFromFile
+import com.alejandro.randomplots.tools.generateRandomPlot
+import com.alejandro.randomplots.tools.setWallpaper
+import com.alejandro.randomplots.tools.saveBitmapToFile
+import com.alejandro.randomplots.tools.saveBitmapToGallery
+import com.alejandro.randomplots.tools.loadBitmapFromFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -57,7 +57,7 @@ import ru.noties.jlatexmath.JLatexMathDrawable
 import ru.noties.jlatexmath.JLatexMathView
 
 @Composable
-fun Create() {
+fun Visualize() {
 
     Log.d("","Create ")
     val isDarkTheme = isSystemInDarkTheme()
