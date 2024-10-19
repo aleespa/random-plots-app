@@ -1,7 +1,6 @@
 package com.alejandro.randomplots
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -11,11 +10,6 @@ sealed class BottomBarScreen (
     val titleResourceId: Int,
     val icon: ImageVector
 ){
-    data object Customize : BottomBarScreen(
-        route = "customize",
-        titleResourceId = R.string.customize,
-        icon = Icons.Default.Build
-    )
     data object Visualize : BottomBarScreen(
         route = "visualize",
         titleResourceId = R.string.visualize,

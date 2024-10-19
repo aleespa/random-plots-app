@@ -1,4 +1,4 @@
-package com.alejandro.randomplots.ui.icons
+package drawable.icons
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
