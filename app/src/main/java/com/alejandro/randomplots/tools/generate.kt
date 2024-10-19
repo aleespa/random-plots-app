@@ -1,4 +1,4 @@
-package com.alejandro.randomplots.create
+package com.alejandro.randomplots.tools
 
 import android.app.WallpaperManager
 import android.content.ContentValues

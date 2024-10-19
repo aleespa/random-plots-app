@@ -1,4 +1,4 @@
-package com.company.test.screens
+package com.alejandro.randomplots.screens
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -9,7 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 
 @Composable
-fun Settings() {
+fun Customize() {
 
     Column {
         ListItem(

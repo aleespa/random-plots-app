@@ -11,4 +11,6 @@
     <string name="create">Crear</string>
     <string name="gallery">Galería</string>
     <string name="settings">Opciones</string>
+    <string name="customize">Personalizar</string>
+    <string name="visualize">Visualizar</string>
 </resources>

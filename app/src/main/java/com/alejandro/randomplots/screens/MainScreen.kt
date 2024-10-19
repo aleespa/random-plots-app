@@ -1,6 +1,5 @@
 package com.alejandro.randomplots.screens
 import android.annotation.SuppressLint
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
@@ -18,7 +17,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.alejandro.randomplots.BottomBarScreen
-import com.company.test.screens.Settings
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -34,9 +32,9 @@ fun MainScreen() {
 @Composable
 fun BottomBar(navController: NavHostController){
     val screens = listOf(
-        BottomBarScreen.Create,
-        BottomBarScreen.Gallery,
-        BottomBarScreen.Settings
+        BottomBarScreen.Customize,
+        BottomBarScreen.Visualize,
+        BottomBarScreen.Gallery
     )
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -67,16 +65,17 @@ fun BottomBar(navController: NavHostController){
 fun BottomNavGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = BottomBarScreen.Create.route
+        startDestination = BottomBarScreen.Visualize.route
     ) {
-        composable(route = BottomBarScreen.Create.route) {
-            Create()
+        composable(route = BottomBarScreen.Customize.route) {
+            Customize()
+        }
+        composable(route = BottomBarScreen.Visualize.route) {
+            Visualize()
         }
         composable(route = BottomBarScreen.Gallery.route) {
             Gallery()
         }
-        composable(route = BottomBarScreen.Settings.route) {
-            Settings()
-        }
+
     }
 }
