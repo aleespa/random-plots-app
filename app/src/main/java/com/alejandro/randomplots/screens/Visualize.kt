@@ -17,13 +17,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,15 +52,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.alejandro.randomplots.R
-import com.alejandro.randomplots.tools.SettingsViewModel
 import com.alejandro.randomplots.tools.generateRandomPlot
-import com.alejandro.randomplots.tools.setWallpaper
+import com.alejandro.randomplots.tools.loadBitmapFromFile
 import com.alejandro.randomplots.tools.saveBitmapToFile
 import com.alejandro.randomplots.tools.saveBitmapToGallery
-import com.alejandro.randomplots.tools.loadBitmapFromFile
+import com.alejandro.randomplots.tools.setWallpaper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -82,11 +88,14 @@ fun Visualize() {
     if (savedBitmap != null) {
         imageBitmapState.value = savedBitmap.asImageBitmap()
     }
+    val options = listOf("spirograph", "cont_spirograph")
     Column (
         modifier = Modifier,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Spacer(Modifier.height(80.dp))
+        val selectedOption = dropdownMenu(options)
+        Spacer(Modifier.height(10.dp))
         ElevatedCard(
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 6.dp
@@ -138,7 +147,7 @@ fun Visualize() {
                     // Introduce a delay before starting the long-running operation
                     CoroutineScope(Dispatchers.Main).launch {
                         delay(1) // Adjust delay time as needed
-                        val result = generateRandomPlot(isDarkTheme)
+                        val result = generateRandomPlot(isDarkTheme, selectedOption)
                         val androidBitmap = result.first?.asAndroidBitmap()
                         if (androidBitmap != null) {
                             saveBitmapToFile(context, androidBitmap,
@@ -233,4 +242,45 @@ fun LatexMathView(latexString: String) {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun dropdownMenu(options: List<String>): String {
+    var expanded by remember { mutableStateOf(false) }
+    var selectedOption by remember { mutableStateOf(options[0]) }
+    Column (
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = {
+                expanded = !expanded
+            }
+        ) {
+            TextField(
+                value = selectedOption,
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                modifier = Modifier.menuAnchor()
+            )
 
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                options.forEach { option ->
+                    DropdownMenuItem(
+                        text = { Text(option) },
+                        onClick = {
+                            selectedOption = option
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+    }
+
+    return selectedOption
+}
