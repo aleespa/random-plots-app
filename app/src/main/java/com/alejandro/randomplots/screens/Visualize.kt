@@ -90,7 +90,7 @@ fun Visualize() {
         modifier = Modifier,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Spacer(Modifier.height(80.dp))
+        Spacer(Modifier.height(50.dp))
         val selectedOption = dropdownMenu(options)
         Spacer(Modifier.height(10.dp))
         ElevatedCard(
@@ -132,7 +132,7 @@ fun Visualize() {
 
             }
         }
-        Spacer(Modifier.height(70.dp))
+        Spacer(Modifier.height(50.dp))
         Column {
             ExtendedFloatingActionButton(
                 modifier = Modifier
@@ -159,7 +159,7 @@ fun Visualize() {
                     textAlign = TextAlign.Center,
                 )
             }
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(15.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -179,7 +179,7 @@ fun Visualize() {
                         textAlign = TextAlign.Center
                     )
                 }
-                Spacer(Modifier.width(10.dp))
+                Spacer(Modifier.width(15.dp))
                 ExtendedFloatingActionButton(
                     elevation = FloatingActionButtonDefaults.elevation(10.dp),
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
