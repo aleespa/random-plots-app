@@ -30,12 +30,17 @@ def calculate_eigenvalues(x: np.array):
     return np.linalg.eigvals(x)
 
 
-def generate_plot(x, y):
+def generate_plot(x, y, dark_mode=False):
     # Create a figure with adjusted layout
     fig, ax = plt.subplots(figsize=(12, 12), dpi=100, tight_layout=True)
-    fig.patch.set_facecolor('#f4f0e7')
+    if dark_mode:
+        fig.patch.set_facecolor('#1e1f22')
+    else:
+        fig.patch.set_facecolor('#f4f0e7')
     # Create scatter plot without axes
-    ax.scatter(x, y, s=1, color='k', lw=0, alpha=0.9)
+    ax.scatter(x, y,s=1,
+               color='w' if dark_mode else "k",
+               lw=0, alpha=0.9)
     ax.set_xlim(-2.5, 1.5)
     ax.set_ylim(-1.5, 2.5)
 
@@ -50,7 +55,7 @@ def generate_plot(x, y):
     return buffer
 
 
-def create_image():
+def create_image(dark_mode=False):
     sample_size = 20000
     sample = vectorized_sample_complex_pairs(sample_size)
     r1 = np.random.uniform(-1, 1) + np.random.uniform(-1, 1) * 1j
@@ -58,7 +63,7 @@ def create_image():
     Z = np.array([calculate_eigenvalues(calculate_matrix(t, r1, r2)) for t in sample]).ravel()
     x = Z.real
     y = Z.imag
-    buffer = generate_plot(x, y)
+    buffer = generate_plot(x, y, dark_mode)
     image_data = base64.b64encode(buffer.getvalue()).decode('utf-8')
     return image_data
 

@@ -17,12 +17,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -52,6 +48,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.alejandro.randomplots.Figures
 import com.alejandro.randomplots.R
 import com.alejandro.randomplots.tools.generateRandomPlot
 import com.alejandro.randomplots.tools.loadBitmapFromFile
@@ -88,7 +85,7 @@ fun Visualize() {
     if (savedBitmap != null) {
         imageBitmapState.value = savedBitmap.asImageBitmap()
     }
-    val options = listOf("spirograph", "cont_spirograph")
+    val options = Figures.entries.map { it.s }
     Column (
         modifier = Modifier,
         verticalArrangement = Arrangement.SpaceBetween
@@ -282,5 +279,5 @@ fun dropdownMenu(options: List<String>): String {
         }
     }
 
-    return selectedOption
+    return Figures.fromCode(selectedOption)?.s1 ?: ""
 }
