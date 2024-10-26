@@ -231,7 +231,7 @@ fun LatexMathView(latexString: String) {
             val drawable = JLatexMathDrawable.builder(latexString)
                 .textSize(70F)
                 .padding(8)
-                .align(JLatexMathDrawable.ALIGN_RIGHT)
+                .align(JLatexMathDrawable.ALIGN_CENTER)
                 .color(textColor)
                 .build()
             view.setLatexDrawable(drawable)
