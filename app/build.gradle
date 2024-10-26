@@ -20,7 +20,7 @@ android {
             useSupportLibrary true
         }
         python {
-            buildPython "C:/Users/Alejandro Lopez/AppData/Local/Programs/Python/Python312/python.exe"
+            buildPython "C:/Users/Alejandro López/AppData/Local/Programs/Python/Python312/python.exe"
 
             pip {
                 install "matplotlib"

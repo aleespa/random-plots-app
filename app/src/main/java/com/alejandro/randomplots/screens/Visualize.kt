@@ -132,7 +132,7 @@ fun Visualize() {
 
             }
         }
-        Spacer(Modifier.height(50.dp))
+        Spacer(Modifier.height(30.dp))
         Column {
             ExtendedFloatingActionButton(
                 modifier = Modifier
