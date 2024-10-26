@@ -38,19 +38,17 @@ def generate_plot(dark=False):
     t = np.linspace(0, 2 * np.pi, 10000)
     fig, ax = plt.subplots(figsize=(12, 12), dpi=200, tight_layout=True)
     if dark:
-        fig.patch.set_facecolor('#302e2b')
+        fig.patch.set_facecolor('#1e1f22')
     else:
         fig.patch.set_facecolor('#f4f0e7')
 
     for _ in range(4):
-        a, b, c, d = sorted(np.random.randint(1, 26, 4))
-        k, l = a / b, c / d
+        k, l = np.random.uniform(0,1,2)
         if dark:
             color = cmap_dark(np.random.uniform())
         else:
             color = cmap_light(np.random.uniform())
         plot_spiro(t, k, l, ax, color)
-        # Save the figure to a buffer without extra white space
 
     ax.axis('off')
     buffer = io.BytesIO()
@@ -68,7 +66,7 @@ def spiro(t: np.array,
 
 def plot_spiro(t, k, l, ax, color):
     s = spiro(100 * t, k, l)
-    ax.plot(s.real, s.imag, lw=3, alpha=0.9,
+    ax.plot(s.real, s.imag, lw=1, alpha=0.9,
             color=color)
 
 def create_image(dark_mode=False):
