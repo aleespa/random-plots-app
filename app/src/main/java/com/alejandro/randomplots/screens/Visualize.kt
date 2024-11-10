@@ -1,5 +1,6 @@
 package com.alejandro.randomplots.screens
 
+import android.content.Context
 import android.util.Log
 import android.view.View
 import androidx.compose.foundation.Image
@@ -16,7 +17,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
@@ -26,10 +32,14 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,6 +60,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.alejandro.randomplots.Figures
 import com.alejandro.randomplots.R
+import com.alejandro.randomplots.tools.LatexMathView
 import com.alejandro.randomplots.tools.generateRandomPlot
 import com.alejandro.randomplots.tools.loadBitmapFromFile
 import com.alejandro.randomplots.tools.saveBitmapToFile
@@ -91,6 +102,7 @@ fun Visualize() {
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Spacer(Modifier.height(50.dp))
+        SwitchWithIconExample()
         val selectedOption = dropdownMenu(options)
         Spacer(Modifier.height(10.dp))
         ElevatedCard(
@@ -132,7 +144,7 @@ fun Visualize() {
 
             }
         }
-        Spacer(Modifier.height(30.dp))
+        Spacer(Modifier.height(35.dp))
         Column {
             ExtendedFloatingActionButton(
                 modifier = Modifier
@@ -165,39 +177,11 @@ fun Visualize() {
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
             ) {
-                ExtendedFloatingActionButton(
-                    elevation = FloatingActionButtonDefaults.elevation(10.dp),
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    onClick = {
-                        val androidBitmap = imageBitmapState.value?.asAndroidBitmap()
-                        if (androidBitmap != null) {
-                            saveBitmapToGallery(context, androidBitmap)
-                    }
-                }) {
-                    Text(
-                        text = stringResource(id = R.string.save),
-                        textAlign = TextAlign.Center
-                    )
-                }
+                SaveToGalleryButton(imageBitmapState, context)
                 Spacer(Modifier.width(15.dp))
-                ExtendedFloatingActionButton(
-                    elevation = FloatingActionButtonDefaults.elevation(10.dp),
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    onClick = {
-                        val androidBitmap = imageBitmapState.value?.asAndroidBitmap()
-                        if (androidBitmap != null) {
-                            setWallpaper(context, androidBitmap)
-                        }
-                        Log.d("","Wallpaper set")
-                }) {
-                    Text(
-                        text = stringResource(id = R.string.set_wallpaper),
-                        textAlign = TextAlign.Center,
-                    )
-                }
+                SetWallpaperButton(imageBitmapState, context)
             }
         }
-
     }
 }
 @Composable
@@ -215,29 +199,6 @@ fun ImageWithNullFallback(imageBitmap: ImageBitmap?) {
     )
 }
 
-@Composable
-fun LatexMathView(latexString: String) {
-    val textColor = MaterialTheme.colorScheme.onBackground.toArgb()
-    AndroidView(
-        modifier = Modifier
-            .width(IntrinsicSize.Max)
-            .padding(10.dp),
-        factory = { context ->
-            JLatexMathView(context).apply {
-                visibility = View.VISIBLE
-            }
-        },
-        update = { view ->
-            val drawable = JLatexMathDrawable.builder(latexString)
-                .textSize(70F)
-                .padding(8)
-                .align(JLatexMathDrawable.ALIGN_CENTER)
-                .color(textColor)
-                .build()
-            view.setLatexDrawable(drawable)
-        }
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -280,4 +241,64 @@ fun dropdownMenu(options: List<String>): String {
     }
 
     return Figures.fromCode(selectedOption)?.s1 ?: ""
+}
+
+@Composable
+fun SwitchWithIconExample() {
+    var checked by remember { mutableStateOf(true) }
+
+    Switch(
+        checked = checked,
+        onCheckedChange = {
+            checked = it
+        },
+        thumbContent = if (checked) {
+            {
+                Icon(
+                    imageVector = Icons.Rounded.Info,
+                    contentDescription = null,
+                    modifier = Modifier.size(SwitchDefaults.IconSize),
+                )
+            }
+        } else {
+            null
+        }
+    )
+}
+@Composable
+fun SetWallpaperButton(imageBitmapState: MutableState<ImageBitmap?>,
+                       context: Context) {
+    ExtendedFloatingActionButton(
+        elevation = FloatingActionButtonDefaults.elevation(10.dp),
+        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+        onClick = {
+            val androidBitmap = imageBitmapState.value?.asAndroidBitmap()
+            if (androidBitmap != null) {
+                setWallpaper(context, androidBitmap)
+            }
+            Log.d("", "Wallpaper set")
+        }) {
+        Text(
+            text = stringResource(id = R.string.set_wallpaper),
+            textAlign = TextAlign.Center,
+        )
+    }
+}
+
+@Composable
+fun SaveToGalleryButton(imageBitmapState: MutableState<ImageBitmap?>, context: Context) {
+    ExtendedFloatingActionButton(
+        elevation = FloatingActionButtonDefaults.elevation(10.dp),
+        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+        onClick = {
+            val androidBitmap = imageBitmapState.value?.asAndroidBitmap()
+            if (androidBitmap != null) {
+                saveBitmapToGallery(context, androidBitmap)
+            }
+        }) {
+        Text(
+            text = stringResource(id = R.string.save),
+            textAlign = TextAlign.Center
+        )
+    }
 }
