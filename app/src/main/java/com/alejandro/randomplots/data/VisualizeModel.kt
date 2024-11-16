@@ -11,4 +11,5 @@ class VisualizeModel: ViewModel() {
     var isRotated by mutableStateOf(false)
     var imageBitmapState by mutableStateOf<ImageBitmap?>(null)
     var latexString by mutableStateOf("")
+    var selectedOption by mutableStateOf("")
 }
