@@ -7,21 +7,21 @@ from matplotlib import pyplot as plt
 
 def vectorized_sample_complex_pairs(sample_size: int):
     # Sample 2n random angles from 0 to 2*pi (2 for each pair)
-    thetas = np.random.uniform(0, 2 * np.pi, size=2 * sample_size)
+    thetas = np.random.uniform(0, 2 * np.pi, size=3 * sample_size)
 
     # Compute complex numbers
     zs = np.exp(1j * thetas)
 
     # Reshape to get n pairs
-    pairs = zs.reshape(sample_size, 2)
+    pairs = zs.reshape(sample_size, 3)
 
     return pairs
 
 
 def calculate_matrix(t: np.array, r1, r2):
-    return np.array([[1j, -1, 1, r1, 1j],
+    return np.array([[1j, -1, -t[2], r1, 1j],
                      [-1, 1, 0, 1, 1],
-                     [t[1], 0, -1j, 0, 1j],
+                     [t[1], 0, -1j, t[2], 1j],
                      [1j, t[0], 1j, 1j, 1j],
                      [1j,2, -1, -1, 1j]])
 
@@ -41,8 +41,8 @@ def generate_plot(x, y, dark_mode=False):
     ax.scatter(x, y,s=1,
                color='w' if dark_mode else "k",
                lw=0, alpha=0.9)
-    ax.set_xlim(-2.5, 1.5)
-    ax.set_ylim(-1.5, 2.5)
+    ax.set_xlim(-3, 3)
+    ax.set_ylim(-2, 3.5)
 
     # Remove axes lines and labels
     ax.axis('off')
