@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
@@ -30,6 +31,7 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -37,6 +39,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -52,8 +55,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.alejandro.randomplots.Figures
 import com.alejandro.randomplots.R
+import com.alejandro.randomplots.data.VisualizeModel
 import com.alejandro.randomplots.tools.LatexMathView
 import com.alejandro.randomplots.tools.generateRandomPlot
 import com.alejandro.randomplots.tools.loadBitmapFromFile
@@ -66,81 +71,27 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun Visualize() {
-    Log.d("","Create ")
-    val isDarkTheme = isSystemInDarkTheme()
-    var rotated by remember {
-        mutableStateOf(false)
-    }
-    var loading by remember {
-        mutableStateOf(false)
-    }
-    val imageBitmapState = remember {
-        mutableStateOf<ImageBitmap?>(null)
-    }
-    val latexString = remember {
-        mutableStateOf<String>("")
-    }
+fun Visualize(visualizeModel: VisualizeModel = viewModel()) {
+    var selectedOption = remember { mutableStateOf("") }
     val context = LocalContext.current
     val savedBitmap = loadBitmapFromFile(context, "cache_front.png")
     if (savedBitmap != null) {
-        imageBitmapState.value = savedBitmap.asImageBitmap()
+        visualizeModel.imageBitmapState = savedBitmap.asImageBitmap()
     }
     val options = Figures.entries.map { it.s }
     Column (
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Spacer(modifier= Modifier.height(50.dp))
-        SwitchWithIconExample()
-        val selectedOption = dropdownMenu(options)
+//        SwitchWithIconExample()
+        selectedOption.value = dropdownMenu(options)
         Spacer(Modifier.height(10.dp))
-        ElevatedCard(
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 6.dp
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1f)
-                .padding(10.dp)
-                .align(Alignment.CenterHorizontally)
-                .clickable { rotated = !rotated },
-        ) {
-            if (!rotated){
-                if (loading) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.secondary,
-                            trackColor = MaterialTheme.colorScheme.surfaceVariant)
-                    }
-                } else{
-                    ImageWithNullFallback(imageBitmapState.value)
-                }
-
-            }else{
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ){
-                    LatexMathView(
-                        latexString = latexString.value
-                    )
-                }
-
-            }
-        }
+        VisualizeBox(visualizeModel)
         Spacer(Modifier.height(35.dp))
-        VisualizeButtons(context,
-            selectedOption,
-            latexString,
-            isDarkTheme,
-            imageBitmapState)
+        VisualizeButtons(visualizeModel, context, selectedOption.value)
     }
 }
+
 @Composable
 fun ImageWithNullFallback(imageBitmap: ImageBitmap?) {
     val painter = if (imageBitmap != null) {
@@ -177,7 +128,7 @@ fun dropdownMenu(options: List<String>): String {
                 onValueChange = {},
                 readOnly = true,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                modifier = Modifier.menuAnchor()
+                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable, true)
             )
 
             ExposedDropdownMenu(
@@ -223,13 +174,14 @@ fun SwitchWithIconExample() {
     )
 }
 @Composable
-fun SetWallpaperButton(imageBitmapState: MutableState<ImageBitmap?>,
-                       context: Context) {
+fun SetWallpaperButton(
+    imageBitmapState: ImageBitmap?,
+    context: Context) {
     ExtendedFloatingActionButton(
         elevation = FloatingActionButtonDefaults.elevation(10.dp),
         containerColor = MaterialTheme.colorScheme.secondaryContainer,
         onClick = {
-            val androidBitmap = imageBitmapState.value?.asAndroidBitmap()
+            val androidBitmap = imageBitmapState?.asAndroidBitmap()
             if (androidBitmap != null) {
                 setWallpaper(context, androidBitmap)
             }
@@ -243,12 +195,12 @@ fun SetWallpaperButton(imageBitmapState: MutableState<ImageBitmap?>,
 }
 
 @Composable
-fun SaveToGalleryButton(imageBitmapState: MutableState<ImageBitmap?>, context: Context) {
+fun SaveToGalleryButton(imageBitmapState: ImageBitmap?, context: Context) {
     ExtendedFloatingActionButton(
         elevation = FloatingActionButtonDefaults.elevation(10.dp),
         containerColor = MaterialTheme.colorScheme.secondaryContainer,
         onClick = {
-            val androidBitmap = imageBitmapState.value?.asAndroidBitmap()
+            val androidBitmap = imageBitmapState?.asAndroidBitmap()
             if (androidBitmap != null) {
                 saveBitmapToGallery(context, androidBitmap)
             }
@@ -262,16 +214,18 @@ fun SaveToGalleryButton(imageBitmapState: MutableState<ImageBitmap?>, context: C
 
 @Composable
 fun GeneratePlotButton(
-    latexString: MutableState<String>,
+    visualizeModel: VisualizeModel,
     context: Context,
     isDarkTheme: Boolean,
     selectedOption:String,
-    imageBitmapState: MutableState<ImageBitmap?>){
+    ){
     ExtendedFloatingActionButton(
         elevation = FloatingActionButtonDefaults.elevation(10.dp),
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         onClick = {
+
             CoroutineScope(Dispatchers.Main).launch {
+                visualizeModel.loading = true
                 delay(1)
                 val result = generateRandomPlot(isDarkTheme, selectedOption)
                 val androidBitmap = result.first?.asAndroidBitmap()
@@ -279,8 +233,9 @@ fun GeneratePlotButton(
                     saveBitmapToFile(context, androidBitmap,
                         "cache_front.png")
                 }
-                imageBitmapState.value = result.first
-                latexString.value = result.second
+                visualizeModel.imageBitmapState = result.first
+                visualizeModel.latexString = result.second
+                visualizeModel.loading = false
             }}) {
         Text(
             text = stringResource(id = R.string.generate),
@@ -291,27 +246,67 @@ fun GeneratePlotButton(
 
 @Composable
 fun VisualizeButtons(
+    visualizeModel: VisualizeModel,
     context: Context,
     selectedOption: String,
-    latexString: MutableState<String>,
-    isDarkTheme: Boolean,
-    imageBitmapState: MutableState<ImageBitmap?>
 ){
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     )
     {
-        GeneratePlotButton(latexString, context, isDarkTheme, selectedOption, imageBitmapState)
+        GeneratePlotButton(visualizeModel, context, isSystemInDarkTheme(), selectedOption)
         Spacer(Modifier.height(15.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
         ) {
-            SaveToGalleryButton(imageBitmapState, context)
+            SaveToGalleryButton(visualizeModel.imageBitmapState, context)
             Spacer(Modifier.width(15.dp))
-            SetWallpaperButton(imageBitmapState, context)
+            SetWallpaperButton(visualizeModel.imageBitmapState, context)
+        }
+    }
+}
+
+@Composable
+fun VisualizeBox(visualizeModel: VisualizeModel){
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 6.dp
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(1f)
+            .padding(10.dp)
+            .clickable { visualizeModel.isRotated = !visualizeModel.isRotated },
+    ) {
+        if (!visualizeModel.isRotated){
+            if (visualizeModel.loading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.secondary,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant)
+                }
+            } else{
+                ImageWithNullFallback(visualizeModel.imageBitmapState)
+            }
+
+        }else{
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ){
+                LatexMathView(
+                    latexString = visualizeModel.latexString
+                )
+            }
+
         }
     }
 }
