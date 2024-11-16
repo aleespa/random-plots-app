@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.Button
@@ -32,6 +34,7 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -55,6 +58,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.alejandro.randomplots.Figures
 import com.alejandro.randomplots.R
@@ -72,7 +76,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun Visualize(visualizeModel: VisualizeModel = viewModel()) {
-    var selectedOption = remember { mutableStateOf("") }
+
     val context = LocalContext.current
     val savedBitmap = loadBitmapFromFile(context, "cache_front.png")
     if (savedBitmap != null) {
@@ -82,13 +86,68 @@ fun Visualize(visualizeModel: VisualizeModel = viewModel()) {
     Column (
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Spacer(modifier= Modifier.height(50.dp))
+        Spacer(modifier= Modifier.height(35.dp))
 //        SwitchWithIconExample()
-        selectedOption.value = dropdownMenu(options)
-        Spacer(Modifier.height(10.dp))
+        visualizeModel.selectedOption = "random_eigen"
+        PlotDrawer(visualizeModel, options)
+        Spacer(Modifier.height(35.dp))
         VisualizeBox(visualizeModel)
         Spacer(Modifier.height(35.dp))
-        VisualizeButtons(visualizeModel, context, selectedOption.value)
+        VisualizeButtons(visualizeModel, context)
+    }
+}
+
+@Composable
+fun PlotDrawer(visualizeModel: VisualizeModel,
+               options: List<String>){
+    LazyRow(modifier = Modifier
+        .fillMaxWidth()
+    ) {
+        items(options) { option ->
+            val painterIcon = painterResource(id=Figures
+                .fromCode(option)?.iconResourceId ?: R.drawable.icon)
+            var containerColor = MaterialTheme.colorScheme.secondaryContainer
+            var elevation = 10.dp
+            val selected = Figures.fromName(visualizeModel.selectedOption)?.s ?: ""
+            val isSelected = option == selected
+            if (isSelected) {
+                containerColor = MaterialTheme.colorScheme.inversePrimary
+                elevation = 12.dp
+            }
+            Spacer(Modifier.width(10.dp))
+            ElevatedCard(
+                colors = CardDefaults.cardColors(containerColor = containerColor),
+                elevation = CardDefaults.cardElevation(defaultElevation = elevation),
+                modifier = Modifier
+                    .size(75.dp)
+                    .aspectRatio(0.75f)
+                    .clickable{visualizeModel.selectedOption = Figures.fromCode(option)?.s1 ?: ""},
+            ){
+                Column {
+                    Spacer(Modifier.height(10.dp))
+                    Icon(painter = painterIcon,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(3.dp)
+                            .fillMaxWidth()
+                            .size(45.dp)
+                            .aspectRatio(1f))
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.TopCenter
+                    ){
+                        Text(
+                            text = option,
+                            modifier = Modifier.padding(10.dp),
+                            textAlign = TextAlign.Center,
+                            fontSize = 9.sp,
+                            lineHeight = 10.sp,
+                        )
+                    }
+                }
+            }
+        }
+
     }
 }
 
@@ -216,8 +275,7 @@ fun SaveToGalleryButton(imageBitmapState: ImageBitmap?, context: Context) {
 fun GeneratePlotButton(
     visualizeModel: VisualizeModel,
     context: Context,
-    isDarkTheme: Boolean,
-    selectedOption:String,
+    isDarkTheme: Boolean
     ){
     ExtendedFloatingActionButton(
         elevation = FloatingActionButtonDefaults.elevation(10.dp),
@@ -227,7 +285,7 @@ fun GeneratePlotButton(
             CoroutineScope(Dispatchers.Main).launch {
                 visualizeModel.loading = true
                 delay(1)
-                val result = generateRandomPlot(isDarkTheme, selectedOption)
+                val result = generateRandomPlot(isDarkTheme, visualizeModel.selectedOption)
                 val androidBitmap = result.first?.asAndroidBitmap()
                 if (androidBitmap != null) {
                     saveBitmapToFile(context, androidBitmap,
@@ -247,15 +305,14 @@ fun GeneratePlotButton(
 @Composable
 fun VisualizeButtons(
     visualizeModel: VisualizeModel,
-    context: Context,
-    selectedOption: String,
+    context: Context
 ){
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     )
     {
-        GeneratePlotButton(visualizeModel, context, isSystemInDarkTheme(), selectedOption)
+        GeneratePlotButton(visualizeModel, context, isSystemInDarkTheme())
         Spacer(Modifier.height(15.dp))
         Row(
             modifier = Modifier
