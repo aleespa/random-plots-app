@@ -87,8 +87,6 @@ fun Visualize(visualizeModel: VisualizeModel = viewModel()) {
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Spacer(modifier= Modifier.height(35.dp))
-//        SwitchWithIconExample()
-        visualizeModel.selectedOption = "random_eigen"
         PlotDrawer(visualizeModel, options)
         Spacer(Modifier.height(35.dp))
         VisualizeBox(visualizeModel)
