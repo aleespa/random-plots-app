@@ -79,7 +79,7 @@ fun Visualize(visualizeModel: VisualizeModel = viewModel()) {
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Spacer(modifier= Modifier.height(35.dp))
-        PlotDrawer(visualizeModel, options)
+        PlotDrawer(visualizeModel, context, options)
         Spacer(Modifier.height(35.dp))
         VisualizeBox(visualizeModel)
         Spacer(Modifier.height(35.dp))
@@ -89,6 +89,7 @@ fun Visualize(visualizeModel: VisualizeModel = viewModel()) {
 
 @Composable
 fun PlotDrawer(visualizeModel: VisualizeModel,
+               context: Context,
                options: List<Figures>){
     LazyRow(modifier = Modifier
         .fillMaxWidth()
@@ -110,7 +111,12 @@ fun PlotDrawer(visualizeModel: VisualizeModel,
                 modifier = Modifier
                     .size(75.dp)
                     .aspectRatio(0.75f)
-                    .clickable{visualizeModel.selectedOption = option},
+                    .clickable{
+                        visualizeModel.selectedOption = option
+                        visualizeModel.isRotated = true
+                        visualizeModel.latexString = readTexAssets(context,
+                            visualizeModel.selectedOption.key)
+                              },
             ){
                 Column {
                     Spacer(Modifier.height(10.dp))
@@ -233,6 +239,7 @@ fun GeneratePlotButton(
 
             CoroutineScope(Dispatchers.Main).launch {
                 visualizeModel.loading = true
+                visualizeModel.isRotated = false
                 delay(1)
                 val result = generateRandomPlot(isDarkTheme, visualizeModel.selectedOption.key)
                 val androidBitmap = result?.asAndroidBitmap()
