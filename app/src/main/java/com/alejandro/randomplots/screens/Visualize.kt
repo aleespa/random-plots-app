@@ -1,7 +1,9 @@
 package com.alejandro.randomplots.screens
 
+import android.app.Activity
 import android.content.Context
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -21,6 +23,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
@@ -70,6 +74,34 @@ import kotlinx.coroutines.launch
 @Composable
 fun Visualize(visualizeModel: VisualizeModel = viewModel()) {
     val context = LocalContext.current
+    var showDialog by remember { mutableStateOf(false) }
+
+    BackHandler {
+        showDialog = true // Show confirmation dialog
+    }
+
+    if (showDialog) {
+        AlertDialog(
+            title = { Text("Exit") },
+            text = { Text("Are you sure you want to exit?") },
+            onDismissRequest = { showDialog = false },
+            confirmButton = {
+                Button(onClick = {
+                    showDialog = false
+                    (context as? Activity)?.finish()
+                }) {
+                    Text("Yes")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showDialog = false }) {
+                    Text("No")
+                }
+            }
+        )
+    }
+
+
     val savedBitmap = loadBitmapFromFile(context, "cache_front.png")
     if (savedBitmap != null) {
         visualizeModel.imageBitmapState = savedBitmap.asImageBitmap()
@@ -111,12 +143,14 @@ fun PlotDrawer(visualizeModel: VisualizeModel,
                 modifier = Modifier
                     .size(75.dp)
                     .aspectRatio(0.75f)
-                    .clickable{
+                    .clickable {
                         visualizeModel.selectedOption = option
                         visualizeModel.isRotated = true
-                        visualizeModel.latexString = readTexAssets(context,
-                            visualizeModel.selectedOption.key)
-                              },
+                        visualizeModel.latexString = readTexAssets(
+                            context,
+                            visualizeModel.selectedOption.key
+                        )
+                    },
             ){
                 Column {
                     Spacer(Modifier.height(10.dp))
