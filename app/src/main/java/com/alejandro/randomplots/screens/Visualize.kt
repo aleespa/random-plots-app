@@ -23,20 +23,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,14 +50,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.alejandro.randomplots.Figures
 import com.alejandro.randomplots.R
 import com.alejandro.randomplots.data.VisualizeModel
 import com.alejandro.randomplots.tools.LatexMathView
 import com.alejandro.randomplots.tools.generateRandomPlot
 import com.alejandro.randomplots.tools.loadBitmapFromFile
-import com.alejandro.randomplots.tools.saveBitmapToFile
+import com.alejandro.randomplots.tools.readTexAssets
+import com.alejandro.randomplots.tools.setBitmapToCache
 import com.alejandro.randomplots.tools.saveBitmapToGallery
+import com.alejandro.randomplots.tools.saveStringToFile
 import com.alejandro.randomplots.tools.setWallpaper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -72,13 +69,12 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun Visualize(visualizeModel: VisualizeModel = viewModel()) {
-
     val context = LocalContext.current
     val savedBitmap = loadBitmapFromFile(context, "cache_front.png")
     if (savedBitmap != null) {
         visualizeModel.imageBitmapState = savedBitmap.asImageBitmap()
     }
-    val options = Figures.entries.map { it.fullName }
+    val options = Figures.entries.map { it }
     Column (
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -93,16 +89,15 @@ fun Visualize(visualizeModel: VisualizeModel = viewModel()) {
 
 @Composable
 fun PlotDrawer(visualizeModel: VisualizeModel,
-               options: List<String>){
+               options: List<Figures>){
     LazyRow(modifier = Modifier
         .fillMaxWidth()
     ) {
         items(options) { option ->
-            val painterIcon = painterResource(id=Figures
-                .fromCode(option)?.iconResourceId ?: R.drawable.icon)
+            val painterIcon = painterResource(id = option.iconResourceId)
             var containerColor = MaterialTheme.colorScheme.secondaryContainer
             var elevation = 10.dp
-            val selected = Figures.fromName(visualizeModel.selectedOption)?.fullName ?: ""
+            val selected = visualizeModel.selectedOption
             val isSelected = option == selected
             if (isSelected) {
                 containerColor = MaterialTheme.colorScheme.inversePrimary
@@ -115,7 +110,7 @@ fun PlotDrawer(visualizeModel: VisualizeModel,
                 modifier = Modifier
                     .size(75.dp)
                     .aspectRatio(0.75f)
-                    .clickable{visualizeModel.selectedOption = Figures.fromCode(option)?.scriptName ?: ""},
+                    .clickable{visualizeModel.selectedOption = option},
             ){
                 Column {
                     Spacer(Modifier.height(10.dp))
@@ -131,7 +126,7 @@ fun PlotDrawer(visualizeModel: VisualizeModel,
                         contentAlignment = Alignment.TopCenter
                     ){
                         Text(
-                            text = option,
+                            text = stringResource(id = option.resourceStringId),
                             modifier = Modifier.padding(10.dp),
                             textAlign = TextAlign.Center,
                             fontSize = 9.sp,
@@ -158,50 +153,6 @@ fun ImageWithNullFallback(imageBitmap: ImageBitmap?) {
         contentDescription = null,
         contentScale = ContentScale.Inside
     )
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun dropdownMenu(options: List<String>): String {
-    var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf(options[0]) }
-    Column (
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = {
-                expanded = !expanded
-            }
-        ) {
-            TextField(
-                value = selectedOption,
-                onValueChange = {},
-                readOnly = true,
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable, true)
-            )
-
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                options.forEach { option ->
-                    DropdownMenuItem(
-                        text = { Text(option) },
-                        onClick = {
-                            selectedOption = option
-                            expanded = false
-                        }
-                    )
-                }
-            }
-        }
-    }
-
-    return Figures.fromCode(selectedOption)?.scriptName ?: ""
 }
 
 @Composable
@@ -248,14 +199,18 @@ fun SetWallpaperButton(
 }
 
 @Composable
-fun SaveToGalleryButton(imageBitmapState: ImageBitmap?, context: Context) {
+fun SaveToGalleryButton(visualizeModel: VisualizeModel, context: Context) {
     ExtendedFloatingActionButton(
         elevation = FloatingActionButtonDefaults.elevation(10.dp),
         containerColor = MaterialTheme.colorScheme.secondaryContainer,
         onClick = {
-            val androidBitmap = imageBitmapState?.asAndroidBitmap()
+            val androidBitmap = visualizeModel.imageBitmapState?.asAndroidBitmap()
             if (androidBitmap != null) {
-                saveBitmapToGallery(context, androidBitmap)
+                saveBitmapToGallery(
+                    context,
+                    androidBitmap,
+                    visualizeModel.selectedOption.key
+                )
             }
         }) {
         Text(
@@ -279,14 +234,15 @@ fun GeneratePlotButton(
             CoroutineScope(Dispatchers.Main).launch {
                 visualizeModel.loading = true
                 delay(1)
-                val result = generateRandomPlot(isDarkTheme, visualizeModel.selectedOption)
-                val androidBitmap = result.first?.asAndroidBitmap()
+                val result = generateRandomPlot(isDarkTheme, visualizeModel.selectedOption.key)
+                val androidBitmap = result?.asAndroidBitmap()
                 if (androidBitmap != null) {
-                    saveBitmapToFile(context, androidBitmap,
+                    setBitmapToCache(context, androidBitmap,
                         "cache_front.png")
                 }
-                visualizeModel.imageBitmapState = result.first
-                visualizeModel.latexString = result.second
+                visualizeModel.imageBitmapState = result
+                visualizeModel.latexString = readTexAssets(context,
+                    visualizeModel.selectedOption.key)
                 visualizeModel.loading = false
             }}) {
         Text(
@@ -313,7 +269,7 @@ fun VisualizeButtons(
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
         ) {
-            SaveToGalleryButton(visualizeModel.imageBitmapState, context)
+            SaveToGalleryButton(visualizeModel, context)
             Spacer(Modifier.width(15.dp))
             SetWallpaperButton(visualizeModel.imageBitmapState, context)
         }
