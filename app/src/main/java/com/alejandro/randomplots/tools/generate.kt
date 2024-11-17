@@ -23,19 +23,16 @@ import java.util.Base64
 
 
 suspend fun generateRandomPlot(isDarkMode: Boolean, script: String = "spirograph"):
-        Pair<ImageBitmap?, String> = withContext(Dispatchers.IO) {
+        ImageBitmap? {
     val py = Python.getInstance()
     val mainModule = py.getModule("main")
-    val result = mainModule.callAttr("generate", isDarkMode, script).asList()
+    val result = mainModule.callAttr("generate", isDarkMode, script)
 
-    val imageBytes = Base64.getDecoder().decode(result[0].toString().toByteArray())
+    val imageBytes = Base64.getDecoder().decode(result.toString().toByteArray())
 
-    return@withContext Pair(
-        BitmapFactory
+    return  BitmapFactory
             .decodeByteArray(imageBytes, 0, imageBytes.size)
-            ?.asImageBitmap(),
-        result[1].toString()
-    )
+            ?.asImageBitmap()
 }
 
 
@@ -70,7 +67,8 @@ fun setWallpaper(context: Context, bitmap: Bitmap?) {
 
 fun saveBitmapToGallery(context: Context,
                         bitmap: Bitmap,
-                        displayName: String = "Random_plot_${System.currentTimeMillis()}.png") {
+                        prefix: String) {
+    val displayName = "${prefix}_${System.currentTimeMillis()}.png"
     val values = ContentValues().apply {
         put(MediaStore.MediaColumns.DISPLAY_NAME, displayName)
         put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
@@ -88,7 +86,18 @@ fun saveBitmapToGallery(context: Context,
     }
 }
 
-fun saveBitmapToFile(context: Context, bitmap: Bitmap, filename: String){
+fun saveStringToFile(context: Context, data: String, filename: String) {
+    try {
+        deleteFileIfExists(context, filename)
+        val file = File(context.filesDir, filename) // Save in the internal files directory
+        file.writeText(data) // Write the string data to the file
+    } catch (e: IOException) {
+        e.printStackTrace()
+    }
+}
+
+
+fun setBitmapToCache(context: Context, bitmap: Bitmap, filename: String){
     try {
         deleteFileIfExists(context, filename)
         val file = File(context.filesDir, filename)

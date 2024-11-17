@@ -12,4 +12,8 @@
     <string name="settings">Settings</string>
     <string name="customize">customize</string>
     <string name="visualize">Visualize</string>
+    <string name="spirograph">Spirograph</string>
+    <string name="irrational_spirograph">Irrational Spirograph</string>
+    <string name="random_eigen">Random eigenvalues</string>
+    <string name="saved_images">My Random Gallery</string>
 </resources>

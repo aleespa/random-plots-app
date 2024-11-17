@@ -9,14 +9,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.alejandro.randomplots.BottomBarScreen
+import com.alejandro.randomplots.data.VisualizeModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -61,17 +65,17 @@ fun BottomBar(navController: NavHostController){
 
 
 @Composable
-fun BottomNavGraph(navController: NavHostController) {
+fun BottomNavGraph(visualizeModel: VisualizeModel = viewModel(),
+                   navController: NavHostController) {
     NavHost(
         navController = navController,
         startDestination = BottomBarScreen.Visualize.route
     ) {
         composable(route = BottomBarScreen.Visualize.route) {
-            Visualize()
+            Visualize(visualizeModel)
         }
         composable(route = BottomBarScreen.Gallery.route) {
-            Gallery()
+            Gallery(visualizeModel, navController)
         }
-
     }
 }
