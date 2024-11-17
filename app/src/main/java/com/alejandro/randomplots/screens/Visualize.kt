@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
@@ -34,15 +33,12 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -82,7 +78,7 @@ fun Visualize(visualizeModel: VisualizeModel = viewModel()) {
     if (savedBitmap != null) {
         visualizeModel.imageBitmapState = savedBitmap.asImageBitmap()
     }
-    val options = Figures.entries.map { it.s }
+    val options = Figures.entries.map { it.fullName }
     Column (
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -106,7 +102,7 @@ fun PlotDrawer(visualizeModel: VisualizeModel,
                 .fromCode(option)?.iconResourceId ?: R.drawable.icon)
             var containerColor = MaterialTheme.colorScheme.secondaryContainer
             var elevation = 10.dp
-            val selected = Figures.fromName(visualizeModel.selectedOption)?.s ?: ""
+            val selected = Figures.fromName(visualizeModel.selectedOption)?.fullName ?: ""
             val isSelected = option == selected
             if (isSelected) {
                 containerColor = MaterialTheme.colorScheme.inversePrimary
@@ -119,7 +115,7 @@ fun PlotDrawer(visualizeModel: VisualizeModel,
                 modifier = Modifier
                     .size(75.dp)
                     .aspectRatio(0.75f)
-                    .clickable{visualizeModel.selectedOption = Figures.fromCode(option)?.s1 ?: ""},
+                    .clickable{visualizeModel.selectedOption = Figures.fromCode(option)?.scriptName ?: ""},
             ){
                 Column {
                     Spacer(Modifier.height(10.dp))
@@ -205,7 +201,7 @@ fun dropdownMenu(options: List<String>): String {
         }
     }
 
-    return Figures.fromCode(selectedOption)?.s1 ?: ""
+    return Figures.fromCode(selectedOption)?.scriptName ?: ""
 }
 
 @Composable
