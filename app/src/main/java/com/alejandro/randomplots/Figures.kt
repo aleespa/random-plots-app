@@ -10,9 +10,9 @@ enum class Figures(
         R.string.spirograph,
         R.drawable.spirograph),
     CONTINUOUS_SPIROGRAPH(
-        "cont_spirograph",
+        "irrational_spirograph",
         R.string.irrational_spirograph,
-        R.drawable.cont_spirograph),
+        R.drawable.irrational_spirograph),
     RANDOM_EIGENVALUES(
         "random_eigen",
         R.string.random_eigen,
