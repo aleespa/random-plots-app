@@ -1,6 +1,6 @@
 package com.alejandro.randomplots
 
-enum class Figures(val s: String, val s1: String, val iconResourceId: Int) {
+enum class Figures(val fullName: String, val scriptName: String, val iconResourceId: Int) {
 
     SPIROGRAPH("Spirograph", "spirograph", R.drawable.spirograph),
     CONTINUOUS_SPIROGRAPH("Continuous Spirograph", "cont_spirograph", R.drawable.cont_spirograph),
@@ -8,10 +8,10 @@ enum class Figures(val s: String, val s1: String, val iconResourceId: Int) {
 
     companion object {
         fun fromCode(s: String): Figures? {
-            return entries.find { it.s == s }
+            return entries.find { it.fullName == s }
         }
         fun fromName(s: String): Figures? {
-            return entries.find { it.s1 == s }
+            return entries.find { it.scriptName == s }
         }
     }
 }
