@@ -1,10 +1,12 @@
 package com.alejandro.randomplots.screens
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.provider.MediaStore
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -48,6 +50,9 @@ import com.alejandro.randomplots.tools.setBitmapToCache
 fun Gallery(visualizeModel: VisualizeModel = viewModel(),
             navController: NavHostController) {
     val context = LocalContext.current
+    BackHandler {
+        navController.navigate(BottomBarScreen.Visualize.route)
+    }
     val folderPath = "Pictures/RandomPlots"
     RandomGalleryTopBar(navController, folderPath, context, visualizeModel)
 }
