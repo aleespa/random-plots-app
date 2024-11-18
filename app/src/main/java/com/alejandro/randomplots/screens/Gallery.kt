@@ -173,6 +173,7 @@ fun ScrollContent(innerPadding: PaddingValues,
                         visualizeModel.selectedOption = Figures.fromKey(figureKey)
                         visualizeModel.latexString = readTexAssets(context,
                             visualizeModel.selectedOption.key)
+                        visualizeModel.isRotated = false
                         navController.navigate(
                             BottomBarScreen.Visualize.route
                         )
