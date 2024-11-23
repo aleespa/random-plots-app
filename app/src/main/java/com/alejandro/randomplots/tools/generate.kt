@@ -5,12 +5,14 @@ import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import com.alejandro.randomplots.R
+import com.alejandro.randomplots.data.VisualizeModel
 import com.chaquo.python.Python
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,11 +24,14 @@ import java.io.IOException
 import java.util.Base64
 
 
-suspend fun generateRandomPlot(isDarkMode: Boolean, script: String = "spirograph"):
+fun generateRandomPlot(visualizeModel: VisualizeModel):
         ImageBitmap? {
     val py = Python.getInstance()
     val mainModule = py.getModule("main")
-    val result = mainModule.callAttr("generate", isDarkMode, script)
+    val result = mainModule.callAttr(
+        "generate",
+        visualizeModel.isDarkMode,
+        visualizeModel.selectedOption.key)
 
     val imageBytes = Base64.getDecoder().decode(result.toString().toByteArray())
 
@@ -67,7 +72,7 @@ fun setWallpaper(context: Context, bitmap: Bitmap?) {
 
 fun saveBitmapToGallery(context: Context,
                         bitmap: Bitmap,
-                        prefix: String) {
+                        prefix: String) : Uri? {
     val displayName = "${prefix}_${System.currentTimeMillis()}.png"
     val values = ContentValues().apply {
         put(MediaStore.MediaColumns.DISPLAY_NAME, displayName)
@@ -84,6 +89,7 @@ fun saveBitmapToGallery(context: Context,
             }
         }
     }
+    return uri
 }
 
 fun saveStringToFile(context: Context, data: String, filename: String) {
