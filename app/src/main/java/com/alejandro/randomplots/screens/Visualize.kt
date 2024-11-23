@@ -2,6 +2,9 @@ package com.alejandro.randomplots.screens
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
+import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
@@ -22,7 +25,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.materialIcon
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Create
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
@@ -35,6 +44,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +56,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -53,6 +64,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.alejandro.randomplots.Figures
@@ -70,6 +82,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.File
 
 @Composable
 fun Visualize(visualizeModel: VisualizeModel = viewModel()) {
@@ -217,47 +230,121 @@ fun SwitchWithIconExample() {
         }
     )
 }
+
+@Composable
+fun DeleteFromGalleryButton(){
+    VisualizeOptionsButtons(
+        icon=Icons.Rounded.Delete,
+        bottomText = stringResource(id = R.string.delete_from_gallery)){}
+}
 @Composable
 fun SetWallpaperButton(
     imageBitmapState: ImageBitmap?,
-    context: Context) {
-    ExtendedFloatingActionButton(
-        elevation = FloatingActionButtonDefaults.elevation(10.dp),
-        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-        onClick = {
-            val androidBitmap = imageBitmapState?.asAndroidBitmap()
-            if (androidBitmap != null) {
-                setWallpaper(context, androidBitmap)
-            }
-            Log.d("", "Wallpaper set")
-        }) {
-        Text(
-            text = stringResource(id = R.string.set_wallpaper),
-            textAlign = TextAlign.Center,
-        )
+    context: Context){
+
+    VisualizeOptionsButtons(
+        icon=Icons.Rounded.Favorite,
+        bottomText = stringResource(id = R.string.set_wallpaper))
+    {
+        val androidBitmap = imageBitmapState?.asAndroidBitmap()
+        if (androidBitmap != null) {
+            setWallpaper(context, androidBitmap)
+        }
     }
 }
 
 @Composable
 fun SaveToGalleryButton(visualizeModel: VisualizeModel, context: Context) {
-    ExtendedFloatingActionButton(
-        elevation = FloatingActionButtonDefaults.elevation(10.dp),
-        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-        onClick = {
-            val androidBitmap = visualizeModel.imageBitmapState?.asAndroidBitmap()
-            if (androidBitmap != null) {
-                saveBitmapToGallery(
-                    context,
-                    androidBitmap,
-                    visualizeModel.selectedOption.key
-                )
-            }
-        }) {
-        Text(
-            text = stringResource(id = R.string.save),
-            textAlign = TextAlign.Center
-        )
+    VisualizeOptionsButtons(
+        icon=Icons.Rounded.Add,
+        bottomText=stringResource(id = R.string.save)) {
+        val androidBitmap = visualizeModel.imageBitmapState?.asAndroidBitmap()
+        if (androidBitmap != null) {
+            saveBitmapToGallery(
+                context,
+                androidBitmap,
+                visualizeModel.selectedOption.key
+            )
+        }
     }
+}
+
+
+@Composable
+fun ShareButton(
+    imageBitmapState: ImageBitmap,
+    context: Context) {
+    VisualizeOptionsButtons(
+        icon = Icons.Rounded.Share,
+        bottomText = stringResource(id = R.string.share)
+    ){
+        // Save the ImageBitmap to a file and get its URI
+        val imageUri = saveImageBitmapToCache(imageBitmapState, context)
+
+        // Create a share intent
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "image/png" // Set MIME type for images
+            putExtra(Intent.EXTRA_STREAM, imageUri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+        // Launch the share intent
+        context.startActivity(Intent.createChooser(shareIntent, "Share Image"))
+    }
+}
+
+fun saveImageBitmapToCache(imageBitmap: ImageBitmap, context: Context): Uri? {
+    // Create a temporary file in the cache directory
+    val file = File(context.cacheDir, "shared_image.png")
+    file.outputStream().use { outputStream ->
+        // Convert ImageBitmap to Bitmap and compress it to PNG format
+        val bitmap = imageBitmap.asAndroidBitmap()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+    }
+
+    // Return a content URI for the file using FileProvider
+    return FileProvider.getUriForFile(
+        context,
+        "${context.packageName}.fileprovider",
+        file
+    )
+}
+
+@Composable
+fun VisualizeOptionsButtons(
+    icon: ImageVector,
+    bottomText: String,
+    onClick: () -> Unit){
+    Column(
+        modifier = Modifier
+            .width(70.dp)
+            .clickable {
+                onClick()
+            },
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    )
+    {  Icon(
+        imageVector = icon,
+        contentDescription = null,
+        tint = MaterialTheme.colorScheme.primary,
+        modifier = Modifier
+            .size(20.dp)
+            .aspectRatio(1f))
+        Spacer(Modifier.height(8.dp))
+        Box(
+            modifier = Modifier,
+            contentAlignment = Alignment.TopCenter
+        ){
+            Text(
+                text = bottomText,
+                modifier = Modifier,
+                textAlign = TextAlign.Center,
+                fontSize = 12.sp,
+                lineHeight = 12.sp,
+                color = MaterialTheme.colorScheme.secondary
+            )
+        } }
 }
 
 @Composable
@@ -306,16 +393,20 @@ fun VisualizeButtons(
         GeneratePlotButton(visualizeModel, context, isSystemInDarkTheme())
         Spacer(Modifier.height(15.dp))
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.height(65.dp),
             horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             SaveToGalleryButton(visualizeModel, context)
-            Spacer(Modifier.width(15.dp))
             SetWallpaperButton(visualizeModel.imageBitmapState, context)
+            if (visualizeModel.isImageFromGallery){
+                DeleteFromGalleryButton()
+            }
+            ShareButton(visualizeModel.imageBitmapState!!, context)
         }
     }
 }
+
 
 @Composable
 fun VisualizeBox(visualizeModel: VisualizeModel){

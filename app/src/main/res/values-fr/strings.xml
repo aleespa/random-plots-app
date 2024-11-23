@@ -13,4 +13,6 @@
     <string name="settings">Paramétres</string>
     <string name="customize">Personnaliser</string>
     <string name="visualize">Visualiser</string>
+    <string name="delete_from_gallery">Delete from gallery</string>
+    <string name="share">Partager</string>
 </resources>

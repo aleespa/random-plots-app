@@ -13,4 +13,5 @@ class VisualizeModel: ViewModel() {
     var imageBitmapState by mutableStateOf<ImageBitmap?>(null)
     var latexString by mutableStateOf("")
     var selectedOption by mutableStateOf(Figures.SPIROGRAPH)
+    var isImageFromGallery by mutableStateOf(true)
 }

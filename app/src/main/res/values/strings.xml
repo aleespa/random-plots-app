@@ -16,4 +16,6 @@
     <string name="irrational_spirograph">Irrational Spirograph</string>
     <string name="random_eigen">Random eigenvalues</string>
     <string name="saved_images">My Random Gallery</string>
+    <string name="delete_from_gallery">Delete from gallery</string>
+    <string name="share">Share</string>
 </resources>
