@@ -1,16 +1,14 @@
 package com.alejandro.randomplots.screens
 
-import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.ImageDecoder
-import android.net.Uri
-import android.provider.MediaStore
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -30,12 +28,12 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -44,14 +42,8 @@ import coil.request.ImageRequest
 import com.alejandro.randomplots.BottomBarScreen
 import com.alejandro.randomplots.Figures
 import com.alejandro.randomplots.R
-import com.alejandro.randomplots.data.DatabaseProvider
 import com.alejandro.randomplots.data.VisualizeModel
 import com.alejandro.randomplots.tools.readTexAssets
-import com.alejandro.randomplots.tools.setBitmapToCache
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
 @Composable
@@ -111,6 +103,7 @@ fun RandomGalleryTopBar(navController: NavHostController,
     ) { innerPadding ->
         ScrollContent(innerPadding, context, navController, visualizeModel)
     }
+
 }
 
 @Composable
@@ -124,8 +117,14 @@ fun ScrollContent(innerPadding: PaddingValues,
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(3), // Display three items per row
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = innerPadding // Optional: Add padding between items
+        modifier = Modifier
+            .fillMaxSize(),
+        contentPadding = PaddingValues(
+            start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
+            end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
+            top = innerPadding.calculateTopPadding(),
+            bottom = innerPadding.calculateBottomPadding() + 72.dp // Add padding for BottomNavigationBar height
+        ) // Optional: Add padding between items
     ) {
         items(images) { image ->
             AsyncImage(
