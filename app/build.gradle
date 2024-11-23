@@ -57,6 +57,11 @@ android {
             stabilityConfigurationFile = rootProject.layout.projectDirectory.file("stability_config.conf")
         }
         }
+    buildTypes {
+        debug {
+            debuggable true
+        }
+    }
 }
 
 

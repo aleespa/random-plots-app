@@ -311,14 +311,14 @@ fun SaveToGalleryButton(visualizeModel: VisualizeModel, context: Context) {
 
 @Composable
 fun ShareButton(
-    imageBitmapState: ImageBitmap,
+    imageBitmapState: ImageBitmap?,
     context: Context) {
     VisualizeOptionsButtons(
         icon = Icons.Rounded.Share,
         bottomText = stringResource(id = R.string.share)
     ){
         // Save the ImageBitmap to a file and get its URI
-        val imageUri = saveImageBitmapToCache(imageBitmapState, context)
+        val imageUri = imageBitmapState?.let { saveImageBitmapToCache(it, context) }
 
         // Create a share intent
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
@@ -442,7 +442,7 @@ fun VisualizeButtons(
                 DeleteFromGalleryButton(visualizeModel, context)
             }
             SetWallpaperButton(visualizeModel.imageBitmapState, context)
-            ShareButton(visualizeModel.imageBitmapState!!, context)
+            ShareButton(visualizeModel.imageBitmapState, context)
         }
     }
 }
