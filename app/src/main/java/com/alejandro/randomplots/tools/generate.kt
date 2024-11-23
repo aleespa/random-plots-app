@@ -52,7 +52,6 @@ fun setWallpaper(context: Context, bitmap: Bitmap?) {
         try {
             val wallpaperManager = WallpaperManager.getInstance(context)
             wallpaperManager.setBitmap(bitmap)
-
             // Show success message on the main thread
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, R.string.wallpaper_set, Toast.LENGTH_SHORT).show()
@@ -85,7 +84,6 @@ fun saveBitmapToGallery(context: Context,
         context.contentResolver.openOutputStream(it).use { outputStream ->
             if (outputStream != null) {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-                Toast.makeText(context, R.string.save_success, Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -92,7 +92,6 @@ import java.io.File
 fun Visualize(visualizeModel: VisualizeModel = viewModel()) {
     val context = LocalContext.current
     var showDialog by remember { mutableStateOf(false) }
-
     BackHandler {
         showDialog = true // Show confirmation dialog
     }
@@ -297,16 +296,15 @@ fun SaveToGalleryButton(visualizeModel: VisualizeModel, context: Context) {
             )
         }
 
-
         val imageEntity = ImageEntity(
             uri = uri?.toString() ?: "",
             imageType = visualizeModel.selectedOption.key,
             timestamp = System.currentTimeMillis(),
             isDarkMode = visualizeModel.isRotated)
-
-        CoroutineScope(Dispatchers.IO).launch {
-            DatabaseProvider.getDatabase(context).imageDao().insertImage(imageEntity)
-        }
+        visualizeModel.insertImage(imageEntity)
+        visualizeModel.isFromGallery = true
+        visualizeModel.galleryURI = uri.toString()
+        visualizeModel.galleryId = imageEntity.id
     }
 }
 
@@ -412,6 +410,7 @@ fun GeneratePlotButton(
                 visualizeModel.latexString = readTexAssets(context,
                     visualizeModel.selectedOption.key)
                 visualizeModel.loading = false
+                visualizeModel.isFromGallery = false
             }}) {
         Text(
             text = stringResource(id = R.string.generate),
@@ -439,11 +438,10 @@ fun VisualizeButtons(
         ) {
             if (visualizeModel.isFromGallery.not()){
                 SaveToGalleryButton(visualizeModel, context)
-            }
-            SetWallpaperButton(visualizeModel.imageBitmapState, context)
-            if (visualizeModel.isFromGallery){
+            } else {
                 DeleteFromGalleryButton(visualizeModel, context)
             }
+            SetWallpaperButton(visualizeModel.imageBitmapState, context)
             ShareButton(visualizeModel.imageBitmapState!!, context)
         }
     }

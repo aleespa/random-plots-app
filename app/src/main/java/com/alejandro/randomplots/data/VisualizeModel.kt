@@ -40,4 +40,11 @@ class VisualizeModel(private val dao: ImageDao): ViewModel() {
         }
     }
 
+    fun insertImage(imageEntity: ImageEntity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            dao.insertImage(imageEntity)
+            fetchImages()
+        }
+    }
+
 }
