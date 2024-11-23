@@ -118,7 +118,8 @@ fun Visualize(visualizeModel: VisualizeModel = viewModel()) {
     }
     val savedBitmap = loadBitmapFromFile(context, "cache_front.png")
     if (visualizeModel.isFromGallery){
-        visualizeModel.imageBitmapState = loadImage(context, Uri.parse(visualizeModel.galleryURI)).asImageBitmap()
+        visualizeModel.imageBitmapState = loadImage(context,
+            Uri.parse(visualizeModel.galleryURI)).asImageBitmap()
     }
     else if (savedBitmap != null) {
             visualizeModel.imageBitmapState = savedBitmap.asImageBitmap()
