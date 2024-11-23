@@ -317,7 +317,7 @@ fun VisualizeOptionsButtons(
     onClick: () -> Unit){
     Column(
         modifier = Modifier
-            .width(70.dp)
+            .width(80.dp)
             .clickable {
                 onClick()
             },
