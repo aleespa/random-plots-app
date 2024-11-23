@@ -1,5 +1,6 @@
 package com.alejandro.randomplots.screens
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
@@ -27,6 +28,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -41,9 +44,14 @@ import coil.request.ImageRequest
 import com.alejandro.randomplots.BottomBarScreen
 import com.alejandro.randomplots.Figures
 import com.alejandro.randomplots.R
+import com.alejandro.randomplots.data.DatabaseProvider
 import com.alejandro.randomplots.data.VisualizeModel
 import com.alejandro.randomplots.tools.readTexAssets
 import com.alejandro.randomplots.tools.setBitmapToCache
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 @Composable
@@ -53,49 +61,13 @@ fun Gallery(visualizeModel: VisualizeModel = viewModel(),
     BackHandler {
         navController.navigate(BottomBarScreen.Visualize.route)
     }
-    val folderPath = "Pictures/RandomPlots"
-    RandomGalleryTopBar(navController, folderPath, context, visualizeModel)
+    RandomGalleryTopBar(navController, context, visualizeModel)
 }
 
-
-fun getImagesFromFolder(context: Context, folderPath: String): List<Pair<String, Uri>> {
-    val images = mutableListOf<Pair<String, Uri>>()
-
-    val uri: Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-    val projection = arrayOf(
-        MediaStore.Images.Media._ID,
-        MediaStore.Images.Media.DISPLAY_NAME,
-        MediaStore.Images.Media.DATE_TAKEN
-    )
-    val selection = "${MediaStore.Images.Media.DATA} LIKE ?"
-    val selectionArgs = arrayOf("%$folderPath%")
-    val sortOrder = "${MediaStore.Images.Media.DATE_TAKEN} ASC"
-
-    context.contentResolver.query(
-        uri,
-        projection,
-        selection,
-        selectionArgs,
-        sortOrder
-    )?.use { cursor ->
-        val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
-        val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME)
-
-        while (cursor.moveToNext()) {
-            val id = cursor.getLong(idColumn)
-            val name = cursor.getString(nameColumn)
-            val contentUri: Uri = Uri.withAppendedPath(uri, id.toString())
-            images.add(name to contentUri)
-        }
-    }
-
-    return images
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RandomGalleryTopBar(navController: NavHostController,
-                        folderPath: String,
                         context: Context,
                         visualizeModel: VisualizeModel) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
@@ -137,39 +109,39 @@ fun RandomGalleryTopBar(navController: NavHostController,
             )
         },
     ) { innerPadding ->
-        ScrollContent(innerPadding, folderPath, context, navController, visualizeModel)
+        ScrollContent(innerPadding, context, navController, visualizeModel)
     }
 }
 
 @Composable
 fun ScrollContent(innerPadding: PaddingValues,
-                  folderPath: String,
                   context: Context,
                   navController: NavHostController,
-                  visualizeModel: VisualizeModel) {
-    val images = remember(folderPath) { getImagesFromFolder(context, folderPath) }
+                  visualizeModel: VisualizeModel
+) {
+    val images by visualizeModel.images.collectAsState()
+    visualizeModel.fetchImages()
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(3), // Display three items per row
         modifier = Modifier.fillMaxSize(),
         contentPadding = innerPadding // Optional: Add padding between items
     ) {
-        items(images) { (imageName, imageFile) ->
+        items(images) { image ->
             AsyncImage(
                 model = ImageRequest.Builder(context)
-                    .data(imageFile)
+                    .data(image.uri)
                     .crossfade(true)
                     .build(),
                 contentDescription = null,
                 modifier = Modifier
                     .padding(2.dp)
                     .clickable {
-                        setBitmapToCache(
-                            context,
-                            loadImage(context, imageFile),
-                            "cache_front.png"
-                        )
-                        val figureKey = extractKeyFromFilename(imageName)
+                        visualizeModel.isFromGallery = true
+                        visualizeModel.galleryURI = image.uri
+                        visualizeModel.galleryId = image.id
+
+                        val figureKey = image.imageType
                         visualizeModel.selectedOption = Figures.fromKey(figureKey)
                         visualizeModel.latexString = readTexAssets(context,
                             visualizeModel.selectedOption.key)
@@ -189,19 +161,7 @@ fun extractKeyFromFilename(filename: String): String {
 }
 
 
-fun loadImage(context: Context, imageFile: Uri): Bitmap {
-    val source = ImageDecoder.createSource(context.contentResolver, imageFile)
-    return ImageDecoder.decodeBitmap(source) { decoder, info, _ ->
-        decoder.setTargetSampleSize(
-            calculateSampleSize(
-                info.size.width,
-                info.size.height,
-                800,
-                800
-            )
-        )
-    }
-}
+
 
 fun calculateSampleSize(
     originalWidth: Int,

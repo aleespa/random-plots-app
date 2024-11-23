@@ -1,9 +1,11 @@
 package com.alejandro.randomplots.screens
 
 import android.app.Activity
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.BackHandler
@@ -115,12 +117,17 @@ fun Visualize(visualizeModel: VisualizeModel = viewModel()) {
             }
         )
     }
-
-
     val savedBitmap = loadBitmapFromFile(context, "cache_front.png")
-    if (savedBitmap != null) {
-        visualizeModel.imageBitmapState = savedBitmap.asImageBitmap()
+    if (visualizeModel.isFromGallery){
+        visualizeModel.imageBitmapState = loadImage(context, Uri.parse(visualizeModel.galleryURI)).asImageBitmap()
     }
+    else if (savedBitmap != null) {
+            visualizeModel.imageBitmapState = savedBitmap.asImageBitmap()
+    }
+
+    visualizeModel.isDarkMode = isSystemInDarkTheme()
+
+
     val options = Figures.entries.map { it }
     Column (
         verticalArrangement = Arrangement.SpaceBetween
@@ -234,10 +241,30 @@ fun SwitchWithIconExample() {
 }
 
 @Composable
-fun DeleteFromGalleryButton(){
+fun DeleteFromGalleryButton(visualizeModel: VisualizeModel,
+                            context: Context){
     VisualizeOptionsButtons(
         icon=Icons.Rounded.Delete,
-        bottomText = stringResource(id = R.string.delete_from_gallery)){}
+        bottomText = stringResource(id = R.string.delete_from_gallery)){
+
+        visualizeModel.deleteImageById(visualizeModel.galleryId)
+        deleteImageFromUri(context, Uri.parse(visualizeModel.galleryURI))
+        visualizeModel.galleryURI = ""
+        visualizeModel.galleryId = 0
+        visualizeModel.isFromGallery = false
+
+    }
+}
+
+fun deleteImageFromUri(context: Context, uri: Uri): Boolean {
+    return try {
+        val contentResolver: ContentResolver = context.contentResolver
+        val rowsDeleted = contentResolver.delete(uri, null, null)
+        rowsDeleted > 0 // Returns true if the deletion was successful
+    } catch (e: Exception) {
+        Log.e("DeleteImage", "Failed to delete image: $uri", e)
+        false
+    }
 }
 @Composable
 fun SetWallpaperButton(
@@ -257,21 +284,25 @@ fun SetWallpaperButton(
 
 @Composable
 fun SaveToGalleryButton(visualizeModel: VisualizeModel, context: Context) {
+    var uri : Uri? = null
     VisualizeOptionsButtons(
         icon=Icons.Rounded.Add,
         bottomText=stringResource(id = R.string.save)) {
         val androidBitmap = visualizeModel.imageBitmapState?.asAndroidBitmap()
         if (androidBitmap != null) {
-            saveBitmapToGallery(
+            uri = saveBitmapToGallery(
                 context,
                 androidBitmap,
                 visualizeModel.selectedOption.key
             )
         }
+
+
         val imageEntity = ImageEntity(
-            uri = "test",
-            name = "Generated Image",
-            timestamp = System.currentTimeMillis())
+            uri = uri?.toString() ?: "",
+            imageType = visualizeModel.selectedOption.key,
+            timestamp = System.currentTimeMillis(),
+            isDarkMode = visualizeModel.isRotated)
 
         CoroutineScope(Dispatchers.IO).launch {
             DatabaseProvider.getDatabase(context).imageDao().insertImage(imageEntity)
@@ -360,8 +391,7 @@ fun VisualizeOptionsButtons(
 @Composable
 fun GeneratePlotButton(
     visualizeModel: VisualizeModel,
-    context: Context,
-    isDarkTheme: Boolean
+    context: Context
     ){
     ExtendedFloatingActionButton(
         elevation = FloatingActionButtonDefaults.elevation(10.dp),
@@ -372,7 +402,7 @@ fun GeneratePlotButton(
                 visualizeModel.loading = true
                 visualizeModel.isRotated = false
                 delay(1)
-                val result = generateRandomPlot(isDarkTheme, visualizeModel.selectedOption.key)
+                val result = generateRandomPlot(visualizeModel)
                 val androidBitmap = result?.asAndroidBitmap()
                 if (androidBitmap != null) {
                     setBitmapToCache(context, androidBitmap,
@@ -400,17 +430,19 @@ fun VisualizeButtons(
         horizontalAlignment = Alignment.CenterHorizontally
     )
     {
-        GeneratePlotButton(visualizeModel, context, isSystemInDarkTheme())
+        GeneratePlotButton(visualizeModel, context)
         Spacer(Modifier.height(15.dp))
         Row(
             modifier = Modifier.height(65.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            SaveToGalleryButton(visualizeModel, context)
+            if (visualizeModel.isFromGallery.not()){
+                SaveToGalleryButton(visualizeModel, context)
+            }
             SetWallpaperButton(visualizeModel.imageBitmapState, context)
-            if (visualizeModel.isImageFromGallery){
-                DeleteFromGalleryButton()
+            if (visualizeModel.isFromGallery){
+                DeleteFromGalleryButton(visualizeModel, context)
             }
             ShareButton(visualizeModel.imageBitmapState!!, context)
         }
@@ -457,5 +489,19 @@ fun VisualizeBox(visualizeModel: VisualizeModel){
             }
 
         }
+    }
+}
+
+fun loadImage(context: Context, imageFile: Uri): Bitmap {
+    val source = ImageDecoder.createSource(context.contentResolver, imageFile)
+    return ImageDecoder.decodeBitmap(source) { decoder, info, _ ->
+        decoder.setTargetSampleSize(
+            calculateSampleSize(
+                info.size.width,
+                info.size.height,
+                800,
+                800
+            )
+        )
     }
 }

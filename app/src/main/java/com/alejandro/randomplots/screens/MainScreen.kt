@@ -20,16 +20,19 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.alejandro.randomplots.BottomBarScreen
+import com.alejandro.randomplots.data.ImageDao
 import com.alejandro.randomplots.data.VisualizeModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen() {
+fun MainScreen(dao: ImageDao) {
     val navController = rememberNavController()
     Scaffold(
         bottomBar = {BottomBar(navController)}
     ) {
-        BottomNavGraph(navController = navController)
+        BottomNavGraph(
+            visualizeModel = VisualizeModel(dao),
+            navController = navController)
     }
 }
 
