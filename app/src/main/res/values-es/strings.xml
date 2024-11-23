@@ -15,4 +15,6 @@
     <string name="visualize">Visualizar</string>
     <string name="delete_from_gallery">Eleminar de la galeria</string>
     <string name="share">Compartir</string>
+    <string name="share_text">Compartir imagen aleatoria</string>
+    <string name="more_info">More info</string>
 </resources>

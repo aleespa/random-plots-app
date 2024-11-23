@@ -267,14 +267,14 @@ fun deleteImageFromUri(context: Context, uri: Uri): Boolean {
 }
 @Composable
 fun SetWallpaperButton(
-    imageBitmapState: ImageBitmap?,
+    visualizeModel: VisualizeModel,
     context: Context){
 
     VisualizeOptionsButtons(
         icon=Icons.Rounded.Favorite,
         bottomText = stringResource(id = R.string.set_wallpaper))
     {
-        val androidBitmap = imageBitmapState?.asAndroidBitmap()
+        val androidBitmap = visualizeModel.imageBitmapState?.asAndroidBitmap()
         if (androidBitmap != null) {
             setWallpaper(context, androidBitmap)
         }
@@ -311,14 +311,14 @@ fun SaveToGalleryButton(visualizeModel: VisualizeModel, context: Context) {
 
 @Composable
 fun ShareButton(
-    imageBitmapState: ImageBitmap?,
+    visualizeModel: VisualizeModel,
     context: Context) {
     VisualizeOptionsButtons(
         icon = Icons.Rounded.Share,
         bottomText = stringResource(id = R.string.share)
     ){
         // Save the ImageBitmap to a file and get its URI
-        val imageUri = imageBitmapState?.let { saveImageBitmapToCache(it, context) }
+        val imageUri = visualizeModel.imageBitmapState?.let { saveImageBitmapToCache(it, context) }
 
         // Create a share intent
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
@@ -327,8 +327,7 @@ fun ShareButton(
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
 
-        // Launch the share intent
-        context.startActivity(Intent.createChooser(shareIntent, "Share Image"))
+        context.startActivity(Intent.createChooser(shareIntent, R.string.share_text.toString()))
     }
 }
 
@@ -441,9 +440,20 @@ fun VisualizeButtons(
             } else {
                 DeleteFromGalleryButton(visualizeModel, context)
             }
-            SetWallpaperButton(visualizeModel.imageBitmapState, context)
-            ShareButton(visualizeModel.imageBitmapState, context)
+            SetWallpaperButton(visualizeModel, context)
+            MoreInfoButton(visualizeModel)
+            ShareButton(visualizeModel, context)
         }
+    }
+}
+
+@Composable
+fun MoreInfoButton(visualizeModel: VisualizeModel) {
+    VisualizeOptionsButtons(
+        icon = Icons.Rounded.Info,
+        bottomText = stringResource(id = R.string.more_info)
+    ){
+        visualizeModel.isRotated = !visualizeModel.isRotated
     }
 }
 
