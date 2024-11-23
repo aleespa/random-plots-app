@@ -69,6 +69,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.alejandro.randomplots.Figures
 import com.alejandro.randomplots.R
+import com.alejandro.randomplots.data.DatabaseProvider
+import com.alejandro.randomplots.data.ImageEntity
 import com.alejandro.randomplots.data.VisualizeModel
 import com.alejandro.randomplots.tools.LatexMathView
 import com.alejandro.randomplots.tools.generateRandomPlot
@@ -265,6 +267,14 @@ fun SaveToGalleryButton(visualizeModel: VisualizeModel, context: Context) {
                 androidBitmap,
                 visualizeModel.selectedOption.key
             )
+        }
+        val imageEntity = ImageEntity(
+            uri = "test",
+            name = "Generated Image",
+            timestamp = System.currentTimeMillis())
+
+        CoroutineScope(Dispatchers.IO).launch {
+            DatabaseProvider.getDatabase(context).imageDao().insertImage(imageEntity)
         }
     }
 }
