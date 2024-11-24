@@ -38,8 +38,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -56,9 +54,8 @@ import coil.request.ImageRequest
 import com.alejandro.randomplots.BottomBarScreen
 import com.alejandro.randomplots.Figures
 import com.alejandro.randomplots.R
-import com.alejandro.randomplots.data.ImageEntity
 import com.alejandro.randomplots.data.VisualizeModel
-import com.alejandro.randomplots.tools.readTexAssets
+import com.alejandro.randomplots.tools.loadSavedImage
 
 
 @Composable
@@ -300,20 +297,8 @@ fun ScrollContent(innerPadding: PaddingValues,
                     modifier = Modifier
                         .padding(2.dp)
                         .clickable {
-                            visualizeModel.isFromGallery = true
-                            visualizeModel.galleryURI = image.uri
-                            visualizeModel.galleryId = image.id
-
-                            val figureKey = image.imageType
-                            visualizeModel.selectedOption = Figures.fromKey(figureKey)
-                            visualizeModel.latexString = readTexAssets(
-                                context,
-                                visualizeModel.selectedOption.key
-                            )
-                            visualizeModel.isRotated = false
-                            navController.navigate(
-                                BottomBarScreen.Visualize.route
-                            )
+                            loadSavedImage(visualizeModel, image, context)
+                            navController.navigate(BottomBarScreen.Visualize.route)
                         }
                 )
             }

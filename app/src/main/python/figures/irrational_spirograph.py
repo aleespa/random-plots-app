@@ -5,18 +5,18 @@ import io
 import base64
 
 colors_dark = [
-    "#3b3b3b",  # Dark gray
-    "#4e5d6c",  # Muted dark blue
-    "#4a4d73",  # Muted dark purple
-    "#36454f",  # Dark slate gray
-    "#555555",  # Medium gray
-    "#2c3e50",  # Muted deep teal
-    "#34495e",  # Muted navy blue
-    "#e74c3c",  # Vibrant red
-    "#f39c12",  # Vibrant orange
-    "#27ae60",  # Vibrant green
-    "#2980b9",  # Vibrant blue
-    "#8e44ad",  # Vibrant purple
+    "#4c4c4c",  # Brightened dark gray
+    "#5e7a8c",  # Vibrant dark blue
+    "#6367a8",  # Vibrant dark purple
+    "#4b6673",  # Vibrant slate gray
+    "#666666",  # Brighter medium gray
+    "#3a5f75",  # Vibrant deep teal
+    "#466d8f",  # Vibrant navy blue
+    "#ff5f4d",  # Brighter vibrant red
+    "#ffa622",  # Brighter vibrant orange
+    "#2dcc71",  # Brighter vibrant green
+    "#3498db",  # Brighter vibrant blue
+    "#a56de2",  # Brighter vibrant purple
 ]
 cmap_dark = matplotlib.colors.ListedColormap(colors_dark)
 colors_light = [

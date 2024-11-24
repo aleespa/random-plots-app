@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class VisualizeModel(private val dao: ImageDao): ViewModel() {
     var loading by mutableStateOf(false)
@@ -58,16 +59,14 @@ class VisualizeModel(private val dao: ImageDao): ViewModel() {
         )
     val lightImages: StateFlow<List<ImageEntity>> = _lightImages
 
-    fun deleteImageById(imageId: Int) {
+    suspend fun deleteImageById(imageId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             dao.deleteImageById(imageId)
         }
     }
 
-    fun insertImage(imageEntity: ImageEntity) {
-        viewModelScope.launch(Dispatchers.IO) {
-            dao.insertImage(imageEntity)
-        }
+    suspend fun insertImage(imageEntity: ImageEntity): Long {
+        return dao.insertImage(imageEntity)
     }
 
     fun getImageFilterConditions(): FilterConditions {
@@ -82,7 +81,6 @@ class VisualizeModel(private val dao: ImageDao): ViewModel() {
             isDarkMode = false
         }
 
-        // Handling the imageType filter
         if (filterImageType != "None") {
             imageType = filterImageType
         }
@@ -102,6 +100,15 @@ class VisualizeModel(private val dao: ImageDao): ViewModel() {
         // Update the filtered images using the repository method
         viewModelScope.launch {
             _filteredImages.value = getFilteredImages(filterConditions)
+        }
+    }
+
+    fun addImage(imageEntity: ImageEntity) {
+        viewModelScope.launch {
+            val id = insertImage(imageEntity) // Call suspend function
+            withContext(Dispatchers.Main) { // Update the UI-related property on the main thread
+                galleryId = id.toInt() // Assign the result
+            }
         }
     }
 }

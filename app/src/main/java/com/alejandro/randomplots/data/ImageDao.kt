@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ImageDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertImage(image: ImageEntity)
+    suspend fun insertImage(image: ImageEntity): Long // Returns the ID of the inserted image
 
     @Query("SELECT * FROM images ORDER BY timestamp DESC")
     fun getAllImages(): Flow<List<ImageEntity>> // Automatically emits updates
