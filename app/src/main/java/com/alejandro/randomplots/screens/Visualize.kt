@@ -60,6 +60,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.ContentScale.Companion
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -209,11 +210,11 @@ fun ImageWithNullFallback(imageBitmap: ImageBitmap?) {
     } else {
         painterResource(id = R.drawable.cover_random)
     }
-
     Image(
         painter = painter,
         contentDescription = null,
-        contentScale = ContentScale.Inside
+        contentScale = ContentScale.Fit,
+        modifier = Modifier.fillMaxSize()
     )
 }
 

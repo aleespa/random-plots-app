@@ -123,8 +123,8 @@ fun ScrollContent(innerPadding: PaddingValues,
             start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
             end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
             top = innerPadding.calculateTopPadding(),
-            bottom = innerPadding.calculateBottomPadding() + 72.dp // Add padding for BottomNavigationBar height
-        ) // Optional: Add padding between items
+            bottom = innerPadding.calculateBottomPadding() + 80.dp // Add padding for BottomNavigationBar height
+        )
     ) {
         items(images) { image ->
             AsyncImage(
