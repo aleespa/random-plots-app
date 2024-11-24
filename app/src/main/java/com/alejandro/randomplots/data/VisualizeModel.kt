@@ -1,7 +1,9 @@
 package com.alejandro.randomplots.data
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
@@ -9,7 +11,9 @@ import androidx.lifecycle.viewModelScope
 import com.alejandro.randomplots.Figures
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class VisualizeModel(private val dao: ImageDao): ViewModel() {
@@ -21,29 +25,50 @@ class VisualizeModel(private val dao: ImageDao): ViewModel() {
     var isDarkMode by mutableStateOf(false)
     var isFromGallery by mutableStateOf(false)
     var galleryURI by mutableStateOf("")
-    var galleryId by mutableStateOf(0)
+    var galleryId by mutableIntStateOf(0)
 
-    private val _images = MutableStateFlow<List<ImageEntity>>(emptyList())
+    var darkFilter by mutableStateOf(false)
+    var lightFilter by mutableStateOf(false)
+
+    var showDialog by mutableStateOf(false)
+    var chipSelectedOption by mutableStateOf("None") // Selected filter option
+
+
+
+    private val _images = dao.getAllImages()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000), // Active for 5 seconds after UI stops collecting
+            initialValue = emptyList()
+        )
     val images: StateFlow<List<ImageEntity>> = _images
 
-    fun fetchImages() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val imageList = dao.getAllImages()
-            _images.value = imageList
-        }
-    }
+    private val _darkImages = dao.getImageByIsDarkMode(true)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+    val darkImages: StateFlow<List<ImageEntity>> = _darkImages
+
+
+    private val _lightImages = dao.getImageByIsDarkMode(false)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+    val lightImages: StateFlow<List<ImageEntity>> = _lightImages
 
     fun deleteImageById(imageId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             dao.deleteImageById(imageId)
-            fetchImages() // Refresh the list after deletion
         }
     }
 
     fun insertImage(imageEntity: ImageEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             dao.insertImage(imageEntity)
-            fetchImages()
         }
     }
 

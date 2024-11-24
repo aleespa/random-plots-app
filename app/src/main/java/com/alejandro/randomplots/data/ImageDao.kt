@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ImageDao {
@@ -11,7 +12,10 @@ interface ImageDao {
     suspend fun insertImage(image: ImageEntity)
 
     @Query("SELECT * FROM images ORDER BY timestamp DESC")
-    suspend fun getAllImages(): List<ImageEntity>
+    fun getAllImages(): Flow<List<ImageEntity>> // Automatically emits updates
+
+    @Query("SELECT * FROM images WHERE isDarkMode = :isDarkMode ORDER BY timestamp DESC")
+    fun getImageByIsDarkMode(isDarkMode: Boolean): Flow<List<ImageEntity>>
 
     @Query("DELETE FROM images WHERE id = :id")
     suspend fun deleteImageById(id: Int)
