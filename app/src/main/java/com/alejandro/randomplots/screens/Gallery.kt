@@ -18,11 +18,10 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -36,6 +35,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,6 +56,7 @@ import coil.request.ImageRequest
 import com.alejandro.randomplots.BottomBarScreen
 import com.alejandro.randomplots.Figures
 import com.alejandro.randomplots.R
+import com.alejandro.randomplots.data.ImageEntity
 import com.alejandro.randomplots.data.VisualizeModel
 import com.alejandro.randomplots.tools.readTexAssets
 
@@ -200,24 +201,35 @@ fun FilterChipWithDropdown(visualizeModel: VisualizeModel) {
     val options = Figures.entries.map { it }
     // The FilterChip
     FilterChip(
-        selected = visualizeModel.showDialog, // Show selected state when dialog is visible
+        selected = (visualizeModel.filterImageType != "None" ), // Show selected state when dialog is visible
         onClick = { visualizeModel.showDialog = true }, // Show dialog on click
-        label = { if (visualizeModel.chipSelectedOption == "None" ) {
-            Text("Select Filter:")
-        } else {Text(stringResource(Figures.fromKey(visualizeModel.chipSelectedOption).resourceStringId))}},
-        modifier = Modifier
+        label = { if (visualizeModel.filterImageType == "None" ) {
+            Text("Figure type")
+        } else {Text(stringResource(Figures.fromKey(visualizeModel.filterImageType).resourceStringId))}},
+        modifier = Modifier.padding(start = 10.dp),
+        trailingIcon = if (visualizeModel.filterImageType == "None") {
+            {
+                Icon(
+                    imageVector = Icons.Filled.ArrowDropDown,
+                    contentDescription = "Done icon",
+                    modifier = Modifier.size(FilterChipDefaults.IconSize)
+                )
+            }
+        } else {
+            null
+        }
     )
 
     if (visualizeModel.showDialog) {
         AlertDialog(
             onDismissRequest = { visualizeModel.showDialog = false }, // Close the dialog when clicked outside
-            title = { Text("Select a Filter") },
+            title = { Text("Figure type") },
             text = {
                 Column {
                     options.forEach { option ->
                         TextButton(
                             onClick = {
-                                visualizeModel.chipSelectedOption = option.key // Update the selected option
+                                visualizeModel.filterImageType = option.key // Update the selected option
                                 visualizeModel.showDialog = false // Close the dialog
                             }
                         ) {
@@ -226,6 +238,17 @@ fun FilterChipWithDropdown(visualizeModel: VisualizeModel) {
                                 style = TextStyle(fontWeight = FontWeight.Bold)
                             )
                         }
+                    }
+                    TextButton(
+                        onClick = {
+                            visualizeModel.filterImageType = "None" // Update the selected option
+                            visualizeModel.showDialog = false // Close the dialog
+                        }
+                    ) {
+                        Text(
+                            text = "All figures",
+                            style = TextStyle(fontWeight = FontWeight.Bold)
+                        )
                     }
                 }
             },
@@ -245,17 +268,14 @@ fun FilterChipWithDropdown(visualizeModel: VisualizeModel) {
 fun ScrollContent(innerPadding: PaddingValues,
                   context: Context,
                   navController: NavHostController,
-                  visualizeModel: VisualizeModel
+                  visualizeModel: VisualizeModel,
 ) {
 
+    val images by visualizeModel.filteredImages.collectAsState()
+    LaunchedEffect(visualizeModel.darkFilter, visualizeModel.lightFilter, visualizeModel.filterImageType) {
+        visualizeModel.updateFilteredImages()
+    }
 
-    val images by remember(visualizeModel.darkFilter, visualizeModel.lightFilter) {
-        when {
-            visualizeModel.darkFilter -> visualizeModel.darkImages
-            visualizeModel.lightFilter -> visualizeModel.lightImages
-            else -> visualizeModel.images
-        }
-    }.collectAsState()
 
     Column {
         LazyVerticalGrid(

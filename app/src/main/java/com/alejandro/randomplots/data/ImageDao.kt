@@ -19,4 +19,15 @@ interface ImageDao {
 
     @Query("DELETE FROM images WHERE id = :id")
     suspend fun deleteImageById(id: Int)
+
+    @Query("""
+        SELECT * FROM images 
+        WHERE 
+        (:isDarkMode IS NULL OR isDarkMode = :isDarkMode) 
+        AND 
+        (:imageType IS NULL OR imageType = :imageType)
+        ORDER BY timestamp DESC
+    """)
+    suspend fun getFilteredImages(isDarkMode: Boolean?, imageType: String?): List<ImageEntity>
+
 }
