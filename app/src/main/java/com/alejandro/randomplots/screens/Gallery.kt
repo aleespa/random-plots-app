@@ -2,36 +2,50 @@ package com.alejandro.randomplots.screens
 
 import android.content.Context
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -54,6 +68,7 @@ fun Gallery(visualizeModel: VisualizeModel = viewModel(),
         navController.navigate(BottomBarScreen.Visualize.route)
     }
     RandomGalleryTopBar(navController, context, visualizeModel)
+
 }
 
 
@@ -67,39 +82,45 @@ fun RandomGalleryTopBar(navController: NavHostController,
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            MediumTopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                ),
-                title = {
-                    Text(
-                        stringResource(id=R.string.saved_images),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        navController.navigate(BottomBarScreen.Visualize.route)
-                    }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Localized description"
+            Column {
+                MediumTopAppBar(
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        titleContentColor = MaterialTheme.colorScheme.primary,
+                    ),
+                    title = {
+                        Text(
+                            stringResource(id=R.string.saved_images),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { /* do something */ }) {
-                        Icon(
-                            imageVector = Icons.Filled.Settings,
-                            contentDescription = "Localized description"
-                        )
-                    }
-                },
-                scrollBehavior = scrollBehavior
-            )
-        },
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            navController.navigate(BottomBarScreen.Visualize.route)
+                        }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Localized description"
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { /* do something */ }) {
+                            Icon(
+                                imageVector = Icons.Filled.Settings,
+                                contentDescription = "Localized description"
+                            )
+                        }
+                    },
+                    scrollBehavior = scrollBehavior
+                )
+                FilterChips(visualizeModel)
+
+            }
+
+                 },
+
     ) { innerPadding ->
         ScrollContent(innerPadding, context, navController, visualizeModel)
     }
@@ -107,60 +128,178 @@ fun RandomGalleryTopBar(navController: NavHostController,
 }
 
 @Composable
+fun FilterChips(visualizeModel: VisualizeModel) {
+    LazyRow(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.background)
+            .fillMaxWidth()
+            .padding(vertical = 10.dp)
+    ) {
+        item {
+            FilterChip(
+                modifier = Modifier
+                    .padding(start = 10.dp),
+                onClick = {
+                    if (visualizeModel.darkFilter) {
+                        visualizeModel.darkFilter = false
+                    } else {
+                    visualizeModel.darkFilter = true
+                    visualizeModel.lightFilter = false}
+                },
+                label = { Text("Dark") },
+                selected = visualizeModel.darkFilter,
+                leadingIcon = if (visualizeModel.darkFilter) {
+                    {
+                        Icon(
+                            imageVector = Icons.Filled.Done,
+                            contentDescription = "Done icon",
+                            modifier = Modifier.size(FilterChipDefaults.IconSize)
+                        )
+                    }
+                } else {
+                    null
+                },
+            )
+        }
+        item {
+            FilterChip(
+                modifier = Modifier
+                    .padding(start = 10.dp),
+                onClick = {
+                    if (visualizeModel.lightFilter) {
+                        visualizeModel.lightFilter = false
+                    } else {
+                        visualizeModel.lightFilter = true
+                        visualizeModel.darkFilter = false
+                    }
+                },
+                label = { Text("Light") },
+                selected = visualizeModel.lightFilter,
+                leadingIcon = if (visualizeModel.lightFilter) {
+                    {
+                        Icon(
+                            imageVector = Icons.Filled.Done,
+                            contentDescription = "Done icon",
+                            modifier = Modifier.size(FilterChipDefaults.IconSize)
+                        )
+                    }
+                } else {
+                    null
+                },
+            )
+        }
+        item {
+            FilterChipWithDropdown(visualizeModel)
+        }
+    }
+}
+
+
+@Composable
+fun FilterChipWithDropdown(visualizeModel: VisualizeModel) {
+    val options = Figures.entries.map { it }
+    // The FilterChip
+    FilterChip(
+        selected = visualizeModel.showDialog, // Show selected state when dialog is visible
+        onClick = { visualizeModel.showDialog = true }, // Show dialog on click
+        label = { if (visualizeModel.chipSelectedOption == "None" ) {
+            Text("Select Filter:")
+        } else {Text(stringResource(Figures.fromKey(visualizeModel.chipSelectedOption).resourceStringId))}},
+        modifier = Modifier
+    )
+
+    if (visualizeModel.showDialog) {
+        AlertDialog(
+            onDismissRequest = { visualizeModel.showDialog = false }, // Close the dialog when clicked outside
+            title = { Text("Select a Filter") },
+            text = {
+                Column {
+                    options.forEach { option ->
+                        TextButton(
+                            onClick = {
+                                visualizeModel.chipSelectedOption = option.key // Update the selected option
+                                visualizeModel.showDialog = false // Close the dialog
+                            }
+                        ) {
+                            Text(
+                                text = stringResource(option.resourceStringId),
+                                style = TextStyle(fontWeight = FontWeight.Bold)
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = { visualizeModel.showDialog = false } // Close dialog without making a selection
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+}
+
+
+@Composable
 fun ScrollContent(innerPadding: PaddingValues,
                   context: Context,
                   navController: NavHostController,
                   visualizeModel: VisualizeModel
 ) {
-    val images by visualizeModel.images.collectAsState()
-    visualizeModel.fetchImages()
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(3), // Display three items per row
-        modifier = Modifier
-            .fillMaxSize(),
-        contentPadding = PaddingValues(
-            start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
-            end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
-            top = innerPadding.calculateTopPadding(),
-            bottom = innerPadding.calculateBottomPadding() + 80.dp // Add padding for BottomNavigationBar height
-        )
-    ) {
-        items(images) { image ->
-            AsyncImage(
-                model = ImageRequest.Builder(context)
-                    .data(image.uri)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(2.dp)
-                    .clickable {
-                        visualizeModel.isFromGallery = true
-                        visualizeModel.galleryURI = image.uri
-                        visualizeModel.galleryId = image.id
 
-                        val figureKey = image.imageType
-                        visualizeModel.selectedOption = Figures.fromKey(figureKey)
-                        visualizeModel.latexString = readTexAssets(context,
-                            visualizeModel.selectedOption.key)
-                        visualizeModel.isRotated = false
-                        navController.navigate(
-                            BottomBarScreen.Visualize.route
-                        )
-                    }
+    val images by remember(visualizeModel.darkFilter, visualizeModel.lightFilter) {
+        when {
+            visualizeModel.darkFilter -> visualizeModel.darkImages
+            visualizeModel.lightFilter -> visualizeModel.lightImages
+            else -> visualizeModel.images
+        }
+    }.collectAsState()
+
+    Column {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3), // Display three items per row
+            modifier = Modifier
+                .fillMaxSize(),
+            contentPadding = PaddingValues(
+                start = innerPadding.calculateStartPadding(LayoutDirection.Ltr) ,
+                end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
+                top = innerPadding.calculateTopPadding(),
+                bottom = innerPadding.calculateBottomPadding() + 80.dp // Add padding for BottomNavigationBar height
             )
+        ) {
+
+            items(images) { image ->
+                AsyncImage(
+                    model = ImageRequest.Builder(context)
+                        .data(image.uri)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(2.dp)
+                        .clickable {
+                            visualizeModel.isFromGallery = true
+                            visualizeModel.galleryURI = image.uri
+                            visualizeModel.galleryId = image.id
+
+                            val figureKey = image.imageType
+                            visualizeModel.selectedOption = Figures.fromKey(figureKey)
+                            visualizeModel.latexString = readTexAssets(
+                                context,
+                                visualizeModel.selectedOption.key
+                            )
+                            visualizeModel.isRotated = false
+                            navController.navigate(
+                                BottomBarScreen.Visualize.route
+                            )
+                        }
+                )
+            }
         }
     }
 }
-
-fun extractKeyFromFilename(filename: String): String {
-    val regex = Regex("^(.*?_.*?_).*")
-    return regex.matchEntire(filename)?.groups?.get(1)?.value?.removeSuffix("_") ?: ""
-}
-
-
-
 
 fun calculateSampleSize(
     originalWidth: Int,

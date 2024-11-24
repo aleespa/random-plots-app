@@ -22,6 +22,7 @@ import androidx.navigation.navArgument
 import com.alejandro.randomplots.BottomBarScreen
 import com.alejandro.randomplots.data.ImageDao
 import com.alejandro.randomplots.data.VisualizeModel
+import androidx.compose.runtime.remember
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -31,7 +32,7 @@ fun MainScreen(dao: ImageDao) {
         bottomBar = {BottomBar(navController)}
     ) {
         BottomNavGraph(
-            visualizeModel = VisualizeModel(dao),
+            visualizeModel = remember {VisualizeModel(dao)},
             navController = navController)
     }
 }

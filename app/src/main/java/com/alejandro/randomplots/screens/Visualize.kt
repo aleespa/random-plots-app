@@ -24,12 +24,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Create
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Info
@@ -46,7 +45,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -60,7 +58,6 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.ContentScale.Companion
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -69,10 +66,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.alejandro.randomplots.Figures
 import com.alejandro.randomplots.R
-import com.alejandro.randomplots.data.DatabaseProvider
 import com.alejandro.randomplots.data.ImageEntity
 import com.alejandro.randomplots.data.VisualizeModel
 import com.alejandro.randomplots.tools.LatexMathView
@@ -81,7 +76,6 @@ import com.alejandro.randomplots.tools.loadBitmapFromFile
 import com.alejandro.randomplots.tools.readTexAssets
 import com.alejandro.randomplots.tools.setBitmapToCache
 import com.alejandro.randomplots.tools.saveBitmapToGallery
-import com.alejandro.randomplots.tools.saveStringToFile
 import com.alejandro.randomplots.tools.setWallpaper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -130,16 +124,18 @@ fun Visualize(visualizeModel: VisualizeModel = viewModel()) {
 
 
     val options = Figures.entries.map { it }
-    Column (
-        verticalArrangement = Arrangement.SpaceBetween
+    LazyColumn(
+    modifier = Modifier.fillMaxSize(),
+    verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        Spacer(modifier= Modifier.height(35.dp))
-        PlotDrawer(visualizeModel, context, options)
-        Spacer(Modifier.height(35.dp))
-        VisualizeBox(visualizeModel)
-        Spacer(Modifier.height(35.dp))
-        VisualizeButtons(visualizeModel, context)
+        item { Spacer(Modifier.height(10.dp)) }
+        item { PlotDrawer(visualizeModel, context, options) }
+        item { VisualizeBox(visualizeModel) }
+        item { GeneratePlotButton(visualizeModel, context)}
+        item { VisualizeSettingsButtons(visualizeModel, context) }
+        item { Spacer(Modifier.height(80.dp)) }
     }
+
 }
 
 @Composable
@@ -302,7 +298,7 @@ fun SaveToGalleryButton(visualizeModel: VisualizeModel, context: Context) {
             uri = uri?.toString() ?: "",
             imageType = visualizeModel.selectedOption.key,
             timestamp = System.currentTimeMillis(),
-            isDarkMode = visualizeModel.isRotated)
+            isDarkMode = visualizeModel.isDarkMode)
         visualizeModel.insertImage(imageEntity)
         visualizeModel.isFromGallery = true
         visualizeModel.galleryURI = uri.toString()
@@ -391,61 +387,63 @@ fun VisualizeOptionsButtons(
 fun GeneratePlotButton(
     visualizeModel: VisualizeModel,
     context: Context
-    ){
-    ExtendedFloatingActionButton(
-        elevation = FloatingActionButtonDefaults.elevation(10.dp),
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
-        onClick = {
-
-            CoroutineScope(Dispatchers.Main).launch {
-                visualizeModel.loading = true
-                visualizeModel.isRotated = false
-                delay(1)
-                val result = generateRandomPlot(visualizeModel)
-                val androidBitmap = result?.asAndroidBitmap()
-                if (androidBitmap != null) {
-                    setBitmapToCache(context, androidBitmap,
-                        "cache_front.png")
+    ) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        ExtendedFloatingActionButton(
+            elevation = FloatingActionButtonDefaults.elevation(10.dp),
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            onClick = {
+                CoroutineScope(Dispatchers.Main).launch {
+                    visualizeModel.loading = true
+                    visualizeModel.isRotated = false
+                    delay(1)
+                    val result = generateRandomPlot(visualizeModel)
+                    val androidBitmap = result?.asAndroidBitmap()
+                    if (androidBitmap != null) {
+                        setBitmapToCache(
+                            context, androidBitmap,
+                            "cache_front.png"
+                        )
+                    }
+                    visualizeModel.imageBitmapState = result
+                    visualizeModel.latexString = readTexAssets(
+                        context,
+                        visualizeModel.selectedOption.key
+                    )
+                    visualizeModel.loading = false
+                    visualizeModel.isFromGallery = false
                 }
-                visualizeModel.imageBitmapState = result
-                visualizeModel.latexString = readTexAssets(context,
-                    visualizeModel.selectedOption.key)
-                visualizeModel.loading = false
-                visualizeModel.isFromGallery = false
-            }}) {
-        Text(
-            text = stringResource(id = R.string.generate),
-            textAlign = TextAlign.Center,
-        )
+            }) {
+            Text(
+                text = stringResource(id = R.string.generate),
+                textAlign = TextAlign.Center,
+            )
+        }
     }
 }
 
 @Composable
-fun VisualizeButtons(
+fun VisualizeSettingsButtons(
     visualizeModel: VisualizeModel,
     context: Context
 ){
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    )
-    {
-        GeneratePlotButton(visualizeModel, context)
-        Spacer(Modifier.height(15.dp))
-        Row(
-            modifier = Modifier.height(65.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (visualizeModel.isFromGallery.not()){
-                SaveToGalleryButton(visualizeModel, context)
-            } else {
-                DeleteFromGalleryButton(visualizeModel, context)
-            }
-            SetWallpaperButton(visualizeModel, context)
-            MoreInfoButton(visualizeModel)
-            ShareButton(visualizeModel, context)
+    Row(
+        modifier = Modifier.height(65.dp).fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (visualizeModel.isFromGallery.not()){
+            SaveToGalleryButton(visualizeModel, context)
+        } else {
+            DeleteFromGalleryButton(visualizeModel, context)
         }
+        SetWallpaperButton(visualizeModel, context)
+        MoreInfoButton(visualizeModel)
+        ShareButton(visualizeModel, context)
     }
 }
 
@@ -467,7 +465,6 @@ fun VisualizeBox(visualizeModel: VisualizeModel){
             defaultElevation = 6.dp
         ),
         modifier = Modifier
-            .fillMaxWidth()
             .aspectRatio(1f)
             .padding(10.dp)
             .clickable { visualizeModel.isRotated = !visualizeModel.isRotated },
@@ -476,8 +473,7 @@ fun VisualizeBox(visualizeModel: VisualizeModel){
             if (visualizeModel.loading) {
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
+                        .fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator(
