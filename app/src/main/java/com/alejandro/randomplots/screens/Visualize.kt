@@ -65,14 +65,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.alejandro.randomplots.Figures
 import com.alejandro.randomplots.R
 import com.alejandro.randomplots.data.ImageEntity
 import com.alejandro.randomplots.data.VisualizeModel
 import com.alejandro.randomplots.tools.LatexMathView
+import com.alejandro.randomplots.tools.generateNewPlot
 import com.alejandro.randomplots.tools.generateRandomPlot
 import com.alejandro.randomplots.tools.loadBitmapFromFile
+import com.alejandro.randomplots.tools.loadSavedImage
 import com.alejandro.randomplots.tools.readTexAssets
 import com.alejandro.randomplots.tools.setBitmapToCache
 import com.alejandro.randomplots.tools.saveBitmapToGallery
@@ -81,6 +84,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 @Composable
@@ -163,13 +167,14 @@ fun PlotDrawer(visualizeModel: VisualizeModel,
                     .size(75.dp)
                     .aspectRatio(0.75f)
                     .clickable {
+                        if (visualizeModel.selectedOption != option){
                         visualizeModel.selectedOption = option
-                        visualizeModel.isRotated = true
                         visualizeModel.latexString = readTexAssets(
                             context,
                             visualizeModel.selectedOption.key
                         )
-                    },
+                        generateNewPlot(visualizeModel, context)
+                    }},
             ){
                 Column {
                     Spacer(Modifier.height(10.dp))
@@ -238,20 +243,27 @@ fun SwitchWithIconExample() {
 }
 
 @Composable
-fun DeleteFromGalleryButton(visualizeModel: VisualizeModel,
-                            context: Context){
+fun DeleteFromGalleryButton(visualizeModel: VisualizeModel, context: Context) {
     VisualizeOptionsButtons(
-        icon=Icons.Rounded.Delete,
-        bottomText = stringResource(id = R.string.delete_from_gallery)){
-
-        visualizeModel.deleteImageById(visualizeModel.galleryId)
-        deleteImageFromUri(context, Uri.parse(visualizeModel.galleryURI))
-        visualizeModel.galleryURI = ""
-        visualizeModel.galleryId = 0
-        visualizeModel.isFromGallery = false
-
+        icon = Icons.Rounded.Delete,
+        bottomText = stringResource(id = R.string.delete_from_gallery)
+    ) {
+        visualizeModel.viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    visualizeModel.deleteImageById(visualizeModel.galleryId)
+                    deleteImageFromUri(context, Uri.parse(visualizeModel.galleryURI))
+                }
+                visualizeModel.galleryURI = ""
+                visualizeModel.galleryId = 0
+                visualizeModel.isFromGallery = false
+            } catch (e: Exception) {
+                Log.e("DeleteFromGallery", "Failed to delete image", e)
+            }
+        }
     }
 }
+
 
 fun deleteImageFromUri(context: Context, uri: Uri): Boolean {
     return try {
@@ -299,10 +311,10 @@ fun SaveToGalleryButton(visualizeModel: VisualizeModel, context: Context) {
             imageType = visualizeModel.selectedOption.key,
             timestamp = System.currentTimeMillis(),
             isDarkMode = visualizeModel.isDarkMode)
-        visualizeModel.insertImage(imageEntity)
-        visualizeModel.isFromGallery = true
-        visualizeModel.galleryURI = uri.toString()
-        visualizeModel.galleryId = imageEntity.id
+
+        visualizeModel.addImage(imageEntity)
+        loadSavedImage(visualizeModel, imageEntity, context)
+
     }
 }
 
@@ -397,26 +409,7 @@ fun GeneratePlotButton(
             elevation = FloatingActionButtonDefaults.elevation(10.dp),
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             onClick = {
-                CoroutineScope(Dispatchers.Main).launch {
-                    visualizeModel.loading = true
-                    visualizeModel.isRotated = false
-                    delay(1)
-                    val result = generateRandomPlot(visualizeModel)
-                    val androidBitmap = result?.asAndroidBitmap()
-                    if (androidBitmap != null) {
-                        setBitmapToCache(
-                            context, androidBitmap,
-                            "cache_front.png"
-                        )
-                    }
-                    visualizeModel.imageBitmapState = result
-                    visualizeModel.latexString = readTexAssets(
-                        context,
-                        visualizeModel.selectedOption.key
-                    )
-                    visualizeModel.loading = false
-                    visualizeModel.isFromGallery = false
-                }
+                generateNewPlot(visualizeModel, context)
             }) {
             Text(
                 text = stringResource(id = R.string.generate),

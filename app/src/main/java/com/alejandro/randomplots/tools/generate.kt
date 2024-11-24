@@ -10,8 +10,11 @@ import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import com.alejandro.randomplots.Figures
 import com.alejandro.randomplots.R
+import com.alejandro.randomplots.data.ImageEntity
 import com.alejandro.randomplots.data.VisualizeModel
 import com.chaquo.python.Python
 import kotlinx.coroutines.CoroutineScope
@@ -135,4 +138,44 @@ fun loadBitmapFromFile(context: Context, filename: String): Bitmap? {
         e.printStackTrace()
         null
     }
+}
+
+fun generateNewPlot(visualizeModel: VisualizeModel, context: Context) {
+    visualizeModel.loading = true
+    visualizeModel.isRotated = false
+    CoroutineScope(Dispatchers.Main).launch {
+        try {
+            val result = withContext(Dispatchers.Default) {
+                generateRandomPlot(visualizeModel)
+            }
+            val androidBitmap = result?.asAndroidBitmap()
+            if (androidBitmap != null) {
+                withContext(Dispatchers.IO) {
+                    setBitmapToCache(context, androidBitmap, "cache_front.png")
+                }
+            }
+            visualizeModel.imageBitmapState = result
+            visualizeModel.latexString = readTexAssets(context, visualizeModel.selectedOption.key)
+            visualizeModel.isFromGallery = false
+        } finally {
+            visualizeModel.loading = false
+        }
+    }
+}
+
+fun loadSavedImage(visualizeModel: VisualizeModel,
+                   image: ImageEntity,
+                   context: Context) {
+    visualizeModel.isFromGallery = true
+    visualizeModel.galleryURI = image.uri
+    visualizeModel.galleryId = image.id
+
+    val figureKey = image.imageType
+    visualizeModel.selectedOption = Figures.fromKey(figureKey)
+    visualizeModel.latexString = readTexAssets(
+    context,
+    visualizeModel.selectedOption.key
+    )
+    visualizeModel.isRotated = false
+
 }
