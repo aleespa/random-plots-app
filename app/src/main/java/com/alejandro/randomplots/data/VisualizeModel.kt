@@ -3,7 +3,6 @@ package com.alejandro.randomplots.data
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
@@ -31,7 +30,7 @@ class VisualizeModel(private val dao: ImageDao): ViewModel() {
     var lightFilter by mutableStateOf(false)
 
     var showDialog by mutableStateOf(false)
-    var chipSelectedOption by mutableStateOf("None") // Selected filter option
+    var filterImageType by mutableStateOf("None") // Selected filter option
 
 
 
@@ -50,7 +49,6 @@ class VisualizeModel(private val dao: ImageDao): ViewModel() {
             initialValue = emptyList()
         )
     val darkImages: StateFlow<List<ImageEntity>> = _darkImages
-
 
     private val _lightImages = dao.getImageByIsDarkMode(false)
         .stateIn(
@@ -72,4 +70,44 @@ class VisualizeModel(private val dao: ImageDao): ViewModel() {
         }
     }
 
+    fun getImageFilterConditions(): FilterConditions {
+        // Default conditions, selecting all
+        var isDarkMode: Boolean? = null
+        var imageType: String? = null
+
+        // Handling the darkMode filter
+        if (darkFilter) {
+            isDarkMode = true
+        } else if (lightFilter) {
+            isDarkMode = false
+        }
+
+        // Handling the imageType filter
+        if (filterImageType != "None") {
+            imageType = filterImageType
+        }
+
+        return FilterConditions(isDarkMode, imageType)
+    }
+    suspend fun getFilteredImages(filterConditions: FilterConditions): List<ImageEntity> {
+        return dao.getFilteredImages(filterConditions.isDarkMode, filterConditions.imageType)
+    }
+    // MutableStateFlow to hold filtered images
+    private val _filteredImages = MutableStateFlow<List<ImageEntity>>(emptyList())
+    val filteredImages: StateFlow<List<ImageEntity>> = _filteredImages
+
+    // Method to update the filtered images based on user selections
+    fun updateFilteredImages() {
+        val filterConditions = getImageFilterConditions()
+        // Update the filtered images using the repository method
+        viewModelScope.launch {
+            _filteredImages.value = getFilteredImages(filterConditions)
+        }
+    }
 }
+
+data class FilterConditions(
+    val isDarkMode: Boolean?,
+    val imageType: String?
+)
+
