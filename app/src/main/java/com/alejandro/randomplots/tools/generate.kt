@@ -10,6 +10,7 @@ import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -28,6 +29,14 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.util.Base64
 
+fun colorToHex(color: Color): String {
+    val red = (color.red * 255).toInt()
+    val green = (color.green * 255).toInt()
+    val blue = (color.blue * 255).toInt()
+    val alpha = (color.alpha * 255).toInt()
+
+    return String.format("#%02X%02X%02X%02X", alpha, red, green, blue)
+}
 
 fun generateRandomPlot(visualizeModel: VisualizeModel):
         ImageBitmap? {
@@ -36,6 +45,7 @@ fun generateRandomPlot(visualizeModel: VisualizeModel):
     val result = mainModule.callAttr(
         "generate",
         visualizeModel.isDarkMode,
+        colorToHex(visualizeModel.bgColor),
         visualizeModel.selectedOption.key)
 
     val imageBytes = Base64.getDecoder().decode(result.toString().toByteArray())
