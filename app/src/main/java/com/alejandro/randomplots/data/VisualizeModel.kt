@@ -30,10 +30,11 @@ class VisualizeModel(private val dao: ImageDao): ViewModel() {
     var darkFilter by mutableStateOf(false)
     var lightFilter by mutableStateOf(false)
 
-    var showDialog by mutableStateOf(false)
+    var showFilterDialog by mutableStateOf(false)
     var filterImageType by mutableStateOf("None") // Selected filter option
 
 
+    var showColorDialog by mutableStateOf(false)
 
     private val _images = dao.getAllImages()
         .stateIn(

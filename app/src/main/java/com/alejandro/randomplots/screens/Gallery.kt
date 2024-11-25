@@ -22,7 +22,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -207,7 +206,7 @@ fun FilterChipWithDropdown(visualizeModel: VisualizeModel) {
     // The FilterChip
     FilterChip(
         selected = (visualizeModel.filterImageType != "None" ), // Show selected state when dialog is visible
-        onClick = { visualizeModel.showDialog = true }, // Show dialog on click
+        onClick = { visualizeModel.showFilterDialog = true }, // Show dialog on click
         label = { if (visualizeModel.filterImageType == "None" ) {
             Text("Figure type")
         } else {Text(stringResource(Figures.fromKey(visualizeModel.filterImageType).resourceStringId))}},
@@ -225,9 +224,9 @@ fun FilterChipWithDropdown(visualizeModel: VisualizeModel) {
         }
     )
 
-    if (visualizeModel.showDialog) {
+    if (visualizeModel.showFilterDialog) {
         AlertDialog(
-            onDismissRequest = { visualizeModel.showDialog = false }, // Close the dialog when clicked outside
+            onDismissRequest = { visualizeModel.showFilterDialog = false }, // Close the dialog when clicked outside
             title = { Text("Figure type") },
             text = {
                 Column {
@@ -235,7 +234,7 @@ fun FilterChipWithDropdown(visualizeModel: VisualizeModel) {
                         TextButton(
                             onClick = {
                                 visualizeModel.filterImageType = option.key // Update the selected option
-                                visualizeModel.showDialog = false // Close the dialog
+                                visualizeModel.showFilterDialog = false // Close the dialog
                             }
                         ) {
                             Text(
@@ -247,7 +246,7 @@ fun FilterChipWithDropdown(visualizeModel: VisualizeModel) {
                     TextButton(
                         onClick = {
                             visualizeModel.filterImageType = "None" // Update the selected option
-                            visualizeModel.showDialog = false // Close the dialog
+                            visualizeModel.showFilterDialog = false // Close the dialog
                         }
                     ) {
                         Text(
@@ -259,7 +258,7 @@ fun FilterChipWithDropdown(visualizeModel: VisualizeModel) {
             },
             confirmButton = {
                 TextButton(
-                    onClick = { visualizeModel.showDialog = false } // Close dialog without making a selection
+                    onClick = { visualizeModel.showFilterDialog = false } // Close dialog without making a selection
                 ) {
                     Text("Cancel")
                 }
