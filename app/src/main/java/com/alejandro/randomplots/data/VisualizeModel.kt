@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -35,6 +36,7 @@ class VisualizeModel(private val dao: ImageDao): ViewModel() {
 
 
     var showColorDialog by mutableStateOf(false)
+    var bgColor by mutableStateOf(Color(0,0,0,0))
 
     private val _images = dao.getAllImages()
         .stateIn(
