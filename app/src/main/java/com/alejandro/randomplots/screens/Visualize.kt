@@ -11,6 +11,7 @@ import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -478,7 +479,7 @@ fun BackgroundSelectionDialog(visualizeModel: VisualizeModel) {
                         Button(
                             onClick = { visualizeModel.isDarkMode = false },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (!visualizeModel.isDarkMode) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
+                                containerColor = if (!visualizeModel.isDarkMode) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
                             )
                         ) {
                             Text(text = "Light Mode")
@@ -486,7 +487,7 @@ fun BackgroundSelectionDialog(visualizeModel: VisualizeModel) {
                         Button(
                             onClick = { visualizeModel.isDarkMode = true },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (visualizeModel.isDarkMode) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
+                                containerColor = if (visualizeModel.isDarkMode) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
                             )
                         ) {
                             Text(text = "Dark Mode")
@@ -494,37 +495,45 @@ fun BackgroundSelectionDialog(visualizeModel: VisualizeModel) {
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
-
-                    // Background Options
-                    Text(
-                        text = "Select Background:",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-
                     LazyRow(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         contentPadding = PaddingValues(horizontal = 16.dp)
                     ) {
                         val backgroundOptions = if (visualizeModel.isDarkMode) {
-                            listOf(Color.DarkGray, Color.Black, Color(0xFF1B1B1B), Color(0xFF333333))
+                            listOf(Color(0, 0, 0), Color(64, 11, 0), Color(0, 30, 26 ), Color( 0, 13, 30))
                         } else {
-                            listOf(Color.White, Color.LightGray, Color(0xFFFFFBF3), Color(0xFFEFEFEF))
+                            listOf(Color(255, 255, 255), Color(249, 235, 234), Color(234, 250, 241), Color(251, 238, 230))
                         }
 
                         itemsIndexed(backgroundOptions) { index, color ->
-                            Box(
-                                modifier = Modifier
-                                    .size(50.dp)
-                                    .background(color, shape = RoundedCornerShape(8.dp))
-                                    .clickable {
-                                    },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = (index + 1).toString(),
-                                    color = if (visualizeModel.isDarkMode) Color.White else Color.Black
-                                )
+                            if (visualizeModel.bgColor == color){
+                                Box(
+                                    modifier = Modifier
+                                        .size(50.dp)
+                                        .background(color, shape = RoundedCornerShape(8.dp))
+                                        .border(
+                                            3.dp,
+                                            MaterialTheme.colorScheme.primary,
+                                            shape = RoundedCornerShape(8.dp)
+                                        )
+                                        .clickable {
+                                            visualizeModel.bgColor = color
+                                        },
+                                    contentAlignment = Alignment.Center,
+
+                                    ){}
+                            } else {
+                                Box(
+                                    modifier = Modifier
+                                        .size(50.dp)
+                                        .background(color, shape = RoundedCornerShape(8.dp))
+                                        .clickable {
+                                            visualizeModel.bgColor = color
+                                        },
+                                    contentAlignment = Alignment.Center,
+
+                                    ){}
                             }
                         }
                     }
@@ -546,7 +555,9 @@ fun VisualizeSettingsButtons(
     context: Context
 ){
     Row(
-        modifier = Modifier.height(65.dp).fillMaxWidth(),
+        modifier = Modifier
+            .height(65.dp)
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
