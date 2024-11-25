@@ -34,13 +34,13 @@ colors_light = [
     "#27ae60",  # Muted green
 ]
 cmap_light = matplotlib.colors.ListedColormap(colors_light)
-def generate_plot(dark=False):
+def generate_plot(dark=False, color=(0,0,0)):
     t = np.linspace(0, 2 * np.pi, 10000)
     fig, ax = plt.subplots(figsize=(12, 12), dpi=200, tight_layout=True)
     if dark:
-        fig.patch.set_facecolor('#1e1f22')
+        fig.patch.set_facecolor(color)
     else:
-        fig.patch.set_facecolor('#f4f0e7')
+        fig.patch.set_facecolor(color)
 
     for _ in range(4):
         a, b, c, d = sorted(np.random.randint(1, 26, 4))
@@ -71,7 +71,7 @@ def plot_spiro(t, k, l, ax, color):
     ax.plot(s.real, s.imag, lw=3, alpha=0.9,
             color=color)
 
-def create_image(dark_mode=False):
-    buffer = generate_plot(dark_mode)
+def create_image(dark_mode=False, color=(0,0,0)):
+    buffer = generate_plot(dark_mode, color)
     image_data = base64.b64encode(buffer.getvalue()).decode('utf-8')
     return image_data
