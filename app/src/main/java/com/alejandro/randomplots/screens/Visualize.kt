@@ -11,10 +11,12 @@ import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -28,6 +30,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Colorize
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.AddPhotoAlternate
 import androidx.compose.material.icons.rounded.Delete
@@ -142,13 +145,16 @@ fun Visualize(visualizeModel: VisualizeModel = viewModel()) {
     }
 
 }
-
 @Composable
-fun PlotDrawer(visualizeModel: VisualizeModel,
-               context: Context,
-               options: List<Figures>){
-    LazyRow(modifier = Modifier
-        .fillMaxWidth()
+fun PlotDrawer(
+    visualizeModel: VisualizeModel,
+    context: Context,
+    options: List<Figures>
+) {
+    LazyRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        contentPadding = PaddingValues(horizontal = 10.dp)
     ) {
         items(options) { option ->
             val painterIcon = painterResource(id = option.iconResourceId)
@@ -160,50 +166,59 @@ fun PlotDrawer(visualizeModel: VisualizeModel,
                 containerColor = MaterialTheme.colorScheme.inversePrimary
                 elevation = 12.dp
             }
-            Spacer(Modifier.width(10.dp))
+
             ElevatedCard(
                 colors = CardDefaults.cardColors(containerColor = containerColor),
                 elevation = CardDefaults.cardElevation(defaultElevation = elevation),
                 modifier = Modifier
-                    .size(75.dp)
-                    .aspectRatio(0.75f)
+                    .size(80.dp)
+                    .aspectRatio(0.70f)
                     .clickable {
-                        if (visualizeModel.selectedOption != option){
-                        visualizeModel.selectedOption = option
-                        visualizeModel.latexString = readTexAssets(
-                            context,
-                            visualizeModel.selectedOption.key
-                        )
-                        generateNewPlot(visualizeModel, context)
-                    }},
-            ){
-                Column {
-                    Spacer(Modifier.height(10.dp))
-                    Icon(painter = painterIcon,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(3.dp)
-                            .fillMaxWidth()
-                            .size(45.dp)
-                            .aspectRatio(1f))
+                        if (visualizeModel.selectedOption != option) {
+                            visualizeModel.selectedOption = option
+                            visualizeModel.latexString = readTexAssets(
+                                context,
+                                visualizeModel.selectedOption.key
+                            )
+                            generateNewPlot(visualizeModel, context)
+                        }
+                    }
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.TopCenter
+                        modifier = Modifier.height(70.dp), // Ensure consistent height for the icon
+                        contentAlignment = Alignment.Center
                     ){
+                        Icon(
+                            painter = painterIcon,
+                            contentDescription = null,
+                            modifier = Modifier.size(65.dp) // Fixed size
+                        )
+                    }
+                    // Wrap Text in a Box with fixed height
+                    Box(
+                        modifier = Modifier.height(20.dp), // Ensure consistent height
+                        contentAlignment = Alignment.Center
+                    ) {
                         Text(
                             text = stringResource(id = option.resourceStringId),
-                            modifier = Modifier.padding(10.dp),
                             textAlign = TextAlign.Center,
                             fontSize = 9.sp,
-                            lineHeight = 10.sp,
+                            lineHeight = 10.sp
                         )
                     }
                 }
             }
         }
-
     }
 }
+
+
+
 
 @Composable
 fun ImageWithNullFallback(imageBitmap: ImageBitmap?) {
@@ -400,25 +415,41 @@ fun VisualizeOptionsButtons(
 fun GeneratePlotButton(
     visualizeModel: VisualizeModel,
     context: Context
-    ) {
-    Row(
+) {
+    Box(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
+        contentAlignment = Alignment.Center // Ensures the button is centered
     ) {
         ExtendedFloatingActionButton(
             elevation = FloatingActionButtonDefaults.elevation(10.dp),
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             onClick = {
                 generateNewPlot(visualizeModel, context)
-            }) {
+            }
+        ) {
             Text(
                 text = stringResource(id = R.string.generate),
                 textAlign = TextAlign.Center,
             )
         }
+        Box(
+            modifier = Modifier
+                .align(Alignment.Center) // Aligns to the right of the button
+                .padding(start = 170.dp)  // Adjust padding to fine-tune position
+                .clickable {
+                }
+        ) {
+            Icon(
+                Icons.Default.Colorize, // Replace with your icon resource
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .size(24.dp) // Icon size
+            )
+        }
     }
 }
+
 
 @Composable
 fun VisualizeSettingsButtons(
