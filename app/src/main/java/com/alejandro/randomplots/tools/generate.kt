@@ -3,6 +3,7 @@ package com.alejandro.randomplots.tools
 import android.app.WallpaperManager
 import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -12,6 +13,7 @@ import android.widget.Toast
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.core.content.FileProvider
 import com.alejandro.randomplots.Figures
 import com.alejandro.randomplots.R
 import com.alejandro.randomplots.data.ImageEntity
@@ -50,26 +52,36 @@ fun setWallpaper(context: Context, bitmap: Bitmap?) {
         return
     }
 
-    // Move wallpaper setting to a background thread to avoid blocking the main thread
-    CoroutineScope(Dispatchers.IO).launch {
-        try {
-            val wallpaperManager = WallpaperManager.getInstance(context)
-            wallpaperManager.setBitmap(bitmap)
-            // Show success message on the main thread
-            withContext(Dispatchers.Main) {
-                Toast.makeText(context, R.string.wallpaper_set, Toast.LENGTH_SHORT).show()
-            }
-        } catch (e: IOException) {
-            withContext(Dispatchers.Main) {
-                Toast.makeText(context, R.string.wallpaper_fail, Toast.LENGTH_SHORT).show()
-            }
-        } catch (e: Exception) {
-            withContext(Dispatchers.Main) {
-                Toast.makeText(context, R.string.wallpaper_fail, Toast.LENGTH_SHORT).show()
-            }
+    try {
+        // Save the bitmap temporarily as a file
+        val file = File(context.cacheDir, "temp_wallpaper.png")
+        val outputStream = FileOutputStream(file)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+        outputStream.flush()
+        outputStream.close()
+
+        // Create a URI for the file
+        val uri = FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.fileprovider",
+            file
+        )
+
+        // Create an Intent to open the default wallpaper app
+        val intent = Intent(Intent.ACTION_ATTACH_DATA).apply {
+            setDataAndType(uri, "image/*")
+            putExtra("mimeType", "image/*")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
+
+        // Start the Intent
+        context.startActivity(Intent.createChooser(intent, context.getString(R.string.select_wallpaper_app)))
+
+    } catch (e: IOException) {
+        Toast.makeText(context, R.string.wallpaper_fail, Toast.LENGTH_SHORT).show()
     }
 }
+
 
 
 fun saveBitmapToGallery(context: Context,
