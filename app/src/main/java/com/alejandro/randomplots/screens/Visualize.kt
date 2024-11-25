@@ -29,6 +29,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.AddPhotoAlternate
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Info
@@ -281,7 +282,7 @@ fun SetWallpaperButton(
     context: Context){
 
     VisualizeOptionsButtons(
-        icon=Icons.Rounded.Favorite,
+        icon=Icons.Rounded.AddPhotoAlternate,
         bottomText = stringResource(id = R.string.set_wallpaper))
     {
         val androidBitmap = visualizeModel.imageBitmapState?.asAndroidBitmap()
