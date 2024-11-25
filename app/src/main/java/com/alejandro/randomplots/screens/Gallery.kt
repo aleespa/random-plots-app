@@ -1,6 +1,8 @@
 package com.alejandro.randomplots.screens
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -41,6 +43,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -104,12 +107,17 @@ fun RandomGalleryTopBar(navController: NavHostController,
                         }
                     },
                     actions = {
-                        IconButton(onClick = { /* do something */ }) {
+                        IconButton(onClick = {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.instagram.com/random_plot"))
+                            context.startActivity(intent)
+                        }) {
                             Icon(
-                                imageVector = Icons.Filled.Settings,
-                                contentDescription = "Localized description"
+                                painter = painterResource(id = R.drawable.ic_instagram_logo),
+                                contentDescription = "Open Instagram",
+                                modifier = Modifier.size(35.dp)
                             )
                         }
+
                     },
                     scrollBehavior = scrollBehavior
                 )
