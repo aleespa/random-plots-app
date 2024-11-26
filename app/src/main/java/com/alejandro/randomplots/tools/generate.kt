@@ -29,13 +29,12 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.util.Base64
 
-fun colorToHex(color: Color): String {
+fun colorToHexWithoutAlpha(color: Color): String {
     val red = (color.red * 255).toInt()
     val green = (color.green * 255).toInt()
     val blue = (color.blue * 255).toInt()
-    val alpha = (color.alpha * 255).toInt()
 
-    return String.format("#%02X%02X%02X%02X", alpha, red, green, blue)
+    return String.format("#%02X%02X%02X", red, green, blue)
 }
 
 fun generateRandomPlot(visualizeModel: VisualizeModel):
@@ -45,7 +44,7 @@ fun generateRandomPlot(visualizeModel: VisualizeModel):
     val result = mainModule.callAttr(
         "generate",
         visualizeModel.isDarkMode,
-        colorToHex(visualizeModel.bgColor),
+        colorToHexWithoutAlpha(visualizeModel.bgColor),
         visualizeModel.selectedOption.key)
 
     val imageBytes = Base64.getDecoder().decode(result.toString().toByteArray())
