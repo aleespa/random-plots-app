@@ -13,8 +13,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.snapping.SnapPosition
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,7 +36,6 @@ import androidx.compose.material.icons.filled.Colorize
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.AddPhotoAlternate
 import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.AlertDialog
@@ -84,16 +81,12 @@ import com.alejandro.randomplots.data.ImageEntity
 import com.alejandro.randomplots.data.VisualizeModel
 import com.alejandro.randomplots.tools.LatexMathView
 import com.alejandro.randomplots.tools.generateNewPlot
-import com.alejandro.randomplots.tools.generateRandomPlot
 import com.alejandro.randomplots.tools.loadBitmapFromFile
 import com.alejandro.randomplots.tools.loadSavedImage
 import com.alejandro.randomplots.tools.readTexAssets
-import com.alejandro.randomplots.tools.setBitmapToCache
 import com.alejandro.randomplots.tools.saveBitmapToGallery
 import com.alejandro.randomplots.tools.setWallpaper
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -164,7 +157,7 @@ fun PlotDrawer(
             val painterIcon = painterResource(id = option.iconResourceId)
             var containerColor = MaterialTheme.colorScheme.secondaryContainer
             var elevation = 10.dp
-            val selected = visualizeModel.selectedOption
+            val selected = visualizeModel.selectedFigure
             val isSelected = option == selected
             if (isSelected) {
                 containerColor = MaterialTheme.colorScheme.inversePrimary
@@ -178,11 +171,11 @@ fun PlotDrawer(
                     .size(80.dp)
                     .aspectRatio(0.70f)
                     .clickable {
-                        if (visualizeModel.selectedOption != option) {
-                            visualizeModel.selectedOption = option
+                        if (visualizeModel.selectedFigure != option) {
+                            visualizeModel.selectedFigure = option
                             visualizeModel.latexString = readTexAssets(
                                 context,
-                                visualizeModel.selectedOption.key
+                                visualizeModel.selectedFigure.key
                             )
                             generateNewPlot(visualizeModel, context)
                         }
@@ -310,33 +303,79 @@ fun SetWallpaperButton(
         }
     }
 }
-
 @Composable
 fun SaveToGalleryButton(visualizeModel: VisualizeModel, context: Context) {
-    var uri : Uri? = null
-    VisualizeOptionsButtons(
-        icon=Icons.Rounded.Add,
-        bottomText=stringResource(id = R.string.save)) {
-        val androidBitmap = visualizeModel.imageBitmapState?.asAndroidBitmap()
-        if (androidBitmap != null) {
-            uri = saveBitmapToGallery(
-                context,
-                androidBitmap,
-                visualizeModel.selectedOption.key
+    var uri: Uri? = null
+
+    Column(
+        modifier = Modifier
+            .width(80.dp)
+            .clickable {
+                // Use a coroutine scope for asynchronous operations
+                visualizeModel.isSavingLoading = true
+                visualizeModel.viewModelScope.launch {
+                    val androidBitmap = visualizeModel.imageBitmapState?.asAndroidBitmap()
+                    if (androidBitmap != null) {
+                        uri = saveBitmapToGallery(
+                            context,
+                            androidBitmap,
+                            visualizeModel.selectedFigure.key
+                        )
+                    }
+
+                    val imageEntity = ImageEntity(
+                        uri = uri?.toString() ?: "",
+                        imageType = visualizeModel.selectedFigure.key,
+                        timestamp = System.currentTimeMillis(),
+                        isDarkMode = visualizeModel.isDarkMode
+                    )
+
+                    // Add image asynchronously
+                    visualizeModel.addImage(imageEntity)
+
+                    // Load the saved image
+                    loadSavedImage(visualizeModel, imageEntity, context)
+
+                    // Toggle off the loading indicator after all tasks are complete
+                    visualizeModel.isSavingLoading = false
+                }
+            },
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        if (visualizeModel.isSavingLoading) {
+            CircularProgressIndicator(
+                color = MaterialTheme.colorScheme.secondary,
+                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                modifier = Modifier.size(20.dp)
+            )
+        } else {
+            Icon(
+                imageVector = Icons.Rounded.Add,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .size(20.dp)
+                    .aspectRatio(1f)
             )
         }
-
-        val imageEntity = ImageEntity(
-            uri = uri?.toString() ?: "",
-            imageType = visualizeModel.selectedOption.key,
-            timestamp = System.currentTimeMillis(),
-            isDarkMode = visualizeModel.isDarkMode)
-
-        visualizeModel.addImage(imageEntity)
-        loadSavedImage(visualizeModel, imageEntity, context)
-
+        Spacer(Modifier.height(8.dp))
+        Box(
+            modifier = Modifier,
+            contentAlignment = Alignment.TopCenter
+        ) {
+            Text(
+                text = stringResource(id = R.string.save),
+                modifier = Modifier,
+                textAlign = TextAlign.Center,
+                fontSize = 12.sp,
+                lineHeight = 12.sp,
+                color = MaterialTheme.colorScheme.secondary
+            )
+        }
     }
 }
+
 
 
 @Composable
@@ -594,7 +633,7 @@ fun MoreInfoButton(visualizeModel: VisualizeModel) {
         icon = Icons.Rounded.Info,
         bottomText = stringResource(id = R.string.more_info)
     ){
-        visualizeModel.isRotated = !visualizeModel.isRotated
+        visualizeModel.showInfo = !visualizeModel.showInfo
     }
 }
 
@@ -608,10 +647,10 @@ fun VisualizeBox(visualizeModel: VisualizeModel){
         modifier = Modifier
             .aspectRatio(1f)
             .padding(10.dp)
-            .clickable { visualizeModel.isRotated = !visualizeModel.isRotated },
+            .clickable { visualizeModel.showInfo = !visualizeModel.showInfo },
     ) {
-        if (!visualizeModel.isRotated){
-            if (visualizeModel.loading) {
+        if (!visualizeModel.showInfo){
+            if (visualizeModel.loadingPlotGenerator) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize(),
