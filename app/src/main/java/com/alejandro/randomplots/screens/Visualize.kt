@@ -463,6 +463,21 @@ fun selectColors(visualizeModel: VisualizeModel) {
 
 @Composable
 fun BackgroundSelectionDialog(visualizeModel: VisualizeModel) {
+    var darkColors = listOf(
+        Color(0, 0, 0),
+        Color(64, 11, 0),
+        Color(0, 30, 26 ),
+        Color( 0, 13, 30))
+    var lightColors = listOf(
+        Color(255, 255, 255),
+        Color(249, 235, 234),
+        Color(234, 250, 241),
+        Color(251, 238, 230))
+    val backgroundOptions = if (visualizeModel.isDarkMode) {
+        darkColors
+    } else {
+        lightColors
+    }
     if (visualizeModel.showColorDialog) {
         AlertDialog(
             onDismissRequest = { visualizeModel.showColorDialog = false },
@@ -477,7 +492,10 @@ fun BackgroundSelectionDialog(visualizeModel: VisualizeModel) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Button(
-                            onClick = { visualizeModel.isDarkMode = false },
+                            onClick = {
+                                visualizeModel.isDarkMode = false
+                                visualizeModel.bgColor = lightColors[0]
+                                      },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = if (!visualizeModel.isDarkMode) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
                             )
@@ -485,7 +503,10 @@ fun BackgroundSelectionDialog(visualizeModel: VisualizeModel) {
                             Text(text = "Light Mode")
                         }
                         Button(
-                            onClick = { visualizeModel.isDarkMode = true },
+                            onClick = {
+                                visualizeModel.isDarkMode = true
+                                visualizeModel.bgColor = darkColors[0]
+                                      },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = if (visualizeModel.isDarkMode) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
                             )
@@ -500,11 +521,7 @@ fun BackgroundSelectionDialog(visualizeModel: VisualizeModel) {
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         contentPadding = PaddingValues(horizontal = 16.dp)
                     ) {
-                        val backgroundOptions = if (visualizeModel.isDarkMode) {
-                            listOf(Color(0, 0, 0), Color(64, 11, 0), Color(0, 30, 26 ), Color( 0, 13, 30))
-                        } else {
-                            listOf(Color(255, 255, 255), Color(249, 235, 234), Color(234, 250, 241), Color(251, 238, 230))
-                        }
+
 
                         itemsIndexed(backgroundOptions) { index, color ->
                             if (visualizeModel.bgColor == color){
@@ -520,7 +537,7 @@ fun BackgroundSelectionDialog(visualizeModel: VisualizeModel) {
                                         .clickable {
                                             visualizeModel.bgColor = color
                                         },
-                                    contentAlignment = Alignment.Center,
+                                    contentAlignment = Alignment.Center
 
                                     ){}
                             } else {
@@ -531,8 +548,7 @@ fun BackgroundSelectionDialog(visualizeModel: VisualizeModel) {
                                         .clickable {
                                             visualizeModel.bgColor = color
                                         },
-                                    contentAlignment = Alignment.Center,
-
+                                    contentAlignment = Alignment.Center
                                     ){}
                             }
                         }
