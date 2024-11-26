@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alejandro.randomplots.Figures
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,25 +19,22 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class VisualizeModel(private val dao: ImageDao): ViewModel() {
-    var loading by mutableStateOf(false)
-    var isRotated by mutableStateOf(false)
+    var loadingPlotGenerator by mutableStateOf(false)
+    var showInfo by mutableStateOf(false)
     var imageBitmapState by mutableStateOf<ImageBitmap?>(null)
     var latexString by mutableStateOf("")
-    var selectedOption by mutableStateOf(Figures.SPIROGRAPH)
+    var selectedFigure by mutableStateOf(Figures.SPIROGRAPH)
     var isDarkMode by mutableStateOf(false)
     var isFromGallery by mutableStateOf(false)
     var galleryURI by mutableStateOf("")
     var galleryId by mutableIntStateOf(0)
-
     var darkFilter by mutableStateOf(false)
     var lightFilter by mutableStateOf(false)
-
     var showFilterDialog by mutableStateOf(false)
-    var filterImageType by mutableStateOf("None") // Selected filter option
-
-
+    var filterImageType by mutableStateOf("None")
     var showColorDialog by mutableStateOf(false)
     var bgColor by mutableStateOf(Color(0,0,0,0))
+    var isSavingLoading by mutableStateOf(false)
 
     private val _images = dao.getAllImages()
         .stateIn(
@@ -106,13 +104,11 @@ class VisualizeModel(private val dao: ImageDao): ViewModel() {
         }
     }
 
-    fun addImage(imageEntity: ImageEntity) {
-        viewModelScope.launch {
-            val id = insertImage(imageEntity) // Call suspend function
-            withContext(Dispatchers.Main) { // Update the UI-related property on the main thread
-                galleryId = id.toInt() // Assign the result
-            }
+    suspend fun addImage(imageEntity: ImageEntity) {
+        val id = withContext(Dispatchers.IO) {
+            insertImage(imageEntity) // Call suspend function on IO dispatcher
         }
+        galleryId = id.toInt() // This will be executed on the main thread
     }
 }
 

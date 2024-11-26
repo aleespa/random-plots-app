@@ -1,6 +1,5 @@
 package com.alejandro.randomplots.tools
 
-import android.app.WallpaperManager
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -45,7 +44,7 @@ fun generateRandomPlot(visualizeModel: VisualizeModel):
         "generate",
         visualizeModel.isDarkMode,
         colorToHexWithoutAlpha(visualizeModel.bgColor),
-        visualizeModel.selectedOption.key)
+        visualizeModel.selectedFigure.key)
 
     val imageBytes = Base64.getDecoder().decode(result.toString().toByteArray())
 
@@ -162,8 +161,8 @@ fun loadBitmapFromFile(context: Context, filename: String): Bitmap? {
 }
 
 fun generateNewPlot(visualizeModel: VisualizeModel, context: Context) {
-    visualizeModel.loading = true
-    visualizeModel.isRotated = false
+    visualizeModel.loadingPlotGenerator = true
+    visualizeModel.showInfo = false
     CoroutineScope(Dispatchers.Main).launch {
         try {
             val result = withContext(Dispatchers.Default) {
@@ -176,10 +175,10 @@ fun generateNewPlot(visualizeModel: VisualizeModel, context: Context) {
                 }
             }
             visualizeModel.imageBitmapState = result
-            visualizeModel.latexString = readTexAssets(context, visualizeModel.selectedOption.key)
+            visualizeModel.latexString = readTexAssets(context, visualizeModel.selectedFigure.key)
             visualizeModel.isFromGallery = false
         } finally {
-            visualizeModel.loading = false
+            visualizeModel.loadingPlotGenerator = false
         }
     }
 }
@@ -192,11 +191,11 @@ fun loadSavedImage(visualizeModel: VisualizeModel,
     visualizeModel.galleryId = image.id
 
     val figureKey = image.imageType
-    visualizeModel.selectedOption = Figures.fromKey(figureKey)
+    visualizeModel.selectedFigure = Figures.fromKey(figureKey)
     visualizeModel.latexString = readTexAssets(
     context,
-    visualizeModel.selectedOption.key
+    visualizeModel.selectedFigure.key
     )
-    visualizeModel.isRotated = false
+    visualizeModel.showInfo = false
 
 }
