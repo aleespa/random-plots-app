@@ -24,7 +24,6 @@ class VisualizeModel(private val dao: ImageDao): ViewModel() {
     var imageBitmapState by mutableStateOf<ImageBitmap?>(null)
     var latexString by mutableStateOf("")
     var selectedFigure by mutableStateOf(Figures.SPIROGRAPH)
-    var isDarkMode by mutableStateOf(false)
     var isFromGallery by mutableStateOf(false)
     var galleryURI by mutableStateOf("")
     var galleryId by mutableIntStateOf(0)
@@ -34,6 +33,7 @@ class VisualizeModel(private val dao: ImageDao): ViewModel() {
     var filterImageType by mutableStateOf("None")
     var showColorDialog by mutableStateOf(false)
     var bgColor by mutableStateOf(Color(0,0,0,0))
+    var isDarkMode by mutableStateOf(true)
     var isSavingLoading by mutableStateOf(false)
     var temporalImageEntity by mutableStateOf<Builder>(Builder())
 
