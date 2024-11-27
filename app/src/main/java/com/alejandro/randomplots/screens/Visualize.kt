@@ -323,20 +323,11 @@ fun SaveToGalleryButton(visualizeModel: VisualizeModel, context: Context) {
                         )
                     }
 
-                    val imageEntity = ImageEntity(
-                        uri = uri?.toString() ?: "",
-                        imageType = visualizeModel.selectedFigure.key,
-                        timestamp = System.currentTimeMillis(),
-                        isDarkMode = visualizeModel.isDarkMode
-                    )
-
-                    // Add image asynchronously
+                    val imageEntity = visualizeModel.temporalImageEntity
+                        .setUri(uri?.toString() ?: "")
+                        .build()
                     visualizeModel.addImage(imageEntity)
-
-                    // Load the saved image
                     loadSavedImage(visualizeModel, imageEntity, context)
-
-                    // Toggle off the loading indicator after all tasks are complete
                     visualizeModel.isSavingLoading = false
                 }
             },
