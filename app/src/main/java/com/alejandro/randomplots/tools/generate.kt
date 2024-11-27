@@ -85,7 +85,7 @@ fun setWallpaper(context: Context, bitmap: Bitmap?) {
         // Start the Intent
         context.startActivity(Intent.createChooser(intent, context.getString(R.string.select_wallpaper_app)))
 
-    } catch (e: IOException) {
+    } catch (_: IOException) {
         Toast.makeText(context, R.string.wallpaper_fail, Toast.LENGTH_SHORT).show()
     }
 }
@@ -111,16 +111,6 @@ fun saveBitmapToGallery(context: Context,
         }
     }
     return uri
-}
-
-fun saveStringToFile(context: Context, data: String, filename: String) {
-    try {
-        deleteFileIfExists(context, filename)
-        val file = File(context.filesDir, filename) // Save in the internal files directory
-        file.writeText(data) // Write the string data to the file
-    } catch (e: IOException) {
-        e.printStackTrace()
-    }
 }
 
 
@@ -174,6 +164,10 @@ fun generateNewPlot(visualizeModel: VisualizeModel, context: Context) {
                     setBitmapToCache(context, androidBitmap, "cache_front.png")
                 }
             }
+            visualizeModel.temporalImageEntity = ImageEntity.Builder()
+                .setImageType(visualizeModel.selectedFigure.key)
+                .setIsDarkMode(visualizeModel.isDarkMode)
+                .setTimestamp(System.currentTimeMillis())
             visualizeModel.imageBitmapState = result
             visualizeModel.latexString = readTexAssets(context, visualizeModel.selectedFigure.key)
             visualizeModel.isFromGallery = false

@@ -10,13 +10,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alejandro.randomplots.Figures
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.alejandro.randomplots.data.ImageEntity.Builder
 
 class VisualizeModel(private val dao: ImageDao): ViewModel() {
     var loadingPlotGenerator by mutableStateOf(false)
@@ -35,32 +35,9 @@ class VisualizeModel(private val dao: ImageDao): ViewModel() {
     var showColorDialog by mutableStateOf(false)
     var bgColor by mutableStateOf(Color(0,0,0,0))
     var isSavingLoading by mutableStateOf(false)
+    var temporalImageEntity by mutableStateOf<Builder>(Builder())
 
-    private val _images = dao.getAllImages()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000), // Active for 5 seconds after UI stops collecting
-            initialValue = emptyList()
-        )
-    val images: StateFlow<List<ImageEntity>> = _images
-
-    private val _darkImages = dao.getImageByIsDarkMode(true)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
-    val darkImages: StateFlow<List<ImageEntity>> = _darkImages
-
-    private val _lightImages = dao.getImageByIsDarkMode(false)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
-    val lightImages: StateFlow<List<ImageEntity>> = _lightImages
-
-    suspend fun deleteImageById(imageId: Int) {
+    fun deleteImageById(imageId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             dao.deleteImageById(imageId)
         }

@@ -4,7 +4,6 @@ plugins {
     id 'com.chaquo.python'
     id "com.google.devtools.ksp" version "2.0.21-1.0.27"
     id "org.jetbrains.kotlin.plugin.compose" version "2.0.20" // this version matches your Kotlin version
-
 }
 
 android {
@@ -110,7 +109,6 @@ dependencies {
     implementation "io.coil-kt:coil-compose:2.7.0"
 
     implementation "androidx.compose.material:material-icons-core:1.7.5"
-    implementation "androidx.compose.material:material-icons-extended:1.7.5" 
-
+    implementation "androidx.compose.material:material-icons-extended:1.7.5"
 
 }
