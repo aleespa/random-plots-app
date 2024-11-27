@@ -500,7 +500,7 @@ fun BackgroundSelectionDialog(visualizeModel: VisualizeModel) {
         Color( 0, 13, 30))
     var lightColors = listOf(
         Color(255, 255, 255),
-        Color(249, 235, 234),
+        Color(244, 240, 231),
         Color(234, 250, 241),
         Color(251, 238, 230))
     val backgroundOptions = if (visualizeModel.isDarkMode) {
@@ -676,8 +676,8 @@ fun loadImage(context: Context, imageFile: Uri): Bitmap {
             calculateSampleSize(
                 info.size.width,
                 info.size.height,
-                800,
-                800
+                1200,
+                1200
             )
         )
     }

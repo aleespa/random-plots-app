@@ -3,38 +3,28 @@ from matplotlib import pyplot as plt
 import matplotlib.colors
 import io
 import base64
+import matplotlib.colors as mcolors
 
 colors_dark = [
-    "#4c4c4c",  # Brightened dark gray
-    "#5e7a8c",  # Vibrant dark blue
-    "#6367a8",  # Vibrant dark purple
-    "#4b6673",  # Vibrant slate gray
-    "#666666",  # Brighter medium gray
-    "#3a5f75",  # Vibrant deep teal
-    "#466d8f",  # Vibrant navy blue
-    "#ff5f4d",  # Brighter vibrant red
-    "#ffa622",  # Brighter vibrant orange
-    "#2dcc71",  # Brighter vibrant green
-    "#3498db",  # Brighter vibrant blue
-    "#a56de2",  # Brighter vibrant purple
+    "#8488d7",
+    "#a86f86",
+    "#8ba886",
+    "#4b6673",
+    "#e1e1e1",
 ]
-cmap_dark = matplotlib.colors.ListedColormap(colors_dark)
+cmap_dark = mcolors.LinearSegmentedColormap.from_list("custom_cmap", colors_dark, N=250)
+
 colors_light = [
-    "#f39c12",  # Vibrant orange
-    "#e74c3c",  # Vibrant red
-    "#1abc9c",  # Vibrant teal
-    "#3498db",  # Vibrant blue
-    "#9b59b6",  # Vibrant purple
-    "#2ecc71",  # Vibrant green
     "#e67e22",  # Muted orange
     "#c0392b",  # Muted red
-    "#16a085",  # Muted teal
     "#2980b9",  # Muted blue
     "#8e44ad",  # Muted purple
-    "#27ae60",  # Muted green
+    "#38823E",  # Muted green
 ]
-cmap_light = matplotlib.colors.ListedColormap(colors_light)
-def generate_plot(dark=False,bg_color=(0,0,0)):
+cmap_light = mcolors.LinearSegmentedColormap.from_list("custom_cmap", colors_light, N=250)
+
+
+def generate_plot(dark=True, bg_color=(0, 0, 0)) -> io.BytesIO:
     t = np.linspace(0, 2 * np.pi, 10000)
     fig, ax = plt.subplots(figsize=(12, 12), dpi=200, tight_layout=True)
     if dark:
@@ -43,7 +33,7 @@ def generate_plot(dark=False,bg_color=(0,0,0)):
         fig.patch.set_facecolor(bg_color)
 
     for _ in range(4):
-        k, l = np.random.uniform(0,1,2)
+        k, l = np.random.uniform(0.01, 0.99, 2)
         if dark:
             color = cmap_dark(np.random.uniform())
         else:
@@ -64,12 +54,15 @@ def spiro(t: np.array,
     return ((1 - k) * np.exp(1j * t)
             + k * l * np.exp(- 1j * t * (1 - k) / k))
 
+
 def plot_spiro(t, k, l, ax, color):
     s = spiro(100 * t, k, l)
     ax.plot(s.real, s.imag, lw=1, alpha=0.9,
             color=color)
 
-def create_image(dark_mode=False, color=(0,0,0)):
+
+def create_image(dark_mode=True, color=(0, 0, 0)):
     buffer = generate_plot(dark_mode, color)
     image_data = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    plt.close()
     return image_data
