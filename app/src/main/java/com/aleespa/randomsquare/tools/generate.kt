@@ -1,4 +1,4 @@
-package com.alejandro.randomplots.tools
+package com.aleespa.randomsquare.tools
 
 import android.content.ContentValues
 import android.content.Context
@@ -14,10 +14,10 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.content.FileProvider
-import com.alejandro.randomplots.Figures
-import com.alejandro.randomplots.R
-import com.alejandro.randomplots.data.ImageEntity
-import com.alejandro.randomplots.data.VisualizeModel
+import com.aleespa.randomsquare.Figures
+import com.aleespa.randomsquare.R
+import com.aleespa.randomsquare.data.ImageEntity
+import com.aleespa.randomsquare.data.VisualizeModel
 import com.chaquo.python.Python
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

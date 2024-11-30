@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace 'com.alejandro.randomplots'
+    namespace 'com.aleespa.randomsquare'
     compileSdk 35
 
     defaultConfig {
-        applicationId "com.alejandro.randomplots"
+        applicationId 'com.aleespa.randomsquare'
         minSdk 29
         //noinspection EditedTargetSdkVersion
         targetSdk 35

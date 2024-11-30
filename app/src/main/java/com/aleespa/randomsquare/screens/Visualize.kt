@@ -1,4 +1,4 @@
-package com.alejandro.randomplots.screens
+package com.aleespa.randomsquare.screens
 
 import android.app.Activity
 import android.content.ContentResolver
@@ -75,17 +75,16 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.alejandro.randomplots.Figures
-import com.alejandro.randomplots.R
-import com.alejandro.randomplots.data.ImageEntity
-import com.alejandro.randomplots.data.VisualizeModel
-import com.alejandro.randomplots.tools.LatexMathView
-import com.alejandro.randomplots.tools.generateNewPlot
-import com.alejandro.randomplots.tools.loadBitmapFromFile
-import com.alejandro.randomplots.tools.loadSavedImage
-import com.alejandro.randomplots.tools.readTexAssets
-import com.alejandro.randomplots.tools.saveBitmapToGallery
-import com.alejandro.randomplots.tools.setWallpaper
+import com.aleespa.randomsquare.Figures
+import com.aleespa.randomsquare.R
+import com.aleespa.randomsquare.data.VisualizeModel
+import com.aleespa.randomsquare.tools.LatexMathView
+import com.aleespa.randomsquare.tools.generateNewPlot
+import com.aleespa.randomsquare.tools.loadBitmapFromFile
+import com.aleespa.randomsquare.tools.loadSavedImage
+import com.aleespa.randomsquare.tools.readTexAssets
+import com.aleespa.randomsquare.tools.saveBitmapToGallery
+import com.aleespa.randomsquare.tools.setWallpaper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

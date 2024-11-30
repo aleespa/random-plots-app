@@ -1,4 +1,4 @@
-package com.alejandro.randomplots.ui.theme
+package com.aleespa.randomsquare.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

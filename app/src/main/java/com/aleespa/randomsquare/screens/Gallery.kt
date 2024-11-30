@@ -1,4 +1,4 @@
-package com.alejandro.randomplots.screens
+package com.aleespa.randomsquare.screens
 
 import android.content.Context
 import android.content.Intent
@@ -46,8 +46,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -55,11 +53,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.alejandro.randomplots.BottomBarScreen
-import com.alejandro.randomplots.Figures
-import com.alejandro.randomplots.R
-import com.alejandro.randomplots.data.VisualizeModel
-import com.alejandro.randomplots.tools.loadSavedImage
+import com.aleespa.randomsquare.BottomBarScreen
+import com.aleespa.randomsquare.Figures
+import com.aleespa.randomsquare.R
+import com.aleespa.randomsquare.data.VisualizeModel
+import com.aleespa.randomsquare.tools.loadSavedImage
 
 
 @Composable
