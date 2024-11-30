@@ -1,4 +1,4 @@
-package com.alejandro.randomplots.screens
+package com.aleespa.randomsquare.screens
 import android.annotation.SuppressLint
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -13,15 +13,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.alejandro.randomplots.BottomBarScreen
-import com.alejandro.randomplots.data.ImageDao
-import com.alejandro.randomplots.data.VisualizeModel
+import com.aleespa.randomsquare.BottomBarScreen
+import com.aleespa.randomsquare.data.ImageDao
+import com.aleespa.randomsquare.data.VisualizeModel
 import androidx.compose.runtime.remember
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

@@ -1,4 +1,4 @@
-package com.alejandro.randomplots.data
+package com.aleespa.randomsquare.data
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
