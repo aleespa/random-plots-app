@@ -20,7 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication"
         android:requestLegacyExternalStorage="true"
-        tools:targetApi="31">
+        tools:targetApi="35">
         <activity
             android:name="com.alejandro.randomplots.MainActivity"
             android:exported="true"
