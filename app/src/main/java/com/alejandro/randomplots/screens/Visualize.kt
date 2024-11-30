@@ -133,7 +133,7 @@ fun Visualize(visualizeModel: VisualizeModel = viewModel()) {
     modifier = Modifier.fillMaxSize(),
     verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        item { Spacer(Modifier.height(10.dp)) }
+        item { Spacer(Modifier.height(50.dp)) }
         item { PlotDrawer(visualizeModel, context, options) }
         item { VisualizeBox(visualizeModel) }
         item { GeneratePlotButton(visualizeModel, context)}
@@ -168,7 +168,7 @@ fun PlotDrawer(
                 colors = CardDefaults.cardColors(containerColor = containerColor),
                 elevation = CardDefaults.cardElevation(defaultElevation = elevation),
                 modifier = Modifier
-                    .size(80.dp)
+                    .size(70.dp)
                     .aspectRatio(0.70f)
                     .clickable {
                         if (visualizeModel.selectedFigure != option) {
