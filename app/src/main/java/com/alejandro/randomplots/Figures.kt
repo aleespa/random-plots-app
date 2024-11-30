@@ -5,6 +5,10 @@ enum class Figures(
     val resourceStringId: Int,
     val iconResourceId: Int) {
 
+    POLYGON_FEEDBACK(
+    "polygon_feedback",
+    R.string.polygon_feedback,
+    R.drawable.polygon_feedback),
     SPIROGRAPH(
         "spirograph",
         R.string.spirograph,
@@ -16,7 +20,11 @@ enum class Figures(
     RANDOM_EIGENVALUES(
         "random_eigen",
         R.string.random_eigen,
-        R.drawable.random_eigen);
+        R.drawable.random_eigen),
+    POLYGON_TUNNEL(
+    "polygon_tunnel",
+    R.string.polygon_tunnel,
+    R.drawable.polygon_tunnel);
 
     companion object {
         fun fromKey(key: String): Figures {

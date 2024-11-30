@@ -27,6 +27,8 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.Base64
+import kotlin.random.Random
+import kotlin.random.nextUInt
 
 fun colorToHexWithoutAlpha(color: Color): String {
     val red = (color.red * 255).toInt()
@@ -42,6 +44,7 @@ fun generateRandomPlot(visualizeModel: VisualizeModel):
     val mainModule = py.getModule("main")
     val result = mainModule.callAttr(
         "generate",
+        visualizeModel.randomSeed,
         visualizeModel.isDarkMode,
         colorToHexWithoutAlpha(visualizeModel.bgColor),
         visualizeModel.selectedFigure.key)
@@ -153,7 +156,13 @@ fun loadBitmapFromFile(context: Context, filename: String): Bitmap? {
 fun generateNewPlot(visualizeModel: VisualizeModel, context: Context) {
     visualizeModel.loadingPlotGenerator = true
     visualizeModel.showInfo = false
+    visualizeModel.randomSeed = generate32BitSeed().toLong()
     CoroutineScope(Dispatchers.Main).launch {
+        visualizeModel.temporalImageEntity = ImageEntity.Builder()
+            .setImageType(visualizeModel.selectedFigure.key)
+            .setIsDarkMode(visualizeModel.isDarkMode)
+            .setTimestamp(System.currentTimeMillis())
+            .setRandomSeed(visualizeModel.randomSeed)
         try {
             val result = withContext(Dispatchers.Default) {
                 generateRandomPlot(visualizeModel)
@@ -164,10 +173,6 @@ fun generateNewPlot(visualizeModel: VisualizeModel, context: Context) {
                     setBitmapToCache(context, androidBitmap, "cache_front.png")
                 }
             }
-            visualizeModel.temporalImageEntity = ImageEntity.Builder()
-                .setImageType(visualizeModel.selectedFigure.key)
-                .setIsDarkMode(visualizeModel.isDarkMode)
-                .setTimestamp(System.currentTimeMillis())
             visualizeModel.imageBitmapState = result
             visualizeModel.latexString = readTexAssets(context, visualizeModel.selectedFigure.key)
             visualizeModel.isFromGallery = false
@@ -192,4 +197,8 @@ fun loadSavedImage(visualizeModel: VisualizeModel,
     )
     visualizeModel.showInfo = false
 
+}
+
+fun generate32BitSeed(): UInt {
+    return Random.nextUInt()
 }

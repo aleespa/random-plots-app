@@ -24,20 +24,18 @@ colors_light = [
 cmap_light = mcolors.LinearSegmentedColormap.from_list("custom_cmap", colors_light, N=250)
 
 
-def generate_plot(dark=True, bg_color=(0, 0, 0)) -> io.BytesIO:
+def generate_plot(seed, dark=True, bg_color=(0, 0, 0)) -> io.BytesIO:
+    rng = np.random.default_rng(seed)
     t = np.linspace(0, 2 * np.pi, 10000)
     fig, ax = plt.subplots(figsize=(12, 12), dpi=200, tight_layout=True)
-    if dark:
-        fig.patch.set_facecolor(bg_color)
-    else:
-        fig.patch.set_facecolor(bg_color)
+    fig.patch.set_facecolor(bg_color)
 
     for _ in range(4):
-        k, l = np.random.uniform(0.01, 0.99, 2)
+        k, l = rng.uniform(0.01, 0.99, 2)
         if dark:
-            color = cmap_dark(np.random.uniform())
+            color = cmap_dark(rng.uniform())
         else:
-            color = cmap_light(np.random.uniform())
+            color = cmap_light(rng.uniform())
         plot_spiro(t, k, l, ax, color)
 
     ax.axis('off')
@@ -61,8 +59,8 @@ def plot_spiro(t, k, l, ax, color):
             color=color)
 
 
-def create_image(dark_mode=True, color=(0, 0, 0)):
-    buffer = generate_plot(dark_mode, color)
+def create_image(seed=0, dark_mode=True, bg_color=(0, 0, 0)) -> str:
+    buffer = generate_plot(seed, dark_mode, bg_color)
     image_data = base64.b64encode(buffer.getvalue()).decode('utf-8')
     plt.close()
     return image_data

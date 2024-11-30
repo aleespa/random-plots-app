@@ -11,9 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.alejandro.randomplots.Figures
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.alejandro.randomplots.data.ImageEntity.Builder
@@ -23,7 +21,7 @@ class VisualizeModel(private val dao: ImageDao): ViewModel() {
     var showInfo by mutableStateOf(false)
     var imageBitmapState by mutableStateOf<ImageBitmap?>(null)
     var latexString by mutableStateOf("")
-    var selectedFigure by mutableStateOf(Figures.SPIROGRAPH)
+    var selectedFigure by mutableStateOf(Figures.POLYGON_FEEDBACK)
     var isFromGallery by mutableStateOf(false)
     var galleryURI by mutableStateOf("")
     var galleryId by mutableIntStateOf(0)
@@ -34,6 +32,7 @@ class VisualizeModel(private val dao: ImageDao): ViewModel() {
     var showColorDialog by mutableStateOf(false)
     var bgColor by mutableStateOf(Color(0,0,0,0))
     var isDarkMode by mutableStateOf(true)
+    var randomSeed by mutableStateOf(0L)
     var isSavingLoading by mutableStateOf(false)
     var temporalImageEntity by mutableStateOf<Builder>(Builder())
 

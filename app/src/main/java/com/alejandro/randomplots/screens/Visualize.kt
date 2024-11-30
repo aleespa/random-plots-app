@@ -133,7 +133,7 @@ fun Visualize(visualizeModel: VisualizeModel = viewModel()) {
     modifier = Modifier.fillMaxSize(),
     verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        item { Spacer(Modifier.height(50.dp)) }
+        item { Spacer(Modifier.height(60.dp)) }
         item { PlotDrawer(visualizeModel, context, options) }
         item { VisualizeBox(visualizeModel) }
         item { GeneratePlotButton(visualizeModel, context)}
@@ -182,7 +182,7 @@ fun PlotDrawer(
                     }
             ) {
                 Column(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(0.95f),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
