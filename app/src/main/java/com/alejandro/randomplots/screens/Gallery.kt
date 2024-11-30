@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -26,6 +27,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -107,7 +109,8 @@ fun RandomGalleryTopBar(navController: NavHostController,
                     },
                     actions = {
                         IconButton(onClick = {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.instagram.com/random_plot"))
+                            val intent = Intent(Intent.ACTION_VIEW,
+                                Uri.parse("https://www.instagram.com/random_plot"))
                             context.startActivity(intent)
                         }) {
                             Icon(
@@ -229,31 +232,27 @@ fun FilterChipWithDropdown(visualizeModel: VisualizeModel) {
             onDismissRequest = { visualizeModel.showFilterDialog = false }, // Close the dialog when clicked outside
             title = { Text("Figure type") },
             text = {
-                Column {
-                    options.forEach { option ->
+                LazyColumn {
+                    item {HorizontalDivider(thickness = 2.dp)}
+                    item{options.forEach { option ->
                         TextButton(
                             onClick = {
                                 visualizeModel.filterImageType = option.key // Update the selected option
                                 visualizeModel.showFilterDialog = false // Close the dialog
                             }
                         ) {
-                            Text(
-                                text = stringResource(option.resourceStringId),
-                                style = TextStyle(fontWeight = FontWeight.Bold)
-                            )
+                            Text(text = stringResource(option.resourceStringId))
                         }
-                    }
-                    TextButton(
+                        HorizontalDivider(thickness = 1.dp)
+                    }}
+                    item{TextButton(
                         onClick = {
                             visualizeModel.filterImageType = "None" // Update the selected option
                             visualizeModel.showFilterDialog = false // Close the dialog
                         }
                     ) {
-                        Text(
-                            text = "All figures",
-                            style = TextStyle(fontWeight = FontWeight.Bold)
-                        )
-                    }
+                        Text(text = "All figures")
+                    }}
                 }
             },
             confirmButton = {
@@ -276,10 +275,11 @@ fun ScrollContent(innerPadding: PaddingValues,
 ) {
 
     val images by visualizeModel.filteredImages.collectAsState()
-    LaunchedEffect(visualizeModel.darkFilter, visualizeModel.lightFilter, visualizeModel.filterImageType) {
+    LaunchedEffect(visualizeModel.darkFilter,
+        visualizeModel.lightFilter,
+        visualizeModel.filterImageType) {
         visualizeModel.updateFilteredImages()
     }
-
 
     Column {
         LazyVerticalGrid(
