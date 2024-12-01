@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId 'com.aleespa.randomsquare'
-        minSdk 29
+        minSdk 31
         //noinspection EditedTargetSdkVersion
         targetSdk 35
         versionCode 1
@@ -111,5 +111,7 @@ dependencies {
 
     implementation "androidx.compose.material:material-icons-core:1.7.5"
     implementation "androidx.compose.material:material-icons-extended:1.7.5"
+
+    implementation "androidx.core:core-splashscreen:1.0.1"
 
 }

@@ -3,6 +3,7 @@
 
     <style name="Theme.MyApplication" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="android:windowBackground">@color/splashBackground</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@color/splashBackground</item>
         <item name="android:statusBarColor">@color/statusBarColor</item>
 
     </style>

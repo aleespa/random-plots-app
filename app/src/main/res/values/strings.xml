@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Random Square</string>
+    <string name="app_name">Random</string>
     <string name="generate">Generate\nRandom Plot</string>
     <string name="save">Save to\ngallery</string>
     <string name="set_wallpaper">Set as\nwallpaper</string>
