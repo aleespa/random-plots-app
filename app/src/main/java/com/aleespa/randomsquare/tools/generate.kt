@@ -75,7 +75,12 @@ fun setWallpaper(context: Context, visualizeModel: VisualizeModel) {
         val outputStream = FileOutputStream(file)
         var resolution = getScreenResolution(context)
         if (visualizeModel.toFitAspectRatio) {
-            bitmap = convertToAspectRatio(bitmap, resolution[0], resolution[1], Color.Black)
+            bitmap = convertToAspectRatio(
+                bitmap,
+                resolution[0],
+                resolution[1],
+                visualizeModel.bgColor
+            )
         }
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
         outputStream.flush()
@@ -173,6 +178,7 @@ fun generateNewPlot(visualizeModel: VisualizeModel, context: Context) {
             .setIsDarkMode(visualizeModel.isDarkMode)
             .setTimestamp(System.currentTimeMillis())
             .setRandomSeed(visualizeModel.randomSeed)
+            .setBackgroundColor(fromColor(visualizeModel.bgColor))
         try {
             val result = withContext(Dispatchers.Default) {
                 generateRandomPlot(visualizeModel)
@@ -198,6 +204,7 @@ fun loadSavedImage(visualizeModel: VisualizeModel,
     visualizeModel.isFromGallery = true
     visualizeModel.galleryURI = image.uri
     visualizeModel.galleryId = image.id
+    visualizeModel.bgColor = toColor(image.backgroundColor)
 
     val figureKey = image.imageType
     visualizeModel.selectedFigure = Figures.fromKey(figureKey)
@@ -259,4 +266,13 @@ fun getScreenResolution(context: Context): List<Int> {
     val heightPixels = display.heightPixels
 
     return listOf<Int>(widthPixels, heightPixels)
+}
+
+
+fun fromColor(color: Color): Int {
+    return color.toArgb() // Convert Color to Int (ARGB format)
+}
+
+fun toColor(value: Int): Color {
+    return Color(value) // Convert Int back to Color
 }
