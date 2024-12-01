@@ -1,6 +1,5 @@
 package com.aleespa.randomsquare.screens
 
-import android.app.Activity
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
@@ -10,8 +9,6 @@ import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,8 +26,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Colorize
 import androidx.compose.material.icons.rounded.Add
@@ -38,9 +33,6 @@ import androidx.compose.material.icons.rounded.AddPhotoAlternate
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Share
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
@@ -51,7 +43,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,7 +50,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -70,6 +60,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
@@ -93,31 +84,11 @@ import java.io.File
 @Composable
 fun Visualize(visualizeModel: VisualizeModel = viewModel()) {
     val context = LocalContext.current
-    var showDialog by remember { mutableStateOf(false) }
     BackHandler {
-        showDialog = true // Show confirmation dialog
+        visualizeModel.showExitDialog = true // Show confirmation dialog
     }
+    ExitDialog(visualizeModel, context)
 
-    if (showDialog) {
-        AlertDialog(
-            title = { Text("Exit") },
-            text = { Text("Are you sure you want to exit?") },
-            onDismissRequest = { showDialog = false },
-            confirmButton = {
-                Button(onClick = {
-                    showDialog = false
-                    (context as? Activity)?.finish()
-                }) {
-                    Text("Yes")
-                }
-            },
-            dismissButton = {
-                Button(onClick = { showDialog = false }) {
-                    Text("No")
-                }
-            }
-        )
-    }
     val savedBitmap = loadBitmapFromFile(context, "cache_front.png")
     if (visualizeModel.isFromGallery){
         visualizeModel.imageBitmapState = loadImage(context,
@@ -290,18 +261,30 @@ fun deleteImageFromUri(context: Context, uri: Uri): Boolean {
 @Composable
 fun SetWallpaperButton(
     visualizeModel: VisualizeModel,
-    context: Context){
-
+    context: Context
+) {
     VisualizeOptionsButtons(
-        icon=Icons.Rounded.AddPhotoAlternate,
-        bottomText = stringResource(id = R.string.set_wallpaper))
-    {
-        val androidBitmap = visualizeModel.imageBitmapState?.asAndroidBitmap()
-        if (androidBitmap != null) {
-            setWallpaper(context, androidBitmap)
-        }
+        icon = Icons.Rounded.AddPhotoAlternate,
+        bottomText = stringResource(id = R.string.set_wallpaper)
+    ) {
+        visualizeModel.showAspectRatioDialog = true // Show the dialog
+    }
+
+    if (visualizeModel.showAspectRatioDialog) {
+        AspectRatioDialog(
+            visualizeModel,
+            onDismiss = { visualizeModel.showAspectRatioDialog = false },
+            onConfirm = {
+                visualizeModel.showAspectRatioDialog = false
+                val androidBitmap = visualizeModel.imageBitmapState?.asAndroidBitmap()
+                if (androidBitmap != null) {
+                    setWallpaper(context, visualizeModel) // Set wallpaper only after user confirms
+                }
+            }
+        )
     }
 }
+
 @Composable
 fun SaveToGalleryButton(visualizeModel: VisualizeModel, context: Context) {
     var uri: Uri? = null
@@ -407,6 +390,46 @@ fun saveImageBitmapToCache(imageBitmap: ImageBitmap, context: Context): Uri? {
     )
 }
 
+
+@Composable
+fun VisualizeOptionsButtons(
+    id: Int,
+    iconSize: Dp= 30.dp,
+    bottomText: String,
+    onClick: () -> Unit){
+    Column(
+        modifier = Modifier
+            .width(80.dp)
+            .clickable {
+                onClick()
+            },
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    )
+    {  Icon(
+        painter = painterResource(id = id),
+        contentDescription = null,
+        tint = MaterialTheme.colorScheme.primary,
+        modifier = Modifier
+            .size(iconSize)
+            .aspectRatio(1f))
+        Spacer(Modifier.height(8.dp))
+        Box(
+            modifier = Modifier,
+            contentAlignment = Alignment.TopCenter
+        ){
+            Text(
+                text = bottomText,
+                modifier = Modifier,
+                textAlign = TextAlign.Center,
+                fontSize = 12.sp,
+                lineHeight = 12.sp,
+                color = MaterialTheme.colorScheme.secondary
+            )
+        } }
+}
+
+
 @Composable
 fun VisualizeOptionsButtons(
     icon: ImageVector,
@@ -482,6 +505,7 @@ fun GeneratePlotButton(
             )
         }
     }
+
     BackgroundSelectionDialog(visualizeModel)
 
 }
@@ -490,108 +514,6 @@ fun selectColors(visualizeModel: VisualizeModel) {
     visualizeModel.showColorDialog = true
 }
 
-@Composable
-fun BackgroundSelectionDialog(visualizeModel: VisualizeModel) {
-    var darkColors = listOf(
-        Color(0, 0, 0),
-        Color(64, 11, 0),
-        Color(0, 30, 26 ),
-        Color( 0, 13, 30))
-    var lightColors = listOf(
-        Color(255, 255, 255),
-        Color(244, 240, 231),
-        Color(234, 250, 241),
-        Color(251, 238, 230))
-    val backgroundOptions = if (visualizeModel.isDarkMode) {
-        darkColors
-    } else {
-        lightColors
-    }
-    if (visualizeModel.showColorDialog) {
-        AlertDialog(
-            onDismissRequest = { visualizeModel.showColorDialog = false },
-            title = {
-                Text(text = "Select Background Mode", style = MaterialTheme.typography.titleMedium)
-            },
-            text = {
-                Column {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Button(
-                            onClick = {
-                                visualizeModel.isDarkMode = false
-                                visualizeModel.bgColor = lightColors[0]
-                                      },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = if (!visualizeModel.isDarkMode) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
-                            )
-                        ) {
-                            Text(text = "Light Mode")
-                        }
-                        Button(
-                            onClick = {
-                                visualizeModel.isDarkMode = true
-                                visualizeModel.bgColor = darkColors[0]
-                                      },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = if (visualizeModel.isDarkMode) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
-                            )
-                        ) {
-                            Text(text = "Dark Mode")
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-                    LazyRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        contentPadding = PaddingValues(horizontal = 16.dp)
-                    ) {
-
-
-                        itemsIndexed(backgroundOptions) { index, color ->
-                            if (visualizeModel.bgColor == color){
-                                Box(
-                                    modifier = Modifier
-                                        .size(50.dp)
-                                        .background(color, shape = RoundedCornerShape(8.dp))
-                                        .border(
-                                            3.dp,
-                                            MaterialTheme.colorScheme.primary,
-                                            shape = RoundedCornerShape(8.dp)
-                                        )
-                                        .clickable {
-                                            visualizeModel.bgColor = color
-                                        },
-                                    contentAlignment = Alignment.Center
-
-                                    ){}
-                            } else {
-                                Box(
-                                    modifier = Modifier
-                                        .size(50.dp)
-                                        .background(color, shape = RoundedCornerShape(8.dp))
-                                        .clickable {
-                                            visualizeModel.bgColor = color
-                                        },
-                                    contentAlignment = Alignment.Center
-                                    ){}
-                            }
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { visualizeModel.showColorDialog = false }) {
-                    Text(text = "Accept")
-                }
-            }
-        )
-    }
-}
 
 
 @Composable

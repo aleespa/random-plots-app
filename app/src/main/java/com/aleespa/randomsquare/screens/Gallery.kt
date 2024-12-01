@@ -203,7 +203,6 @@ fun FilterChips(visualizeModel: VisualizeModel) {
 
 @Composable
 fun FilterChipWithDropdown(visualizeModel: VisualizeModel) {
-    val options = Figures.entries.map { it }
     // The FilterChip
     FilterChip(
         selected = (visualizeModel.filterImageType != "None" ), // Show selected state when dialog is visible
@@ -225,43 +224,7 @@ fun FilterChipWithDropdown(visualizeModel: VisualizeModel) {
         }
     )
 
-    if (visualizeModel.showFilterDialog) {
-        AlertDialog(
-            onDismissRequest = { visualizeModel.showFilterDialog = false }, // Close the dialog when clicked outside
-            title = { Text("Figure type") },
-            text = {
-                LazyColumn {
-                    item {HorizontalDivider(thickness = 2.dp)}
-                    item{options.forEach { option ->
-                        TextButton(
-                            onClick = {
-                                visualizeModel.filterImageType = option.key // Update the selected option
-                                visualizeModel.showFilterDialog = false // Close the dialog
-                            }
-                        ) {
-                            Text(text = stringResource(option.resourceStringId))
-                        }
-                        HorizontalDivider(thickness = 1.dp)
-                    }}
-                    item{TextButton(
-                        onClick = {
-                            visualizeModel.filterImageType = "None" // Update the selected option
-                            visualizeModel.showFilterDialog = false // Close the dialog
-                        }
-                    ) {
-                        Text(text = "All figures")
-                    }}
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = { visualizeModel.showFilterDialog = false } // Close dialog without making a selection
-                ) {
-                    Text("Cancel")
-                }
-            }
-        )
-    }
+    FilterTypesDialog(visualizeModel)
 }
 
 

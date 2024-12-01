@@ -27,14 +27,18 @@ class VisualizeModel(private val dao: ImageDao): ViewModel() {
     var galleryId by mutableIntStateOf(0)
     var darkFilter by mutableStateOf(false)
     var lightFilter by mutableStateOf(false)
-    var showFilterDialog by mutableStateOf(false)
     var filterImageType by mutableStateOf("None")
-    var showColorDialog by mutableStateOf(false)
     var bgColor by mutableStateOf(Color(0,0,0,0))
     var isDarkMode by mutableStateOf(true)
     var randomSeed by mutableStateOf(0L)
     var isSavingLoading by mutableStateOf(false)
     var temporalImageEntity by mutableStateOf<Builder>(Builder())
+    var toFitAspectRatio by mutableStateOf(false)
+
+    var showFilterDialog by mutableStateOf(false)
+    var showExitDialog by mutableStateOf(false)
+    var showColorDialog by mutableStateOf(false)
+    var showAspectRatioDialog by mutableStateOf(false)
 
     fun deleteImageById(imageId: Int) {
         viewModelScope.launch(Dispatchers.IO) {

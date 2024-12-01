@@ -5,14 +5,18 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Paint
 import android.net.Uri
 import android.provider.MediaStore
+import android.util.DisplayMetrics
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.FileProvider
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
@@ -27,6 +31,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.Base64
+import kotlin.math.min
 import kotlin.random.Random
 import kotlin.random.nextUInt
 
@@ -57,16 +62,20 @@ fun generateRandomPlot(visualizeModel: VisualizeModel):
 }
 
 
-fun setWallpaper(context: Context, bitmap: Bitmap?) {
+fun setWallpaper(context: Context, visualizeModel: VisualizeModel) {
+    var bitmap = visualizeModel.imageBitmapState?.asAndroidBitmap()
     if (bitmap == null) {
         Toast.makeText(context, R.string.generate_img_first, Toast.LENGTH_SHORT).show()
         return
     }
 
     try {
-        // Save the bitmap temporarily as a file
         val file = File(context.cacheDir, "temp_wallpaper.png")
         val outputStream = FileOutputStream(file)
+        var resolution = getScreenResolution(context)
+        if (visualizeModel.toFitAspectRatio) {
+            bitmap = convertToAspectRatio(bitmap, resolution[0], resolution[1], Color.Black)
+        }
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
         outputStream.flush()
         outputStream.close()
@@ -201,4 +210,52 @@ fun loadSavedImage(visualizeModel: VisualizeModel,
 
 fun generate32BitSeed(): UInt {
     return Random.nextUInt()
+}
+fun convertToAspectRatio(
+    originalBitmap: Bitmap,
+    targetWidth: Int,
+    targetHeight: Int,
+    backgroundColor: Color = Color(0xF124124) // Default color as an example
+): Bitmap {
+    // Create a blank bitmap with the target size
+    val resultBitmap = Bitmap.createBitmap(targetWidth, targetHeight, Bitmap.Config.ARGB_8888)
+
+    // Create a canvas to draw on the new bitmap
+    val canvas = Canvas(resultBitmap)
+
+    // Convert the Compose Color to an integer for use with Paint
+    val paint = Paint()
+    paint.color = backgroundColor.toArgb() // Convert Compose Color to ARGB integer
+    canvas.drawRect(0f, 0f, targetWidth.toFloat(), targetHeight.toFloat(), paint)
+
+    // Calculate the scaling factor and position to center the original bitmap
+    val scale = min(
+        targetWidth.toFloat() / originalBitmap.width,
+        targetHeight.toFloat() / originalBitmap.height
+    )
+    val scaledWidth = (originalBitmap.width * scale).toInt()
+    val scaledHeight = (originalBitmap.height * scale).toInt()
+    val left = (targetWidth - scaledWidth) / 2
+    val top = (targetHeight - scaledHeight) / 2
+
+    // Draw the original bitmap onto the new canvas
+    canvas.drawBitmap(
+        Bitmap.createScaledBitmap(originalBitmap, scaledWidth, scaledHeight, true),
+        left.toFloat(),
+        top.toFloat(),
+        null
+    )
+
+    return resultBitmap
+}
+
+fun getScreenResolution(context: Context): List<Int> {
+    val displayMetrics = DisplayMetrics()
+    val display = context.resources.displayMetrics
+
+    // Get the screen width and height in pixels
+    val widthPixels = display.widthPixels
+    val heightPixels = display.heightPixels
+
+    return listOf<Int>(widthPixels, heightPixels)
 }
