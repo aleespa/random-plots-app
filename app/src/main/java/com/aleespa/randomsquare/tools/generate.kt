@@ -22,6 +22,7 @@ import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.ImageEntity
 import com.aleespa.randomsquare.data.VisualizeModel
+import com.aleespa.randomsquare.screens.loadImage
 import com.chaquo.python.Python
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -204,8 +205,8 @@ fun loadSavedImage(visualizeModel: VisualizeModel,
     context,
     visualizeModel.selectedFigure.key
     )
+    visualizeModel.imageBitmapState = loadImage(context,Uri.parse(image.uri))
     visualizeModel.showInfo = false
-
 }
 
 fun generate32BitSeed(): UInt {

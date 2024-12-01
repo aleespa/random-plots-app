@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.util.Log
@@ -80,6 +81,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.IOException
 
 @Composable
 fun Visualize(visualizeModel: VisualizeModel = viewModel()) {
@@ -90,12 +92,8 @@ fun Visualize(visualizeModel: VisualizeModel = viewModel()) {
     ExitDialog(visualizeModel, context)
 
     val savedBitmap = loadBitmapFromFile(context, "cache_front.png")
-    if (visualizeModel.isFromGallery){
-        visualizeModel.imageBitmapState = loadImage(context,
-            Uri.parse(visualizeModel.galleryURI)).asImageBitmap()
-    }
-    else if (savedBitmap != null) {
-            visualizeModel.imageBitmapState = savedBitmap.asImageBitmap()
+    if ((savedBitmap != null).and(visualizeModel.isFromGallery.not())) {
+            visualizeModel.imageBitmapState = savedBitmap?.asImageBitmap()
     }
 
     val options = Figures.entries.map { it }
@@ -590,16 +588,32 @@ fun VisualizeBox(visualizeModel: VisualizeModel){
     }
 }
 
-fun loadImage(context: Context, imageFile: Uri): Bitmap {
-    val source = ImageDecoder.createSource(context.contentResolver, imageFile)
-    return ImageDecoder.decodeBitmap(source) { decoder, info, _ ->
-        decoder.setTargetSampleSize(
-            calculateSampleSize(
-                info.size.width,
-                info.size.height,
-                1200,
-                1200
-            )
-        )
+fun loadImage(
+    context: Context,
+    imageFile: Uri,
+    targetWidth: Int = 1200,
+    targetHeight: Int = 1200
+): ImageBitmap? {
+    return try {
+        // Open InputStream using ContentResolver
+        context.contentResolver.openInputStream(imageFile)?.use { inputStream ->
+            // Load the image dimensions first to calculate scaling
+            val options = BitmapFactory.Options().apply {
+                inJustDecodeBounds = true
+            }
+            BitmapFactory.decodeStream(inputStream, null, options)
+
+            // Calculate sample size
+            options.inSampleSize = calculateSampleSize(options.outWidth, options.outHeight, targetWidth, targetHeight)
+            options.inJustDecodeBounds = false
+
+            // Decode the scaled bitmap
+            context.contentResolver.openInputStream(imageFile)?.use { scaledInputStream ->
+                BitmapFactory.decodeStream(scaledInputStream, null, options)?.asImageBitmap()
+            }
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null // Return null in case of an error
     }
 }
