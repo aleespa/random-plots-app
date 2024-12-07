@@ -24,13 +24,13 @@ import androidx.compose.runtime.remember
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen(dao: ImageDao) {
+fun MainScreen(visualizeModel: VisualizeModel) {
     val navController = rememberNavController()
     Scaffold(
         bottomBar = {BottomBar(navController)}
     ) {
         BottomNavGraph(
-            visualizeModel = remember {VisualizeModel(dao)},
+            visualizeModel = remember {visualizeModel},
             navController = navController)
     }
 }
@@ -72,7 +72,7 @@ fun BottomNavGraph(visualizeModel: VisualizeModel = viewModel(),
                    navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = BottomBarScreen.Visualize.route
+        startDestination = BottomBarScreen.Browse.route
     ) {
         composable(route = BottomBarScreen.Browse.route) {
             Browse(visualizeModel, navController)
