@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -59,6 +60,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -81,6 +83,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontStyle
+
+
+
+
 @Composable
 fun Visualize(visualizeModel: VisualizeModel = viewModel()) {
     val context = LocalContext.current
@@ -91,23 +101,40 @@ fun Visualize(visualizeModel: VisualizeModel = viewModel()) {
 
     val savedBitmap = loadBitmapFromFile(context, "cache_front.png")
     if ((savedBitmap != null).and(visualizeModel.isFromGallery.not())) {
-            visualizeModel.imageBitmapState = savedBitmap?.asImageBitmap()
+        visualizeModel.imageBitmapState = savedBitmap?.asImageBitmap()
     }
 
-    val options = Figures.entries.map { it }
     LazyColumn(
-    modifier = Modifier.fillMaxSize(),
-    verticalArrangement = Arrangement.spacedBy(20.dp)
+        modifier = Modifier.fillMaxSize().safeDrawingPadding(),
+        verticalArrangement = Arrangement.spacedBy(25.dp)
     ) {
-        item { Spacer(Modifier.height(60.dp)) }
-        item { PlotDrawer(visualizeModel, context, options) }
+        item { Spacer(Modifier.height(20.dp)) }
+        item { TitleFigure(visualizeModel) }
         item { VisualizeBox(visualizeModel) }
-        item { GeneratePlotButton(visualizeModel, context)}
+        item { GeneratePlotButton(visualizeModel, context) }
         item { VisualizeSettingsButtons(visualizeModel, context) }
         item { Spacer(Modifier.height(80.dp)) }
     }
-
 }
+@Composable
+fun TitleFigure(visualizeModel: VisualizeModel) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(40.dp), // Optional padding
+        contentAlignment = Alignment.Center // Centers the content inside the Box
+    ) {
+        Text(
+            text = stringResource(visualizeModel.selectedFigure.resourceStringId),
+            style = TextStyle(
+                fontFamily = parkinsansFontFamily,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold
+            )
+        )
+    }
+}
+
 @Composable
 fun PlotDrawer(
     visualizeModel: VisualizeModel,
@@ -486,7 +513,7 @@ fun GeneratePlotButton(
         Box(
             modifier = Modifier
                 .align(Alignment.Center) // Aligns to the right of the button
-                .padding(start = 170.dp)  // Adjust padding to fine-tune position
+                .padding(start = 180.dp)  // Adjust padding to fine-tune position
                 .clickable {
                     selectColors(visualizeModel)
                 }
@@ -614,3 +641,10 @@ fun loadImage(
         null // Return null in case of an error
     }
 }
+
+
+val parkinsansFontFamily = FontFamily(
+    Font(R.font.parkinsans, FontWeight.Normal),
+    Font(R.font.parkinsans_medium, FontWeight.Bold),
+    Font(R.font.parkinsans, FontWeight.Normal, FontStyle.Italic)
+)

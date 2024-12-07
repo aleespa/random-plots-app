@@ -6,14 +6,19 @@ import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -35,20 +40,25 @@ import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
@@ -58,16 +68,20 @@ import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.tools.loadSavedImage
-
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.safeDrawingPadding
 
 @Composable
 fun Gallery(visualizeModel: VisualizeModel = viewModel(),
             navController: NavHostController) {
     val context = LocalContext.current
+
     BackHandler {
         navController.navigate(BottomBarScreen.Visualize.route)
     }
-    RandomGalleryTopBar(navController, context, visualizeModel)
+    Column(modifier = Modifier.safeDrawingPadding()){
+        RandomGalleryTopBar(navController, context, visualizeModel)
+    }
 
 }
 
@@ -77,54 +91,75 @@ fun Gallery(visualizeModel: VisualizeModel = viewModel(),
 fun RandomGalleryTopBar(navController: NavHostController,
                         context: Context,
                         visualizeModel: VisualizeModel) {
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             Column {
-                MediumTopAppBar(
+                TopAppBar(
+                    modifier = Modifier
+                        .height(75.dp),
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        titleContentColor = MaterialTheme.colorScheme.primary,
+                        containerColor = MaterialTheme.colorScheme.surface,
                     ),
                     title = {
-                        Text(
-                            stringResource(id=R.string.saved_images),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight(), // Optional padding
+                            contentAlignment = Alignment.Center // Centers the content inside the Box
+                        ) {
+                            Text(
+                                text = stringResource(id=R.string.saved_images),
+                                style = TextStyle(
+                                    fontFamily = parkinsansFontFamily,
+                                    fontSize = 28.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
                     },
                     navigationIcon = {
-                        IconButton(onClick = {
-                            navController.navigate(BottomBarScreen.Visualize.route)
-                        }) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Localized description"
-                            )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight(), // Optional padding
+                            contentAlignment = Alignment.Center // Centers the content inside the Box
+                        ) {
+                            IconButton(onClick = {
+                                navController.navigate(BottomBarScreen.Visualize.route)
+                            }) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Localized description"
+                                )
+                            }
                         }
                     },
                     actions = {
-                        IconButton(onClick = {
-                            val intent = Intent(Intent.ACTION_VIEW,
-                                Uri.parse("https://www.instagram.com/random_plot"))
-                            context.startActivity(intent)
-                        }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_instagram_logo),
-                                contentDescription = "Open Instagram",
-                                modifier = Modifier.size(35.dp)
-                            )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight(), // Optional padding
+                            contentAlignment = Alignment.Center // Centers the content inside the Box
+                        ) {
+                            IconButton(onClick = {
+                                val intent = Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse("https://www.instagram.com/random_plot")
+                                )
+                                context.startActivity(intent)
+                            }) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_instagram_logo),
+                                    contentDescription = "Open Instagram",
+                                    modifier = Modifier.size(34.dp)
+                                )
+                            }
                         }
 
                     },
-                    scrollBehavior = scrollBehavior
                 )
                 FilterChips(visualizeModel)
 
             }
-
                  },
 
     ) { innerPadding ->
@@ -139,7 +174,6 @@ fun FilterChips(visualizeModel: VisualizeModel) {
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
             .fillMaxWidth()
-            .padding(vertical = 10.dp)
     ) {
         item {
             FilterChip(
@@ -229,10 +263,11 @@ fun FilterChipWithDropdown(visualizeModel: VisualizeModel) {
 
 
 @Composable
-fun ScrollContent(innerPadding: PaddingValues,
-                  context: Context,
-                  navController: NavHostController,
-                  visualizeModel: VisualizeModel,
+fun ScrollContent(
+    innerPadding: PaddingValues,
+    context: Context,
+    navController: NavHostController,
+    visualizeModel: VisualizeModel,
 ) {
 
     val images by visualizeModel.filteredImages.collectAsState()

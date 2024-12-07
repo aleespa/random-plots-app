@@ -1,8 +1,6 @@
 package com.aleespa.randomsquare.screens
 
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
@@ -10,9 +8,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,95 +20,104 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.material3.carousel.rememberCarouselState
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.aleespa.randomsquare.BottomBarScreen
 import com.aleespa.randomsquare.FigureType
-import com.aleespa.randomsquare.R
+import com.aleespa.randomsquare.data.SettingDarkMode
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.getFiguresByType
 import com.aleespa.randomsquare.tools.generateNewPlot
 import com.aleespa.randomsquare.tools.readTexAssets
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Browse(visualizeModel: VisualizeModel = viewModel(),
-           navController: NavHostController) {
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+fun Browse(
+    visualizeModel: VisualizeModel,
+    navController: NavHostController
+) {
     val context = LocalContext.current
+    val isDark = isSystemInDarkTheme()
+
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            Column {
-                MediumTopAppBar(
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        titleContentColor = MaterialTheme.colorScheme.primary,
-                    ),
-                    title = {
+            TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.primary,
+                ),
+                title = {},
+                actions = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            stringResource(id=R.string.browse),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            style = MaterialTheme.typography.titleLarge
+                            text = visualizeModel.settingDarkMode.text,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(end = 4.dp)
                         )
-                    },
-                    navigationIcon = {
                         IconButton(onClick = {
+                            visualizeModel.settingDarkMode = when (visualizeModel.settingDarkMode) {
+                                SettingDarkMode.Auto -> SettingDarkMode.On
+                                SettingDarkMode.On -> SettingDarkMode.Off
+                                SettingDarkMode.Off -> SettingDarkMode.Auto
+                            }
+                            visualizeModel.isDarkMode = when (visualizeModel.settingDarkMode) {
+                                SettingDarkMode.Auto -> isDark
+                                SettingDarkMode.On -> true
+                                SettingDarkMode.Off -> false
+                            }
+                            visualizeModel.bgColor = when (visualizeModel.settingDarkMode) {
+                                SettingDarkMode.Auto -> if (isDark) Color(0, 13, 30) else Color(244, 240, 231)
+                                SettingDarkMode.On -> Color(0, 13, 30)
+                                SettingDarkMode.Off -> Color(244, 240, 231)
+                            }
                         }) {
                             Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Localized description"
-                            )
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = {
-                            val intent = Intent(Intent.ACTION_VIEW,
-                                Uri.parse("https://www.instagram.com/random_plot"))
-                            context.startActivity(intent)
-                        }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_instagram_logo),
-                                contentDescription = "Open Instagram",
+                                imageVector = when (visualizeModel.settingDarkMode) {
+                                    SettingDarkMode.Auto -> Icons.Default.DarkMode
+                                    SettingDarkMode.On -> Icons.Default.DarkMode
+                                    SettingDarkMode.Off -> Icons.Default.LightMode
+                                },
+                                contentDescription = "Change dark mode",
                                 modifier = Modifier.size(35.dp)
                             )
                         }
-
-                    },
-                    scrollBehavior = scrollBehavior
-                )
-            }
-
+                    }
+                }
+            )
         }
-    ){ innerPadding -> BrowserScrollable(visualizeModel, innerPadding, navController, context)}
-
+    ) { innerPadding ->
+        // Place your scrolling content here
+        BrowserScrollable(visualizeModel,
+            innerPadding,
+            navController,context
+        )
+    }
 }
+
 
 @Composable
 fun BrowserScrollable(visualizeModel: VisualizeModel,
@@ -151,10 +157,10 @@ fun Carousel(visualizeModel: VisualizeModel,navController: NavHostController,
         ) { i ->
             val item = figures[i]
             val isDark = isSystemInDarkTheme()
-            val sampleImage = if (isSystemInDarkTheme()){
-                item.sampleDarkImage
-            } else {
-                item.sampleLightImage
+            val sampleImage = when (visualizeModel.settingDarkMode){
+                SettingDarkMode.Auto -> if (isDark) item.sampleDarkImage else (item.sampleLightImage)
+                SettingDarkMode.On -> item.sampleDarkImage
+                SettingDarkMode.Off -> item.sampleLightImage
             }
             Image(
                 modifier = Modifier
@@ -162,12 +168,7 @@ fun Carousel(visualizeModel: VisualizeModel,navController: NavHostController,
                     .maskClip(MaterialTheme.shapes.extraLarge)
                     .clickable {
                         visualizeModel.selectedFigure = item
-                        visualizeModel.isDarkMode = isDark
-                        if (isDark){
-                            visualizeModel.bgColor = Color( 0, 13, 30)
-                        } else {
-                            visualizeModel.bgColor = Color(244, 240, 231)
-                        }
+
                         visualizeModel.latexString = readTexAssets(
                             context,
                             visualizeModel.selectedFigure.key)
@@ -187,15 +188,6 @@ data class CarouselItem(
     @StringRes val contentDescriptionResId: Int
 )
 
-@Composable
-fun BrowseTitle(visualizeModel: VisualizeModel = viewModel()) {
-    Box(
-        modifier = Modifier
-            .padding(start = 10.dp),
-    ){
-        Text("Browse", style = MaterialTheme.typography.headlineLarge)
-    }
-}
 
 @Composable
 fun PlotTypeDescription(text: String) {
@@ -207,7 +199,11 @@ fun PlotTypeDescription(text: String) {
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.titleLarge
+            style = TextStyle(
+                fontFamily = parkinsansFontFamily,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
+            )
         )
     }
 }

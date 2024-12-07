@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Random Plots</string>
+    <string name="app_name">Random</string>
     <string name="generate">"Generar\nRandom Plot"</string>
     <string name="save">Guardar en\ngalería</string>
     <string name="set_wallpaper">Definir como\nfondo de pantalla</string>
@@ -13,10 +13,19 @@
     <string name="settings">Opciones</string>
     <string name="customize">Personalizar</string>
     <string name="visualize">Visualizar</string>
-    <string name="delete_from_gallery">Eleminar de la galeria</string>
+    <string name="saved_images">Mis Cuadros Aleatorios</string>
+    <string name="delete_from_gallery">Eliminar de la galería</string>
     <string name="share">Compartir</string>
-    <string name="share_text">Compartir imagen aleatoria</string>
-    <string name="more_info">More info</string>
+    <string name="share_text">Compartir cuadro aleatorio</string>
+    <string name="more_info">Más info</string>
+    <string name="select_wallpaper_app">Elegir applicacion para definir fondo de pantalla</string>
     <string name="polygon_tunnel">Polygon Tunnel</string>
     <string name="polygon_feedback">Polygon feedback</string>
+    <string name="browse">Explorar</string>
+    <string name="circular">Circulos</string>
+    <string name="polygon">Polígonos</string>
+    <string name="stochastic">Dispersiones</string>
+    <string name="spirograph">Espirógrafo</string>
+    <string name="irrational_spirograph">Espirógrafo Irracional</string>
+    <string name="random_eigen">Autovalores Aleatorios</string>
 </resources>

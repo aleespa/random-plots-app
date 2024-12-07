@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.aleespa.randomsquare.data.DatabaseProvider
+import com.aleespa.randomsquare.data.VisualizeModel
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
 import com.aleespa.randomsquare.screens.MainScreen
@@ -17,10 +18,10 @@ class MainActivity : ComponentActivity() {
             Python.start(AndroidPlatform(this))
         }
         val dao = DatabaseProvider.getDatabase(this).imageDao()
-
+        val visualizeModel = VisualizeModel(dao)
         setContent {
-            MyApplicationTheme {
-                MainScreen(dao)
+            MyApplicationTheme (darkTheme = visualizeModel.settingDarkMode){
+                MainScreen(visualizeModel)
             }
         }
     }

@@ -30,6 +30,7 @@ class VisualizeModel(private val dao: ImageDao): ViewModel() {
     var filterImageType by mutableStateOf("None")
     var bgColor by mutableStateOf(Color(0,0,0,0))
     var isDarkMode by mutableStateOf(true)
+    var settingDarkMode by mutableStateOf(SettingDarkMode.Auto)
     var randomSeed by mutableStateOf(0L)
     var isSavingLoading by mutableStateOf(false)
     var temporalImageEntity by mutableStateOf<Builder>(Builder())
