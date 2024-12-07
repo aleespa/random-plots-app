@@ -38,6 +38,7 @@ fun MainScreen(dao: ImageDao) {
 @Composable
 fun BottomBar(navController: NavHostController){
     val screens = listOf(
+        BottomBarScreen.Browse,
         BottomBarScreen.Visualize,
         BottomBarScreen.Gallery
     )
@@ -73,6 +74,9 @@ fun BottomNavGraph(visualizeModel: VisualizeModel = viewModel(),
         navController = navController,
         startDestination = BottomBarScreen.Visualize.route
     ) {
+        composable(route = BottomBarScreen.Browse.route) {
+            Browse(visualizeModel, navController)
+        }
         composable(route = BottomBarScreen.Visualize.route) {
             Visualize(visualizeModel)
         }

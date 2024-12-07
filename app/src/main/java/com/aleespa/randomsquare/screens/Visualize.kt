@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.ImageDecoder
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.BackHandler
@@ -81,7 +80,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.IOException
 
 @Composable
 fun Visualize(visualizeModel: VisualizeModel = viewModel()) {
@@ -164,7 +162,6 @@ fun PlotDrawer(
                             modifier = Modifier.size(65.dp) // Fixed size
                         )
                     }
-                    // Wrap Text in a Box with fixed height
                     Box(
                         modifier = Modifier.height(20.dp), // Ensure consistent height
                         contentAlignment = Alignment.Center

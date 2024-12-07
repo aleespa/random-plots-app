@@ -23,4 +23,9 @@
     <string name="select_wallpaper_app">Choose wallpaper app</string>
     <string name="polygon_tunnel">Polygon Tunnel</string>
     <string name="polygon_feedback">Polygon feedback</string>
+    <string name="browse">Browse</string>
+    <string name="carousel_image_1_description">test</string>
+    <string name="circular">Circular</string>
+    <string name="polygon">Polygons</string>
+    <string name="stochastic">Stochastic</string>
 </resources>
