@@ -28,4 +28,5 @@
     <string name="spirograph">Espirógrafo</string>
     <string name="irrational_spirograph">Espirógrafo Irracional</string>
     <string name="random_eigen">Autovalores Aleatorios</string>
+    <string name="noisy_cicles">Noisy Circles</string>
 </resources>
