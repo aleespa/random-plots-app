@@ -18,8 +18,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AddPhotoAlternate
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -30,27 +28,18 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.VisualizeModel
+import com.aleespa.randomsquare.data.getBackgroundColorsByType
 
 
 @Composable
 fun BackgroundSelectionDialog(visualizeModel: VisualizeModel) {
-    var darkColors = listOf(
-        Color(0, 0, 0),
-        Color(30, 13, 0),
-        Color(0, 30, 13),
-        Color( 0, 13, 30))
-    var lightColors = listOf(
-        Color(255, 255, 255),
-        Color(244, 240, 231),
-        Color(234, 250, 241),
-        Color(251, 238, 230))
+    var darkColors = getBackgroundColorsByType("Dark")
+    var lightColors = getBackgroundColorsByType("Light")
     val backgroundOptions = if (visualizeModel.isDarkMode) {
         darkColors
     } else {
@@ -72,7 +61,7 @@ fun BackgroundSelectionDialog(visualizeModel: VisualizeModel) {
                         Button(
                             onClick = {
                                 visualizeModel.isDarkMode = false
-                                visualizeModel.bgColor = lightColors[0]
+                                visualizeModel.bgColor = lightColors[0].color
                             },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = if (!visualizeModel.isDarkMode) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
@@ -83,7 +72,7 @@ fun BackgroundSelectionDialog(visualizeModel: VisualizeModel) {
                         Button(
                             onClick = {
                                 visualizeModel.isDarkMode = true
-                                visualizeModel.bgColor = darkColors[0]
+                                visualizeModel.bgColor = darkColors[0].color
                             },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = if (visualizeModel.isDarkMode) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
@@ -101,19 +90,19 @@ fun BackgroundSelectionDialog(visualizeModel: VisualizeModel) {
                     ) {
 
 
-                        itemsIndexed(backgroundOptions) { index, color ->
-                            if (visualizeModel.bgColor == color){
+                        itemsIndexed(backgroundOptions) { index, backgroundColor ->
+                            if (visualizeModel.bgColor == backgroundColor.color){
                                 Box(
                                     modifier = Modifier
                                         .size(50.dp)
-                                        .background(color, shape = RoundedCornerShape(8.dp))
+                                        .background(backgroundColor.color, shape = RoundedCornerShape(8.dp))
                                         .border(
                                             3.dp,
                                             MaterialTheme.colorScheme.primary,
                                             shape = RoundedCornerShape(8.dp)
                                         )
                                         .clickable {
-                                            visualizeModel.bgColor = color
+                                            visualizeModel.bgColor = backgroundColor.color
                                         },
                                     contentAlignment = Alignment.Center
 
@@ -122,9 +111,9 @@ fun BackgroundSelectionDialog(visualizeModel: VisualizeModel) {
                                 Box(
                                     modifier = Modifier
                                         .size(50.dp)
-                                        .background(color, shape = RoundedCornerShape(8.dp))
+                                        .background(backgroundColor.color, shape = RoundedCornerShape(8.dp))
                                         .clickable {
-                                            visualizeModel.bgColor = color
+                                            visualizeModel.bgColor = backgroundColor.color
                                         },
                                     contentAlignment = Alignment.Center
                                 ){}
@@ -187,30 +176,6 @@ fun AspectRatioDialog(
     )
 }
 
-
-@Composable
-fun ExitDialog(visualizeModel: VisualizeModel, context: Context) {
-    if (visualizeModel.showExitDialog){
-        AlertDialog(
-            title = { Text("Exit") },
-            text = { Text("Are you sure you want to exit?") },
-            onDismissRequest = { visualizeModel.showExitDialog = false },
-            confirmButton = {
-                Button(onClick = {
-                    visualizeModel.showExitDialog = false
-                    (context as? Activity)?.finish()
-                }) {
-                    Text("Yes")
-                }
-            },
-            dismissButton = {
-                Button(onClick = { visualizeModel.showExitDialog = false }) {
-                    Text("No")
-                }
-            }
-        )
-    }
-}
 
 @Composable
 fun FilterTypesDialog(visualizeModel: VisualizeModel) {

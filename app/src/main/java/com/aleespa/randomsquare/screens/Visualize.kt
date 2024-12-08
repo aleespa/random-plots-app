@@ -67,7 +67,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.VisualizeModel
@@ -87,17 +86,17 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontStyle
-
-
+import androidx.navigation.NavHostController
+import com.aleespa.randomsquare.BottomBarScreen
 
 
 @Composable
-fun Visualize(visualizeModel: VisualizeModel = viewModel()) {
+fun Visualize(visualizeModel: VisualizeModel,
+              navController: NavHostController) {
     val context = LocalContext.current
     BackHandler {
-        visualizeModel.showExitDialog = true // Show confirmation dialog
+        navController.navigate(BottomBarScreen.Browse.route)
     }
-    ExitDialog(visualizeModel, context)
 
     val savedBitmap = loadBitmapFromFile(context, "cache_front.png")
     if ((savedBitmap != null).and(visualizeModel.isFromGallery.not())) {
