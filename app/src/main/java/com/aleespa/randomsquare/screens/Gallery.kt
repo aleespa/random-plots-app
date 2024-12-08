@@ -72,7 +72,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.safeDrawingPadding
 
 @Composable
-fun Gallery(visualizeModel: VisualizeModel = viewModel(),
+fun Gallery(visualizeModel: VisualizeModel,
             navController: NavHostController) {
     val context = LocalContext.current
 

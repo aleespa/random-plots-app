@@ -78,7 +78,7 @@ fun BottomNavGraph(visualizeModel: VisualizeModel = viewModel(),
             Browse(visualizeModel, navController)
         }
         composable(route = BottomBarScreen.Visualize.route) {
-            Visualize(visualizeModel)
+            Visualize(visualizeModel, navController)
         }
         composable(route = BottomBarScreen.Gallery.route) {
             Gallery(visualizeModel, navController)

@@ -1,8 +1,8 @@
 package com.aleespa.randomsquare.screens
 
+import android.app.Activity
 import android.content.Context
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -35,7 +35,6 @@ import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -48,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.aleespa.randomsquare.BottomBarScreen
 import com.aleespa.randomsquare.FigureType
+import com.aleespa.randomsquare.data.BackgroundColors
 import com.aleespa.randomsquare.data.SettingDarkMode
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.getFiguresByType
@@ -63,6 +63,9 @@ fun Browse(
     val context = LocalContext.current
     val isDark = isSystemInDarkTheme()
 
+    BackHandler {
+        (context as? Activity)?.finish()
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -90,9 +93,10 @@ fun Browse(
                                 SettingDarkMode.Off -> false
                             }
                             visualizeModel.bgColor = when (visualizeModel.settingDarkMode) {
-                                SettingDarkMode.Auto -> if (isDark) Color(0, 13, 30) else Color(244, 240, 231)
-                                SettingDarkMode.On -> Color(0, 13, 30)
-                                SettingDarkMode.Off -> Color(244, 240, 231)
+                                SettingDarkMode.Auto -> if (isDark) BackgroundColors.BLACK.color
+                                else BackgroundColors.SAND.color
+                                SettingDarkMode.On -> BackgroundColors.BLACK.color
+                                SettingDarkMode.Off -> BackgroundColors.SAND.color
                             }
                         }) {
                             Icon(
@@ -132,7 +136,7 @@ fun BrowserScrollable(visualizeModel: VisualizeModel,
             start = innerPadding.calculateStartPadding(LayoutDirection.Ltr) ,
             end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
             top = innerPadding.calculateTopPadding(),
-            bottom = innerPadding.calculateBottomPadding() + 80.dp // Add padding for BottomNavigationBar height
+            bottom = innerPadding.calculateBottomPadding() + 80.dp
     )
     ) {
         item { Carousel(visualizeModel, navController, context)}
@@ -181,12 +185,6 @@ fun Carousel(visualizeModel: VisualizeModel,navController: NavHostController,
         }
     }
 }
-
-data class CarouselItem(
-    val id: Int,
-    @DrawableRes val imageResId: Int,
-    @StringRes val contentDescriptionResId: Int
-)
 
 
 @Composable
