@@ -28,4 +28,8 @@
     <string name="circular">Circles</string>
     <string name="polygon">Polygons</string>
     <string name="stochastic">Scatters</string>
+    <string name="noisy_cicles">Noisy Circles</string>
+    <string name="polygon_grid">Polygon Grid</string>
+    <string name="fractal">Fractals</string>
+    <string name="exponential_sum">Exponential Sum</string>
 </resources>
