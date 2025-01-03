@@ -28,5 +28,10 @@
     <string name="spirograph">Espirógrafo</string>
     <string name="irrational_spirograph">Espirógrafo Irracional</string>
     <string name="random_eigen">Autovalores Aleatorios</string>
-    <string name="noisy_cicles">Noisy Circles</string>
+    <string name="noisy_cicles">Circulos Ruidosos</string>
+    <string name="exponential_sum">Suma Exponencial</string>
+    <string name="dark_name">Oscuro</string>
+    <string name="light_name">Claro</string>
+    <string name="polygon_grid">Mallas Poligonales</string>
+    <string name="fractal">Fractales</string>
 </resources>
