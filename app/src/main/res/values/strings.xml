@@ -32,4 +32,6 @@
     <string name="polygon_grid">Polygon Grid</string>
     <string name="fractal">Fractals</string>
     <string name="exponential_sum">Exponential Sum</string>
+    <string name="dark_name">Dark</string>
+    <string name="light_name">Light</string>
 </resources>

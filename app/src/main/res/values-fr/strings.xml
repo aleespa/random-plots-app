@@ -28,5 +28,10 @@
     <string name="spirograph">Spirographe</string>
     <string name="irrational_spirograph">Spirographe Irrationnel</string>
     <string name="random_eigen">Valeur Propre Aléatoire</string>
-    <string name="noisy_cicles">Noisy Circles</string>
+    <string name="noisy_cicles">Cercle Bruyant</string>
+    <string name="exponential_sum">Somme Exponentielle</string>
+    <string name="dark_name">Sombre</string>
+    <string name="light_name">Clair</string>
+    <string name="polygon_grid">Maillage Polygonal</string>
+    <string name="fractal">Fractales</string>
 </resources>
