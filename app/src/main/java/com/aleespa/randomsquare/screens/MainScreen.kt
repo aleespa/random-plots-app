@@ -18,20 +18,21 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.aleespa.randomsquare.BottomBarScreen
-import com.aleespa.randomsquare.data.ImageDao
 import com.aleespa.randomsquare.data.VisualizeModel
 import androidx.compose.runtime.remember
+import com.google.android.gms.ads.interstitial.InterstitialAd
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen(visualizeModel: VisualizeModel) {
+fun MainScreen(visualizeModel: VisualizeModel, mInterstitialAd: InterstitialAd?) {
     val navController = rememberNavController()
     Scaffold(
         bottomBar = {BottomBar(navController)}
     ) {
         BottomNavGraph(
             visualizeModel = remember {visualizeModel},
-            navController = navController)
+            navController = navController,
+            mInterstitialAd = mInterstitialAd)
     }
 }
 
@@ -69,7 +70,8 @@ fun BottomBar(navController: NavHostController){
 
 @Composable
 fun BottomNavGraph(visualizeModel: VisualizeModel = viewModel(),
-                   navController: NavHostController) {
+                   navController: NavHostController,
+                   mInterstitialAd: InterstitialAd?) {
     NavHost(
         navController = navController,
         startDestination = BottomBarScreen.Browse.route
@@ -78,7 +80,7 @@ fun BottomNavGraph(visualizeModel: VisualizeModel = viewModel(),
             Browse(visualizeModel, navController)
         }
         composable(route = BottomBarScreen.Visualize.route) {
-            Visualize(visualizeModel, navController)
+            Visualize(visualizeModel, navController, mInterstitialAd)
         }
         composable(route = BottomBarScreen.Gallery.route) {
             Gallery(visualizeModel, navController)

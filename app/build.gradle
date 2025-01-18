@@ -67,6 +67,8 @@ android {
 
 
 dependencies {
+    implementation 'com.google.android.gms:play-services-ads:23.6.0'
+
     implementation 'ru.noties:jlatexmath-android:0.2.0'
     implementation 'ru.noties:jlatexmath-android-font-cyrillic:0.2.0'
     implementation 'ru.noties:jlatexmath-android-font-greek:0.2.0'
