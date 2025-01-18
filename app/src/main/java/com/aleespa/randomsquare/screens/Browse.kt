@@ -57,6 +57,7 @@ import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.getFiguresByType
 import com.aleespa.randomsquare.tools.generateNewPlot
 import com.aleespa.randomsquare.tools.readTexAssets
+import com.google.android.gms.ads.interstitial.InterstitialAd
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

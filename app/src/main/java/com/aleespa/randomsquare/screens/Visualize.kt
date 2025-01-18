@@ -1,5 +1,6 @@
 package com.aleespa.randomsquare.screens
 
+import android.app.Activity
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
@@ -7,6 +8,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -78,6 +80,9 @@ import com.aleespa.randomsquare.tools.loadBitmapFromFile
 import com.aleespa.randomsquare.tools.loadSavedImage
 import com.aleespa.randomsquare.tools.saveBitmapToGallery
 import com.aleespa.randomsquare.tools.setWallpaper
+import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.interstitial.InterstitialAd
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -86,7 +91,8 @@ import java.io.File
 
 @Composable
 fun Visualize(visualizeModel: VisualizeModel,
-              navController: NavHostController) {
+              navController: NavHostController,
+              mInterstitialAd: InterstitialAd?) {
     val context = LocalContext.current
     BackHandler {
         navController.navigate(BottomBarScreen.Browse.route)
@@ -105,7 +111,7 @@ fun Visualize(visualizeModel: VisualizeModel,
         item { TitleFigure(visualizeModel) }
         item { VisualizeBox(visualizeModel) }
         item { GeneratePlotButton(visualizeModel, context) }
-        item { VisualizeSettingsButtons(visualizeModel, context) }
+        item { VisualizeSettingsButtons(visualizeModel, context, mInterstitialAd) }
         item { Spacer(Modifier.height(80.dp)) }
     }
 }
@@ -203,7 +209,8 @@ fun deleteImageFromUri(context: Context, uri: Uri): Boolean {
 @Composable
 fun SetWallpaperButton(
     visualizeModel: VisualizeModel,
-    context: Context
+    context: Context,
+    mInterstitialAd: InterstitialAd?
 ) {
     VisualizeOptionsButtons(
         icon = Icons.Rounded.AddPhotoAlternate,
@@ -218,12 +225,32 @@ fun SetWallpaperButton(
             onDismiss = { visualizeModel.showAspectRatioDialog = false },
             onConfirm = {
                 visualizeModel.showAspectRatioDialog = false
-                val androidBitmap = visualizeModel.imageBitmapState?.asAndroidBitmap()
-                if (androidBitmap != null) {
-                    setWallpaper(context, visualizeModel) // Set wallpaper only after user confirms
+
+                mInterstitialAd?.let {
+                    it.fullScreenContentCallback =
+                        object : FullScreenContentCallback() {
+                        override fun onAdDismissedFullScreenContent() {
+                            // Proceed with setting the wallpaper after the ad is closed
+                            setWallpaperAfterAd(visualizeModel, context)
+                        }
+                    }
+                    it.show(context as Activity)
+                } ?: run {
+                    setWallpaperAfterAd(visualizeModel, context)
                 }
             }
+
+
         )
+    }
+}
+
+private fun setWallpaperAfterAd(visualizeModel: VisualizeModel, context: Context) {
+    val androidBitmap = visualizeModel.imageBitmapState?.asAndroidBitmap()
+    if (androidBitmap != null) {
+        setWallpaper(context, visualizeModel) // Set wallpaper after the ad is dismissed or if the ad is not loaded
+    } else {
+        Toast.makeText(context, "Failed to set wallpaper", Toast.LENGTH_SHORT).show()
     }
 }
 
@@ -458,7 +485,8 @@ fun selectColors(visualizeModel: VisualizeModel) {
 @Composable
 fun VisualizeSettingsButtons(
     visualizeModel: VisualizeModel,
-    context: Context
+    context: Context,
+    mInterstitialAd: InterstitialAd?
 ){
     Row(
         modifier = Modifier
@@ -472,7 +500,7 @@ fun VisualizeSettingsButtons(
         } else {
             DeleteFromGalleryButton(visualizeModel, context)
         }
-        SetWallpaperButton(visualizeModel, context)
+        SetWallpaperButton(visualizeModel, context, mInterstitialAd)
         MoreInfoButton(visualizeModel)
         ShareButton(visualizeModel, context)
     }
