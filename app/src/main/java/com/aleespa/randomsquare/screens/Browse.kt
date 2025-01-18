@@ -35,6 +35,7 @@ import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -45,6 +46,9 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import com.aleespa.randomsquare.BottomBarScreen
 import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.data.BackgroundColors
@@ -166,6 +170,11 @@ fun Carousel(visualizeModel: VisualizeModel,navController: NavHostController,
                 SettingDarkMode.On -> item.sampleDarkImage
                 SettingDarkMode.Off -> item.sampleLightImage
             }
+            val painter = rememberAsyncImagePainter(
+                model = sampleImage,
+                contentScale = ContentScale.Crop,
+                filterQuality = FilterQuality.High
+            )
             Image(
                 modifier = Modifier
                     .height(205.dp)
@@ -178,7 +187,7 @@ fun Carousel(visualizeModel: VisualizeModel,navController: NavHostController,
                             visualizeModel.selectedFigure.key)
                         generateNewPlot(visualizeModel, context)
                         navController.navigate(BottomBarScreen.Visualize.route)},
-                painter = painterResource(id = sampleImage),
+                painter = painter,
                 contentDescription = stringResource(item.resourceStringId),
                 contentScale = ContentScale.Crop
             )
