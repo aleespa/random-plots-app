@@ -13,7 +13,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -25,8 +24,6 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Colorize
 import androidx.compose.material.icons.rounded.Add
@@ -61,33 +58,30 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewModelScope
-import com.aleespa.randomsquare.Figures
+import androidx.navigation.NavHostController
+import com.aleespa.randomsquare.BottomBarScreen
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.tools.LatexMathView
 import com.aleespa.randomsquare.tools.generateNewPlot
 import com.aleespa.randomsquare.tools.loadBitmapFromFile
 import com.aleespa.randomsquare.tools.loadSavedImage
-import com.aleespa.randomsquare.tools.readTexAssets
 import com.aleespa.randomsquare.tools.saveBitmapToGallery
 import com.aleespa.randomsquare.tools.setWallpaper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.font.FontStyle
-import androidx.navigation.NavHostController
-import com.aleespa.randomsquare.BottomBarScreen
 
 
 @Composable
@@ -307,16 +301,13 @@ fun ShareButton(
         icon = Icons.Rounded.Share,
         bottomText = stringResource(id = R.string.share)
     ){
-        // Save the ImageBitmap to a file and get its URI
         val imageUri = visualizeModel.imageBitmapState?.let { saveImageBitmapToCache(it, context) }
 
-        // Create a share intent
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "image/png" // Set MIME type for images
             putExtra(Intent.EXTRA_STREAM, imageUri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-
         context.startActivity(Intent.createChooser(shareIntent, R.string.share_text.toString()))
     }
 }
@@ -439,7 +430,7 @@ fun GeneratePlotButton(
         Box(
             modifier = Modifier
                 .align(Alignment.Center) // Aligns to the right of the button
-                .padding(start = 180.dp)  // Adjust padding to fine-tune position
+                .padding(start = 200.dp)  // Adjust padding to fine-tune position
                 .clickable {
                     selectColors(visualizeModel)
                 }
