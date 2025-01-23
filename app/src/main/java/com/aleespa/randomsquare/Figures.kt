@@ -7,6 +7,12 @@ enum class Figures(
     val sampleDarkImage: Int,
     val sampleLightImage: Int) {
 
+    PRISM(
+        "prism",
+        FigureType.CHAOTIC,
+        R.string.prism,
+        R.drawable.prism_dark,
+        R.drawable.prism_light),
     POLYGON_GRID(
         "polygon_grid",
         FigureType.POLYGON,
@@ -65,6 +71,7 @@ enum class Figures(
 }
 
 enum class FigureType(val stringId: Int){
+    CHAOTIC(R.string.chaotic),
     CIRCULAR(R.string.circular),
     POLYGON(R.string.polygon),
     STOCHASTIC(R.string.stochastic),
