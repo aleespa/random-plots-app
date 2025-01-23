@@ -225,22 +225,8 @@ fun SetWallpaperButton(
             onDismiss = { visualizeModel.showAspectRatioDialog = false },
             onConfirm = {
                 visualizeModel.showAspectRatioDialog = false
-
-                mInterstitialAd?.let {
-                    it.fullScreenContentCallback =
-                        object : FullScreenContentCallback() {
-                        override fun onAdDismissedFullScreenContent() {
-                            // Proceed with setting the wallpaper after the ad is closed
-                            setWallpaperAfterAd(visualizeModel, context)
-                        }
-                    }
-                    it.show(context as Activity)
-                } ?: run {
-                    setWallpaperAfterAd(visualizeModel, context)
-                }
+                setWallpaperAfterAd(visualizeModel, context)
             }
-
-
         )
     }
 }
