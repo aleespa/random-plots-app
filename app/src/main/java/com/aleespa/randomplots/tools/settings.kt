@@ -1,4 +1,4 @@
-package com.aleespa.randomsquare.tools
+package com.aleespa.randomplots.tools
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

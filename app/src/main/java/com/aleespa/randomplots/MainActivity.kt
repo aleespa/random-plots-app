@@ -1,15 +1,15 @@
-package com.aleespa.randomsquare
+package com.aleespa.randomplots
 
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.aleespa.randomsquare.data.DatabaseProvider
-import com.aleespa.randomsquare.data.VisualizeModel
+import com.aleespa.randomplots.data.DatabaseProvider
+import com.aleespa.randomplots.data.VisualizeModel
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
-import com.aleespa.randomsquare.screens.MainScreen
-import com.aleespa.randomsquare.ui.theme.MyApplicationTheme
+import com.aleespa.randomplots.screens.MainScreen
+import com.aleespa.randomplots.ui.theme.MyApplicationTheme
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd

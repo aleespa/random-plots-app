@@ -1,5 +1,4 @@
-package com.aleespa.randomsquare.data
-import androidx.compose.ui.graphics.Color
+package com.aleespa.randomplots.data
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 

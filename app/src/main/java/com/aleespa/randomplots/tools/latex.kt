@@ -1,13 +1,14 @@
-package com.aleespa.randomsquare.tools
+package com.aleespa.randomplots.tools
 
 import android.content.Context
 import android.util.Log
 import android.view.View
-import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
@@ -22,7 +23,8 @@ fun LatexMathView(latexString: String) {
     val textColor = MaterialTheme.colorScheme.onBackground.toArgb()
     AndroidView(
         modifier = Modifier
-            .width(IntrinsicSize.Max)
+            .fillMaxWidth() // Fill available width
+            .wrapContentWidth(Alignment.CenterHorizontally) // Center content horizontally
             .padding(10.dp),
         factory = { context ->
             JLatexMathView(context).apply {
@@ -33,7 +35,7 @@ fun LatexMathView(latexString: String) {
             val drawable = JLatexMathDrawable.builder(latexString)
                 .textSize(70F)
                 .padding(8)
-                .align(JLatexMathDrawable.ALIGN_CENTER)
+                .align(JLatexMathDrawable.ALIGN_CENTER) // Center content within drawable
                 .color(textColor)
                 .build()
             view.setLatexDrawable(drawable)

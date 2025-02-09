@@ -1,8 +1,6 @@
-package com.aleespa.randomsquare.data
+package com.aleespa.randomplots.data
 
 import androidx.compose.ui.graphics.Color
-import com.aleespa.randomsquare.FigureType
-import com.aleespa.randomsquare.Figures
 
 enum class SettingDarkMode(var text: String) {
     Auto("Auto"),

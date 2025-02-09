@@ -1,4 +1,4 @@
-package com.aleespa.randomsquare.tools
+package com.aleespa.randomplots.tools
 
 import android.content.ContentValues
 import android.content.Context
@@ -18,11 +18,11 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.FileProvider
-import com.aleespa.randomsquare.Figures
-import com.aleespa.randomsquare.R
-import com.aleespa.randomsquare.data.ImageEntity
-import com.aleespa.randomsquare.data.VisualizeModel
-import com.aleespa.randomsquare.screens.loadImage
+import com.aleespa.randomplots.Figures
+import com.aleespa.randomplots.R
+import com.aleespa.randomplots.data.ImageEntity
+import com.aleespa.randomplots.data.VisualizeModel
+import com.aleespa.randomplots.screens.loadImage
 import com.chaquo.python.Python
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

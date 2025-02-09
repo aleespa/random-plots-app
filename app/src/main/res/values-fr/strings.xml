@@ -2,8 +2,8 @@
 <resources>
     <string name="app_name">Random</string>
     <string name="generate">Générer\nRandom Square</string>
-    <string name="save">Enregistrer dans\nla galerie</string>
-    <string name="set_wallpaper">Définir comme\nfond d\'écran</string>
+    <string name="save">Enregistrer dans la galerie</string>
+    <string name="set_wallpaper">Définir comme fond d\'écran</string>
     <string name="generate_img_first">Générer un graphique d\'abord</string>
     <string name="wallpaper_set">Fond d\'écran défini avec succès</string>
     <string name="wallpaper_fail">Impossible de définir le fond d\'écran</string>
@@ -13,7 +13,7 @@
     <string name="settings">Paramètres</string>
     <string name="customize">Personnaliser</string>
     <string name="visualize">Visualiser</string>
-    <string name="saved_images">Mes Tableaux Aléatoires</string>
+    <string name="saved_images">Mes Graphiques Aléatoires</string>
     <string name="delete_from_gallery">Supprimer de la galerie</string>
     <string name="share">Partager</string>
     <string name="share_text">Partager le tableau aléatoire</string>
@@ -34,4 +34,7 @@
     <string name="light_name">Clair</string>
     <string name="polygon_grid">Maillage Polygonal</string>
     <string name="fractal">Fractales</string>
+    <string name="chaos">Chaos</string>
+    <string name="spiral">Spirale</string>
+    <string name="orbits">Orbites</string>
 </resources>

@@ -1,19 +1,19 @@
-
-\text{For } \theta_i \sim \mathcal{U}[0, 2\pi] \text{ with } i = 1, 2, \ldots, 3n, \\
-\text{complex numbers } z_i = e^{i\theta_i} \text{ are sampled.} \\
-\text{These values are reshaped into } n \text{ sets of three pairs: } \\
-t = \{z_1, z_2, z_3\}, z_i \in \mathbb{C} \\
-
-\text{A random matrix } M(t, r_1, r_2, r_3) \text{ is generated as follows: } \\
-M(t, r_1, r_2, r_3) = \begin{bmatrix}
-i & -r_3 & -t_3 & r_1 & i \\
+\text{The image visualizes eigenvalues arising from}\\
+\text{a complex matrix blending chaos and structure.}\\
+\text{Each point corresponds to a solution \(\lambda\)}\\
+\text{satisfying \(\det(M - \lambda I) = 0\), where}\\
+M(t, r_1, r_2, r_3) = 
+\begin{pmatrix}
+i & -r_3 & -e^{i t_2} & r_1 & i \\
 -1 & r_3 & 0 & 1 & 1 \\
-t_2 & r_2 & -i & t_3 & i \\
-i & t_1 & i & i & i \\
+e^{i t_1} & r_2 & -i & e^{i t_2} & i \\
+i & e^{i t_0} & i & i & i \\
 i & 2 & -1 & -1 & i
-\end{bmatrix} \\
-
-\text{The eigenvalues } \lambda_i \text{ of each matrix } M \text{ are computed, } \\
-\lambda_i \in \mathbb{C}, \text{ yielding complex values for } x = \Re(\lambda_i) \text{ and } y = \Im(\lambda_i). \\
-
-\text{Total number of points plotted: } n \times 5 = 50,000 \text{ (for } n = 10,000\text{)}.
+\end{pmatrix}\\
+\text{Entries combine random parameters \(r_1, r_2, r_3\)}\\
+\text{with phasors \(e^{i t}\). The eigenvalues' spread}\\
+\text{in the complex plane reveals hidden order}\\
+\text{emerging from this algebraic turbulence –}\\
+\text{symmetric clusters coexisting with wandering}\\
+\text{outliers, mapping the tension between}\\
+\text{deterministic rules and stochastic inputs.}

@@ -1,6 +1,5 @@
-package com.aleespa.randomsquare.screens
+package com.aleespa.randomplots.screens
 
-import android.app.Activity
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
@@ -26,8 +25,16 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddPhotoAlternate
+import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.Colorize
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.AddPhotoAlternate
 import androidx.compose.material.icons.rounded.Delete
@@ -35,13 +42,12 @@ import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -71,17 +77,15 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.aleespa.randomsquare.BottomBarScreen
-import com.aleespa.randomsquare.R
-import com.aleespa.randomsquare.data.VisualizeModel
-import com.aleespa.randomsquare.tools.LatexMathView
-import com.aleespa.randomsquare.tools.generateNewPlot
-import com.aleespa.randomsquare.tools.loadBitmapFromFile
-import com.aleespa.randomsquare.tools.loadSavedImage
-import com.aleespa.randomsquare.tools.saveBitmapToGallery
-import com.aleespa.randomsquare.tools.setWallpaper
-import com.google.android.gms.ads.AdError
-import com.google.android.gms.ads.FullScreenContentCallback
+import com.aleespa.randomplots.BottomBarScreen
+import com.aleespa.randomplots.R
+import com.aleespa.randomplots.data.VisualizeModel
+import com.aleespa.randomplots.tools.LatexMathView
+import com.aleespa.randomplots.tools.generateNewPlot
+import com.aleespa.randomplots.tools.loadBitmapFromFile
+import com.aleespa.randomplots.tools.loadSavedImage
+import com.aleespa.randomplots.tools.saveBitmapToGallery
+import com.aleespa.randomplots.tools.setWallpaper
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -102,37 +106,180 @@ fun Visualize(visualizeModel: VisualizeModel,
     if ((savedBitmap != null).and(visualizeModel.isFromGallery.not())) {
         visualizeModel.imageBitmapState = savedBitmap?.asImageBitmap()
     }
-
+    if (visualizeModel.showAspectRatioDialog) {
+        AspectRatioDialog(
+            visualizeModel,
+            onDismiss = { visualizeModel.showAspectRatioDialog = false },
+            onConfirm = {
+                visualizeModel.showAspectRatioDialog = false
+                setWallpaperAfterAd(visualizeModel, context)
+            }
+        )
+    }
     LazyColumn(
         modifier = Modifier.fillMaxSize().safeDrawingPadding(),
-        verticalArrangement = Arrangement.spacedBy(25.dp)
+        verticalArrangement = Arrangement.spacedBy(35.dp)
     ) {
-        item { Spacer(Modifier.height(20.dp)) }
-        item { TitleFigure(visualizeModel) }
+        item { Spacer(Modifier.height(40.dp)) }
+        item { TitleFigure(visualizeModel, context) }
         item { VisualizeBox(visualizeModel) }
         item { GeneratePlotButton(visualizeModel, context) }
-        item { VisualizeSettingsButtons(visualizeModel, context, mInterstitialAd) }
+//        item { VisualizeSettingsButtons(visualizeModel, context, mInterstitialAd) }
         item { Spacer(Modifier.height(80.dp)) }
     }
 }
 @Composable
-fun TitleFigure(visualizeModel: VisualizeModel) {
+fun TitleFigure(visualizeModel: VisualizeModel, context: Context) {
+    // State to manage the visibility of the dropdown menu
+    var showMenu by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(40.dp), // Optional padding
+            .height(40.dp)
+            .padding(horizontal = 8.dp), // Optional padding
         contentAlignment = Alignment.Center // Centers the content inside the Box
     ) {
+        // Text for the title
         Text(
             text = stringResource(visualizeModel.selectedFigure.resourceStringId),
             style = TextStyle(
                 fontFamily = parkinsansFontFamily,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold
-            )
+            ),
+            modifier = Modifier
+                .fillMaxWidth(),
+            textAlign = TextAlign.Center // Center the text
         )
+
+        // Three-dot button aligned to the right
+        Box(
+            modifier = Modifier
+                .align(Alignment.CenterEnd) // Align to the right
+                .clickable { showMenu = true } // Open the menu on click
+        ) {
+            Icon(
+                imageVector = Icons.Default.MoreVert, // Three-dot icon
+                contentDescription = "Options",
+                modifier = Modifier.size(28.dp)
+            )
+
+            // Dropdown menu
+            DropdownMenu(
+                expanded = showMenu,
+                onDismissRequest = { showMenu = false }
+            ) {
+                DropdownMenuItem(
+                    onClick = {
+                        if (visualizeModel.isFromGallery.not()){
+                            saveToGallery(visualizeModel, context)
+                        } else {
+                            deleteFromGallery(visualizeModel, context)
+                        }
+                        showMenu = false
+                    }
+                ) {
+                    if (visualizeModel.isFromGallery.not()){
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically, // Align icon and text vertically
+                            horizontalArrangement = Arrangement.Start, // Align content to the start
+                            modifier = Modifier.fillMaxWidth() // Ensure the Row takes full width
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add, // Replace with your desired icon
+                                contentDescription = "Save Icon",
+                                modifier = Modifier.size(20.dp) // Adjust icon size as needed
+                            )
+                            Spacer(modifier = Modifier.width(8.dp)) // Add spacing between icon and text
+                            Text(
+                                text = stringResource(id = R.string.save),
+                                modifier = Modifier.weight(1f) // Take up remaining space
+                            )
+                        }
+                    } else {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically, // Align icon and text vertically
+                            horizontalArrangement = Arrangement.Start, // Align content to the start
+                            modifier = Modifier.fillMaxWidth() // Ensure the Row takes full width
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete, // Replace with your desired icon
+                                contentDescription = "Save Icon",
+                                modifier = Modifier.size(20.dp) // Adjust icon size as needed
+                            )
+                            Spacer(modifier = Modifier.width(8.dp)) // Add spacing between icon and text
+                            Text(
+                                text = stringResource(id = R.string.delete_from_gallery),
+                                modifier = Modifier.weight(1f) // Take up remaining space
+                            )
+                        }
+                    }
+                                    }
+                DropdownMenuItem(
+                    onClick = {
+                        visualizeModel.showAspectRatioDialog = true
+                        showMenu = false
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AddPhotoAlternate, // Replace with your desired icon
+                        contentDescription = "Save Icon",
+                        modifier = Modifier.size(20.dp) // Adjust icon size as needed
+                    )
+                    Spacer(modifier = Modifier.width(8.dp)) // Add spacing between icon and text
+                    Text(
+                        text = stringResource(id = R.string.set_wallpaper),
+                        modifier = Modifier.weight(1f) // Take up remaining space
+                    )
+                }
+                DropdownMenuItem(
+                    onClick = {
+                        val imageUri = visualizeModel.imageBitmapState?.let { saveImageBitmapToCache(it, context) }
+
+                        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                            type = "image/png" // Set MIME type for images
+                            putExtra(Intent.EXTRA_STREAM, imageUri)
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        }
+                        context.startActivity(Intent.createChooser(shareIntent, R.string.share_text.toString()))
+                        showMenu = false
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Share, // Replace with your desired icon
+                        contentDescription = "Save Icon",
+                        modifier = Modifier.size(20.dp) // Adjust icon size as needed
+                    )
+                    Spacer(modifier = Modifier.width(8.dp)) // Add spacing between icon and text
+                    Text(
+                        text = stringResource(id = R.string.share),
+                        modifier = Modifier.weight(1f) // Take up remaining space
+                    )
+                }
+                DropdownMenuItem(
+                    onClick = {
+                        visualizeModel.showInfo = !visualizeModel.showInfo
+                        showMenu = false
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Info, // Replace with your desired icon
+                        contentDescription = "Save Icon",
+                        modifier = Modifier.size(20.dp) // Adjust icon size as needed
+                    )
+                    Spacer(modifier = Modifier.width(8.dp)) // Add spacing between icon and text
+                    Text(
+                        text = stringResource(id = R.string.more_info),
+                        modifier = Modifier.weight(1f) // Take up remaining space
+                    )
+                }
+            }
+        }
     }
 }
+
+
 
 
 @Composable
@@ -150,27 +297,20 @@ fun ImageWithNullFallback(imageBitmap: ImageBitmap?) {
     )
 }
 
-@Composable
-fun SwitchWithIconExample() {
-    var checked by remember { mutableStateOf(true) }
 
-    Switch(
-        checked = checked,
-        onCheckedChange = {
-            checked = it
-        },
-        thumbContent = if (checked) {
-            {
-                Icon(
-                    imageVector = Icons.Rounded.Info,
-                    contentDescription = null,
-                    modifier = Modifier.size(SwitchDefaults.IconSize),
-                )
+fun deleteFromGallery(visualizeModel: VisualizeModel, context: Context){
+    visualizeModel.viewModelScope.launch {try {
+            withContext(Dispatchers.IO) {
+                visualizeModel.deleteImageById(visualizeModel.galleryId)
+                deleteImageFromUri(context, Uri.parse(visualizeModel.galleryURI))
             }
-        } else {
-            null
+            visualizeModel.galleryURI = ""
+            visualizeModel.galleryId = 0
+            visualizeModel.isFromGallery = false
+        } catch (e: Exception) {
+            Log.e("DeleteFromGallery", "Failed to delete image", e)
         }
-    )
+    }
 }
 
 @Composable
@@ -209,8 +349,7 @@ fun deleteImageFromUri(context: Context, uri: Uri): Boolean {
 @Composable
 fun SetWallpaperButton(
     visualizeModel: VisualizeModel,
-    context: Context,
-    mInterstitialAd: InterstitialAd?
+    context: Context
 ) {
     VisualizeOptionsButtons(
         icon = Icons.Rounded.AddPhotoAlternate,
@@ -237,6 +376,28 @@ private fun setWallpaperAfterAd(visualizeModel: VisualizeModel, context: Context
         setWallpaper(context, visualizeModel) // Set wallpaper after the ad is dismissed or if the ad is not loaded
     } else {
         Toast.makeText(context, "Failed to set wallpaper", Toast.LENGTH_SHORT).show()
+    }
+}
+
+fun saveToGallery(visualizeModel: VisualizeModel, context: Context){
+    visualizeModel.isSavingLoading = true
+    var uri: Uri? = null
+    visualizeModel.viewModelScope.launch {
+        val androidBitmap = visualizeModel.imageBitmapState?.asAndroidBitmap()
+        if (androidBitmap != null) {
+            uri = saveBitmapToGallery(
+                context,
+                androidBitmap,
+                visualizeModel.selectedFigure.key
+            )
+        }
+
+        val imageEntity = visualizeModel.temporalImageEntity
+            .setUri(uri?.toString() ?: "")
+            .build()
+        visualizeModel.addImage(imageEntity)
+        loadSavedImage(visualizeModel, imageEntity, context)
+        visualizeModel.isSavingLoading = false
     }
 }
 
@@ -428,18 +589,28 @@ fun GeneratePlotButton(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center // Ensures the button is centered
     ) {
+
         ExtendedFloatingActionButton(
             elevation = FloatingActionButtonDefaults.elevation(10.dp),
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             onClick = {
                 generateNewPlot(visualizeModel, context)
+            },
+            icon = {
+                Icon(
+                    Icons.Default.Casino, // Replace with your desired icon
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(id = R.string.generate),
+                    textAlign = TextAlign.Center,
+                )
             }
-        ) {
-            Text(
-                text = stringResource(id = R.string.generate),
-                textAlign = TextAlign.Center,
-            )
-        }
+        )
+
         Box(
             modifier = Modifier
                 .align(Alignment.Center) // Aligns to the right of the button
@@ -486,7 +657,7 @@ fun VisualizeSettingsButtons(
         } else {
             DeleteFromGalleryButton(visualizeModel, context)
         }
-        SetWallpaperButton(visualizeModel, context, mInterstitialAd)
+        SetWallpaperButton(visualizeModel, context)
         MoreInfoButton(visualizeModel)
         ShareButton(visualizeModel, context)
     }
