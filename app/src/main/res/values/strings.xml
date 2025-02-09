@@ -34,6 +34,8 @@
     <string name="exponential_sum">Exponential Sum</string>
     <string name="dark_name">Dark</string>
     <string name="light_name">Light</string>
-    <string name="chaotic">Chaotic</string>
+    <string name="chaos">Chaos</string>
     <string name="prism">Prism</string>
+    <string name="spiral">Spiral</string>
+    <string name="orbits">Orbits</string>
 </resources>
