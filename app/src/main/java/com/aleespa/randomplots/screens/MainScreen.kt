@@ -1,4 +1,4 @@
-package com.aleespa.randomsquare.screens
+package com.aleespa.randomplots.screens
 import android.annotation.SuppressLint
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -17,8 +17,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.aleespa.randomsquare.BottomBarScreen
-import com.aleespa.randomsquare.data.VisualizeModel
+import com.aleespa.randomplots.BottomBarScreen
+import com.aleespa.randomplots.data.VisualizeModel
 import androidx.compose.runtime.remember
 import com.google.android.gms.ads.interstitial.InterstitialAd
 

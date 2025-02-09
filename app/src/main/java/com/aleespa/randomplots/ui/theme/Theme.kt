@@ -1,4 +1,4 @@
-package com.aleespa.randomsquare.ui.theme
+package com.aleespa.randomplots.ui.theme
 
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-import com.aleespa.randomsquare.data.SettingDarkMode
+import com.aleespa.randomplots.data.SettingDarkMode
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,

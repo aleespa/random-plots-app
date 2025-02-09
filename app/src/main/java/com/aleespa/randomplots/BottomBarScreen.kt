@@ -1,4 +1,4 @@
-package com.aleespa.randomsquare
+package com.aleespa.randomplots
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Apps

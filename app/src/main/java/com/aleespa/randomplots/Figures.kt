@@ -1,4 +1,4 @@
-package com.aleespa.randomsquare
+package com.aleespa.randomplots
 
 enum class Figures(
     val key: String,

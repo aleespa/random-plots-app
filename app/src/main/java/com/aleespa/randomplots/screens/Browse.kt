@@ -1,4 +1,4 @@
-package com.aleespa.randomsquare.screens
+package com.aleespa.randomplots.screens
 
 import android.app.Activity
 import android.content.Context
@@ -38,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -46,18 +45,15 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
-import com.aleespa.randomsquare.BottomBarScreen
-import com.aleespa.randomsquare.FigureType
-import com.aleespa.randomsquare.data.BackgroundColors
-import com.aleespa.randomsquare.data.SettingDarkMode
-import com.aleespa.randomsquare.data.VisualizeModel
-import com.aleespa.randomsquare.getFiguresByType
-import com.aleespa.randomsquare.tools.generateNewPlot
-import com.aleespa.randomsquare.tools.readTexAssets
-import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.aleespa.randomplots.BottomBarScreen
+import com.aleespa.randomplots.FigureType
+import com.aleespa.randomplots.data.BackgroundColors
+import com.aleespa.randomplots.data.SettingDarkMode
+import com.aleespa.randomplots.data.VisualizeModel
+import com.aleespa.randomplots.getFiguresByType
+import com.aleespa.randomplots.tools.generateNewPlot
+import com.aleespa.randomplots.tools.readTexAssets
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

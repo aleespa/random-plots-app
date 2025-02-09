@@ -1,4 +1,4 @@
-package com.aleespa.randomsquare
+package com.aleespa.randomplots
 
 import org.junit.Test
 

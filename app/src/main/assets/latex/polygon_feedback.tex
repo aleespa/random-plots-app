@@ -1,16 +1,13 @@
-
-\text{For } n_{\text{sides}} \sim \mathcal{U}\{5, 6, \ldots, 12, 300\} \\
-\text{and } k \in [0, 30], r \in [0, 30] \text{ divided into 90 points} \\
-
-\text{Colormap } \text{selected from } \mathcal{C} \text{ based on background mode: } \\
-\mathcal{C}_{\text{dark}} = \{\text{Spectral, viridis, plasma, inferno, cividis, etc.}\}, \\
-\mathcal{C}_{\text{light}} = \{\text{gnuplot, binary, gist\_heat, rainbow}\} \\
-
-\text{Parametric equations for the pattern: } \\
-x(k, \theta) = k \cos(\theta) + \cos(k + 1), \\
-y(k, \theta) = k \sin(\theta) + \sin(k - 1), \\
-\text{where } \theta \in [0, 2\pi] \text{ and divided into } n_{\text{sides}} \text{ points.} \\
-
-\text{and norm, scale} \sim \mathcal{U}\{10, 25\} \text{ and } \mathcal{U}\{30, 120\}, \text{ respectively.} \\
-
-\text{Lines plotted with random width } \text{lw} \sim \mathcal{U}[0.5, 4] \text{ and alpha } = 0.7. \\
+\text{The image explores infinite recursion through}\\
+\text{rotating and scaling polygons. Each shape is}\\
+\text{defined by the parametric equations:}\\
+x = z \cos(\theta + z), \quad y = z \sin(\theta + z)\\
+\text{where z controls both size and rotation}\\
+\text{angle, while }\theta\text{spans n equal radial}\\
+\text{divisions. As z grows, polygons spiral outward}\\
+\text{while maintaining angular offsets from prior}\\
+\text{layers. This creates an echo effect reminiscent}\\
+\text{of mirror tunnels. Color gradients track the}\\
+\text{expansion sequence, and polygon sides determine}\\
+\text{the fundamental symmetry of the emergent}\\
+\text{kaleidoscopic pattern.}

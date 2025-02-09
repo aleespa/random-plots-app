@@ -1,4 +1,4 @@
-package com.aleespa.randomsquare.screens
+package com.aleespa.randomplots.screens
 
 import android.content.Context
 import android.content.Intent
@@ -53,11 +53,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.aleespa.randomsquare.BottomBarScreen
-import com.aleespa.randomsquare.Figures
-import com.aleespa.randomsquare.R
-import com.aleespa.randomsquare.data.VisualizeModel
-import com.aleespa.randomsquare.tools.loadSavedImage
+import com.aleespa.randomplots.BottomBarScreen
+import com.aleespa.randomplots.Figures
+import com.aleespa.randomplots.R
+import com.aleespa.randomplots.data.VisualizeModel
+import com.aleespa.randomplots.tools.loadSavedImage
 
 @Composable
 fun Gallery(visualizeModel: VisualizeModel,
@@ -100,7 +100,7 @@ fun RandomGalleryTopBar(navController: NavHostController,
                                 text = stringResource(id=R.string.saved_images),
                                 style = TextStyle(
                                     fontFamily = parkinsansFontFamily,
-                                    fontSize = 28.sp,
+                                    fontSize = 25.sp,
                                     fontWeight = FontWeight.Bold
                                 )
                             )

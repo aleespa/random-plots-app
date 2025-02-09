@@ -1,8 +1,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Random</string>
-    <string name="generate">Generate\nRandom Square</string>
-    <string name="save">Save to\ngallery</string>
-    <string name="set_wallpaper">Set as\nwallpaper</string>
+    <string name="generate">Generate\nRandom Plot</string>
+    <string name="save">Save to gallery</string>
+    <string name="set_wallpaper">Set as wallpaper</string>
     <string name="generate_img_first">Generate a plot first</string>
     <string name="wallpaper_set">Wallpaper set successfully</string>
     <string name="wallpaper_fail">Failed to set wallpaper</string>
@@ -15,7 +15,7 @@
     <string name="spirograph">Spirograph</string>
     <string name="irrational_spirograph">Irrational Spirograph</string>
     <string name="random_eigen">Random Eigenvalues</string>
-    <string name="saved_images">My Random Squares</string>
+    <string name="saved_images">My Random Plots</string>
     <string name="delete_from_gallery">Delete from gallery</string>
     <string name="share">Share</string>
     <string name="share_text">Share random square</string>
@@ -24,7 +24,6 @@
     <string name="polygon_tunnel">Polygon Tunnel</string>
     <string name="polygon_feedback">Polygon Feedback</string>
     <string name="browse">Browse</string>
-    <string name="carousel_image_1_description">test</string>
     <string name="circular">Circles</string>
     <string name="polygon">Polygons</string>
     <string name="stochastic">Scatters</string>
@@ -35,7 +34,6 @@
     <string name="dark_name">Dark</string>
     <string name="light_name">Light</string>
     <string name="chaos">Chaos</string>
-    <string name="prism">Prism</string>
     <string name="spiral">Spiral</string>
     <string name="orbits">Orbits</string>
 </resources>
