@@ -7,16 +7,16 @@ plugins {
 }
 
 android {
-    namespace 'com.aleespa.randomplots'
+    namespace 'com.aleespa.randomsquare'
     compileSdk 35
 
     defaultConfig {
-        applicationId 'com.aleespa.randomplots'
+        applicationId 'com.aleespa.randomsquare'
         minSdk 31
         //noinspection EditedTargetSdkVersion
         targetSdk 35
-        versionCode 7
-        versionName "1.0.6"
+        versionCode 8
+        versionName "1.0.7"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

@@ -1,4 +1,4 @@
-package com.aleespa.randomplots
+package com.aleespa.randomsquare
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

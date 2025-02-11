@@ -1,4 +1,4 @@
-package com.aleespa.randomplots.screens
+package com.aleespa.randomsquare.screens
 
 import android.app.Activity
 import android.content.Context
@@ -46,14 +46,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
-import com.aleespa.randomplots.BottomBarScreen
-import com.aleespa.randomplots.FigureType
-import com.aleespa.randomplots.data.BackgroundColors
-import com.aleespa.randomplots.data.SettingDarkMode
-import com.aleespa.randomplots.data.VisualizeModel
-import com.aleespa.randomplots.getFiguresByType
-import com.aleespa.randomplots.tools.generateNewPlot
-import com.aleespa.randomplots.tools.readTexAssets
+import com.aleespa.randomsquare.BottomBarScreen
+import com.aleespa.randomsquare.FigureType
+import com.aleespa.randomsquare.data.BackgroundColors
+import com.aleespa.randomsquare.data.SettingDarkMode
+import com.aleespa.randomsquare.data.VisualizeModel
+import com.aleespa.randomsquare.getFiguresByType
+import com.aleespa.randomsquare.tools.generateNewPlot
+import com.aleespa.randomsquare.tools.readTexAssets
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -1,4 +1,4 @@
-package com.aleespa.randomplots.screens
+package com.aleespa.randomsquare.screens
 
 import android.content.ContentResolver
 import android.content.Context
@@ -10,10 +10,13 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -25,6 +28,9 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -35,6 +41,8 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.AddPhotoAlternate
 import androidx.compose.material.icons.rounded.Delete
@@ -56,6 +64,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -77,15 +86,16 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.aleespa.randomplots.BottomBarScreen
-import com.aleespa.randomplots.R
-import com.aleespa.randomplots.data.VisualizeModel
-import com.aleespa.randomplots.tools.LatexMathView
-import com.aleespa.randomplots.tools.generateNewPlot
-import com.aleespa.randomplots.tools.loadBitmapFromFile
-import com.aleespa.randomplots.tools.loadSavedImage
-import com.aleespa.randomplots.tools.saveBitmapToGallery
-import com.aleespa.randomplots.tools.setWallpaper
+import com.aleespa.randomsquare.BottomBarScreen
+import com.aleespa.randomsquare.R
+import com.aleespa.randomsquare.data.BackgroundColors
+import com.aleespa.randomsquare.data.VisualizeModel
+import com.aleespa.randomsquare.tools.LatexMathView
+import com.aleespa.randomsquare.tools.generateNewPlot
+import com.aleespa.randomsquare.tools.loadBitmapFromFile
+import com.aleespa.randomsquare.tools.loadSavedImage
+import com.aleespa.randomsquare.tools.saveBitmapToGallery
+import com.aleespa.randomsquare.tools.setWallpaper
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -118,13 +128,13 @@ fun Visualize(visualizeModel: VisualizeModel,
     }
     LazyColumn(
         modifier = Modifier.fillMaxSize().safeDrawingPadding(),
-        verticalArrangement = Arrangement.spacedBy(35.dp)
+        verticalArrangement = Arrangement.spacedBy(30.dp)
     ) {
         item { Spacer(Modifier.height(40.dp)) }
         item { TitleFigure(visualizeModel, context) }
         item { VisualizeBox(visualizeModel) }
         item { GeneratePlotButton(visualizeModel, context) }
-//        item { VisualizeSettingsButtons(visualizeModel, context, mInterstitialAd) }
+        item { BackgroundColorButtons(visualizeModel) }
         item { Spacer(Modifier.height(80.dp)) }
     }
 }
@@ -580,6 +590,8 @@ fun VisualizeOptionsButtons(
         } }
 }
 
+
+
 @Composable
 fun GeneratePlotButton(
     visualizeModel: VisualizeModel,
@@ -614,24 +626,68 @@ fun GeneratePlotButton(
         Box(
             modifier = Modifier
                 .align(Alignment.Center) // Aligns to the right of the button
-                .padding(start = 200.dp)  // Adjust padding to fine-tune position
+                .padding(start = 220.dp)  // Adjust padding to fine-tune position
                 .clickable {
-                    selectColors(visualizeModel)
+                    if (visualizeModel.isFromGallery.not()){
+                        saveToGallery(visualizeModel, context)
+                    } else {
+                        deleteFromGallery(visualizeModel, context)
+                    }
                 }
         ) {
-            Icon(
-                Icons.Default.Colorize, // Replace with your icon resource
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .size(24.dp) // Icon size
-            )
+            if (visualizeModel.isFromGallery.not()){
+                Icon(
+                    Icons.Default.StarBorder, // Replace with your icon resource
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .size(25.dp) // Icon size
+                )
+            }else {
+                Icon(
+                    Icons.Default.Star, // Replace with your icon resource
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .size(25.dp) // Icon size
+                )
+            }
+
         }
     }
 
-    BackgroundSelectionDialog(visualizeModel)
-
 }
+
+@Composable
+fun BackgroundColorButtons(visualizeModel: VisualizeModel){
+    LazyRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp)
+    ) {
+        var backgroundOptions = BackgroundColors.entries.toTypedArray();
+
+        itemsIndexed(backgroundOptions) { index, backgroundColor ->
+            Box(
+                modifier = Modifier
+                    .size(50.dp)
+                    .background(backgroundColor.color, shape = RoundedCornerShape(8.dp))
+                    .border(
+                        width = if (visualizeModel.bgColor == backgroundColor.color) 3.dp else 0.dp,
+                        color = if (visualizeModel.bgColor == backgroundColor.color) MaterialTheme.colorScheme.primary else Color.Transparent,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .clickable {
+                        visualizeModel.bgColor = backgroundColor.color
+                        visualizeModel.isDarkMode = backgroundColor.type == "Dark"
+                    },
+                contentAlignment = Alignment.Center
+
+            ){}
+        }
+    }
+}
+
 
 fun selectColors(visualizeModel: VisualizeModel) {
     visualizeModel.showColorDialog = true

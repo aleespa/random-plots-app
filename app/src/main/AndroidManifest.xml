@@ -22,7 +22,7 @@
         android:requestLegacyExternalStorage="true"
         tools:targetApi="35">
         <activity
-            android:name="com.aleespa.randomplots.MainActivity"
+            android:name="com.aleespa.randomsquare.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.MyApplication">
             <intent-filter>

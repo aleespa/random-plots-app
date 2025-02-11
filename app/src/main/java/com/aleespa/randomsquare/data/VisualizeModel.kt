@@ -1,4 +1,4 @@
-package com.aleespa.randomplots.data
+package com.aleespa.randomsquare.data
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -8,13 +8,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.aleespa.randomplots.Figures
+import com.aleespa.randomsquare.Figures
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import com.aleespa.randomplots.data.ImageEntity.Builder
+import com.aleespa.randomsquare.data.ImageEntity.Builder
 
 class VisualizeModel(private val dao: ImageDao): ViewModel() {
     var loadingPlotGenerator by mutableStateOf(false)

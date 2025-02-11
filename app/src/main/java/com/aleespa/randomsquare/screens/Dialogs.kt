@@ -1,4 +1,4 @@
-package com.aleespa.randomplots.screens
+package com.aleespa.randomsquare.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,10 +28,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.aleespa.randomplots.Figures
-import com.aleespa.randomplots.R
-import com.aleespa.randomplots.data.VisualizeModel
-import com.aleespa.randomplots.data.getBackgroundColorsByType
+import com.aleespa.randomsquare.Figures
+import com.aleespa.randomsquare.R
+import com.aleespa.randomsquare.data.VisualizeModel
+import com.aleespa.randomsquare.data.getBackgroundColorsByType
 
 
 @Composable
