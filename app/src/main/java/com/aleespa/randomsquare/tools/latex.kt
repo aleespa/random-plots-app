@@ -1,4 +1,4 @@
-package com.aleespa.randomplots.tools
+package com.aleespa.randomsquare.tools
 
 import android.content.Context
 import android.util.Log
