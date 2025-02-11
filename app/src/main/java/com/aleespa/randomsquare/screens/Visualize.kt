@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
@@ -591,17 +592,29 @@ fun VisualizeOptionsButtons(
 }
 
 
-
 @Composable
 fun GeneratePlotButton(
     visualizeModel: VisualizeModel,
     context: Context
 ) {
-    Box(
+    Row(
         modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center // Ensures the button is centered
+        horizontalArrangement = Arrangement.SpaceEvenly, // Distributes items evenly
+        verticalAlignment = Alignment.CenterVertically
     ) {
+        Spacer(Modifier.width(16.dp))
+        Icon(
+            imageVector = Icons.Default.AddPhotoAlternate,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .size(26.dp)
+                .clickable {
+                    visualizeModel.showAspectRatioDialog = true
+                }
+        )
 
+        // Center Button
         ExtendedFloatingActionButton(
             elevation = FloatingActionButtonDefaults.elevation(10.dp),
             containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -610,7 +623,7 @@ fun GeneratePlotButton(
             },
             icon = {
                 Icon(
-                    Icons.Default.Casino, // Replace with your desired icon
+                    Icons.Default.Casino,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
@@ -623,40 +636,26 @@ fun GeneratePlotButton(
             }
         )
 
-        Box(
+        // Right Icon (Favorite/Unfavorite)
+        Icon(
+            imageVector = if (visualizeModel.isFromGallery.not()) Icons.Default.StarBorder else Icons.Default.Star,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier
-                .align(Alignment.Center) // Aligns to the right of the button
-                .padding(start = 220.dp)  // Adjust padding to fine-tune position
+                .size(26.dp)
                 .clickable {
-                    if (visualizeModel.isFromGallery.not()){
+                    if (visualizeModel.isFromGallery.not()) {
                         saveToGallery(visualizeModel, context)
                     } else {
                         deleteFromGallery(visualizeModel, context)
                     }
                 }
-        ) {
-            if (visualizeModel.isFromGallery.not()){
-                Icon(
-                    Icons.Default.StarBorder, // Replace with your icon resource
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .size(25.dp) // Icon size
-                )
-            }else {
-                Icon(
-                    Icons.Default.Star, // Replace with your icon resource
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .size(25.dp) // Icon size
-                )
-            }
+        )
 
-        }
+        Spacer(Modifier.width(16.dp))
     }
-
 }
+
 
 @Composable
 fun BackgroundColorButtons(visualizeModel: VisualizeModel){
