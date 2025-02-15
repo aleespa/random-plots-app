@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
@@ -32,12 +31,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddPhotoAlternate
 import androidx.compose.material.icons.filled.Casino
-import androidx.compose.material.icons.filled.Colorize
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
@@ -47,8 +45,6 @@ import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.AddPhotoAlternate
 import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -131,8 +127,8 @@ fun Visualize(visualizeModel: VisualizeModel,
         modifier = Modifier.fillMaxSize().safeDrawingPadding(),
         verticalArrangement = Arrangement.spacedBy(30.dp)
     ) {
-        item { Spacer(Modifier.height(40.dp)) }
-        item { TitleFigure(visualizeModel, context) }
+        item { Spacer(Modifier.height(35.dp)) }
+        item { HeaderSection(visualizeModel, context) }
         item { VisualizeBox(visualizeModel) }
         item { GeneratePlotButton(visualizeModel, context) }
         item { BackgroundColorButtons(visualizeModel) }
@@ -140,10 +136,8 @@ fun Visualize(visualizeModel: VisualizeModel,
     }
 }
 @Composable
-fun TitleFigure(visualizeModel: VisualizeModel, context: Context) {
-    // State to manage the visibility of the dropdown menu
+fun HeaderSection(visualizeModel: VisualizeModel, context: Context) {
     var showMenu by remember { mutableStateOf(false) }
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -151,147 +145,109 @@ fun TitleFigure(visualizeModel: VisualizeModel, context: Context) {
             .padding(horizontal = 8.dp), // Optional padding
         contentAlignment = Alignment.Center // Centers the content inside the Box
     ) {
-        // Text for the title
-        Text(
-            text = stringResource(visualizeModel.selectedFigure.resourceStringId),
-            style = TextStyle(
-                fontFamily = parkinsansFontFamily,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold
-            ),
-            modifier = Modifier
-                .fillMaxWidth(),
-            textAlign = TextAlign.Center // Center the text
-        )
-
-        // Three-dot button aligned to the right
+        TitleText(stringResource(visualizeModel.selectedFigure.resourceStringId))
         Box(
             modifier = Modifier
                 .align(Alignment.CenterEnd) // Align to the right
                 .clickable { showMenu = true } // Open the menu on click
         ) {
-            Icon(
-                imageVector = Icons.Default.MoreVert, // Three-dot icon
-                contentDescription = "Options",
-                modifier = Modifier.size(28.dp)
-            )
-
-            // Dropdown menu
-            DropdownMenu(
-                expanded = showMenu,
-                onDismissRequest = { showMenu = false }
-            ) {
-                DropdownMenuItem(
-                    onClick = {
-                        if (visualizeModel.isFromGallery.not()){
-                            saveToGallery(visualizeModel, context)
-                        } else {
-                            deleteFromGallery(visualizeModel, context)
-                        }
-                        showMenu = false
-                    }
-                ) {
-                    if (visualizeModel.isFromGallery.not()){
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically, // Align icon and text vertically
-                            horizontalArrangement = Arrangement.Start, // Align content to the start
-                            modifier = Modifier.fillMaxWidth() // Ensure the Row takes full width
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Add, // Replace with your desired icon
-                                contentDescription = "Save Icon",
-                                modifier = Modifier.size(20.dp) // Adjust icon size as needed
-                            )
-                            Spacer(modifier = Modifier.width(8.dp)) // Add spacing between icon and text
-                            Text(
-                                text = stringResource(id = R.string.save),
-                                modifier = Modifier.weight(1f) // Take up remaining space
-                            )
-                        }
-                    } else {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically, // Align icon and text vertically
-                            horizontalArrangement = Arrangement.Start, // Align content to the start
-                            modifier = Modifier.fillMaxWidth() // Ensure the Row takes full width
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Delete, // Replace with your desired icon
-                                contentDescription = "Save Icon",
-                                modifier = Modifier.size(20.dp) // Adjust icon size as needed
-                            )
-                            Spacer(modifier = Modifier.width(8.dp)) // Add spacing between icon and text
-                            Text(
-                                text = stringResource(id = R.string.delete_from_gallery),
-                                modifier = Modifier.weight(1f) // Take up remaining space
-                            )
-                        }
-                    }
-                                    }
-                DropdownMenuItem(
-                    onClick = {
-                        visualizeModel.showAspectRatioDialog = true
-                        showMenu = false
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.AddPhotoAlternate, // Replace with your desired icon
-                        contentDescription = "Save Icon",
-                        modifier = Modifier.size(20.dp) // Adjust icon size as needed
-                    )
-                    Spacer(modifier = Modifier.width(8.dp)) // Add spacing between icon and text
-                    Text(
-                        text = stringResource(id = R.string.set_wallpaper),
-                        modifier = Modifier.weight(1f) // Take up remaining space
-                    )
-                }
-                DropdownMenuItem(
-                    onClick = {
-                        val imageUri = visualizeModel.imageBitmapState?.let { saveImageBitmapToCache(it, context) }
-
-                        val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                            type = "image/png" // Set MIME type for images
-                            putExtra(Intent.EXTRA_STREAM, imageUri)
-                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        }
-                        context.startActivity(Intent.createChooser(shareIntent, R.string.share_text.toString()))
-                        showMenu = false
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Share, // Replace with your desired icon
-                        contentDescription = "Save Icon",
-                        modifier = Modifier.size(20.dp) // Adjust icon size as needed
-                    )
-                    Spacer(modifier = Modifier.width(8.dp)) // Add spacing between icon and text
-                    Text(
-                        text = stringResource(id = R.string.share),
-                        modifier = Modifier.weight(1f) // Take up remaining space
-                    )
-                }
-                DropdownMenuItem(
-                    onClick = {
-                        visualizeModel.showInfo = !visualizeModel.showInfo
-                        showMenu = false
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Info, // Replace with your desired icon
-                        contentDescription = "Save Icon",
-                        modifier = Modifier.size(20.dp) // Adjust icon size as needed
-                    )
-                    Spacer(modifier = Modifier.width(8.dp)) // Add spacing between icon and text
-                    Text(
-                        text = stringResource(id = R.string.more_info),
-                        modifier = Modifier.weight(1f) // Take up remaining space
-                    )
-                }
-            }
+            ThreeDotsDropDownMenu(
+                visualizeModel,
+                context,
+                showMenu
+            ) { showMenu = false }
         }
     }
 }
 
 
+@Composable
+fun TitleText(text: String){
+    Text(
+        text = text,
+        style = TextStyle(
+            fontFamily = parkinsansFontFamily,
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Bold
+        ),
+        modifier = Modifier
+            .fillMaxWidth(),
+        textAlign = TextAlign.Center
+    )
+}
 
+@Composable
+fun ThreeDotsDropDownMenu(visualizeModel: VisualizeModel,
+                          context: Context,
+                          showMenu: Boolean,
+                          onDismiss: () -> Unit){
+    Icon(
+        imageVector = Icons.Default.MoreVert,
+        contentDescription = "Options",
+        modifier = Modifier.size(28.dp)
+    )
+    DropdownMenu(
+        expanded = showMenu,
+        onDismissRequest = { onDismiss() }
+    ) {
+        DropdownMenuItem(
+            text = {if (visualizeModel.isFromGallery.not())
+                Text(stringResource(id = R.string.save))
+                   else Text(stringResource(id = R.string.delete_from_gallery))},
+            leadingIcon = {if (visualizeModel.isFromGallery.not()) DropDownMenuIcon(Icons.Default.Add)
+                          else DropDownMenuIcon(Icons.Default.Delete)},
+            onClick = {
+                if (visualizeModel.isFromGallery.not()){
+                    saveToGallery(visualizeModel, context)
+                } else {
+                    deleteFromGallery(visualizeModel, context)
+                }
+                onDismiss()
+            }
+        )
+        DropdownMenuItem(
+            text = {Text(stringResource(id = R.string.set_wallpaper))},
+            leadingIcon = {DropDownMenuIcon(Icons.Default.AddPhotoAlternate)},
+            onClick = {
+                visualizeModel.showAspectRatioDialog = true
+                onDismiss()
+            }
+        )
+        DropdownMenuItem(
+            text = {Text(stringResource(id = R.string.share))},
+            leadingIcon = {DropDownMenuIcon(Icons.Default.Share)},
+            onClick = {
+                val imageUri = visualizeModel.imageBitmapState?.let { saveImageBitmapToCache(it, context) }
+
+                val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                    type = "image/png" // Set MIME type for images
+                    putExtra(Intent.EXTRA_STREAM, imageUri)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                context.startActivity(Intent.createChooser(shareIntent, R.string.share_text.toString()))
+                onDismiss()
+            }
+        )
+        DropdownMenuItem(
+            text = {Text(stringResource(id = R.string.more_info))},
+            leadingIcon = {DropDownMenuIcon(Icons.Default.Info)},
+            onClick = {
+                visualizeModel.showInfo = !visualizeModel.showInfo
+                onDismiss()
+            }
+        )
+    }
+}
+
+
+@Composable
+fun DropDownMenuIcon(icon: ImageVector){
+    Icon(
+            imageVector = icon, // Replace with your desired icon
+            contentDescription = "Save Icon",
+            modifier = Modifier.size(20.dp) // Adjust icon size as needed
+        )
+}
 
 @Composable
 fun ImageWithNullFallback(imageBitmap: ImageBitmap?) {
@@ -324,27 +280,6 @@ fun deleteFromGallery(visualizeModel: VisualizeModel, context: Context){
     }
 }
 
-@Composable
-fun DeleteFromGalleryButton(visualizeModel: VisualizeModel, context: Context) {
-    VisualizeOptionsButtons(
-        icon = Icons.Rounded.Delete,
-        bottomText = stringResource(id = R.string.delete_from_gallery)
-    ) {
-        visualizeModel.viewModelScope.launch {
-            try {
-                withContext(Dispatchers.IO) {
-                    visualizeModel.deleteImageById(visualizeModel.galleryId)
-                    deleteImageFromUri(context, Uri.parse(visualizeModel.galleryURI))
-                }
-                visualizeModel.galleryURI = ""
-                visualizeModel.galleryId = 0
-                visualizeModel.isFromGallery = false
-            } catch (e: Exception) {
-                Log.e("DeleteFromGallery", "Failed to delete image", e)
-            }
-        }
-    }
-}
 
 
 fun deleteImageFromUri(context: Context, uri: Uri): Boolean {
@@ -355,29 +290,6 @@ fun deleteImageFromUri(context: Context, uri: Uri): Boolean {
     } catch (e: Exception) {
         Log.e("DeleteImage", "Failed to delete image: $uri", e)
         false
-    }
-}
-@Composable
-fun SetWallpaperButton(
-    visualizeModel: VisualizeModel,
-    context: Context
-) {
-    VisualizeOptionsButtons(
-        icon = Icons.Rounded.AddPhotoAlternate,
-        bottomText = stringResource(id = R.string.set_wallpaper)
-    ) {
-        visualizeModel.showAspectRatioDialog = true // Show the dialog
-    }
-
-    if (visualizeModel.showAspectRatioDialog) {
-        AspectRatioDialog(
-            visualizeModel,
-            onDismiss = { visualizeModel.showAspectRatioDialog = false },
-            onConfirm = {
-                visualizeModel.showAspectRatioDialog = false
-                setWallpaperAfterAd(visualizeModel, context)
-            }
-        )
     }
 }
 
@@ -412,90 +324,6 @@ fun saveToGallery(visualizeModel: VisualizeModel, context: Context){
     }
 }
 
-@Composable
-fun SaveToGalleryButton(visualizeModel: VisualizeModel, context: Context) {
-    var uri: Uri? = null
-
-    Column(
-        modifier = Modifier
-            .width(80.dp)
-            .clickable {
-                // Use a coroutine scope for asynchronous operations
-                visualizeModel.isSavingLoading = true
-                visualizeModel.viewModelScope.launch {
-                    val androidBitmap = visualizeModel.imageBitmapState?.asAndroidBitmap()
-                    if (androidBitmap != null) {
-                        uri = saveBitmapToGallery(
-                            context,
-                            androidBitmap,
-                            visualizeModel.selectedFigure.key
-                        )
-                    }
-
-                    val imageEntity = visualizeModel.temporalImageEntity
-                        .setUri(uri?.toString() ?: "")
-                        .build()
-                    visualizeModel.addImage(imageEntity)
-                    loadSavedImage(visualizeModel, imageEntity, context)
-                    visualizeModel.isSavingLoading = false
-                }
-            },
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        if (visualizeModel.isSavingLoading) {
-            CircularProgressIndicator(
-                color = MaterialTheme.colorScheme.secondary,
-                trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                modifier = Modifier.size(20.dp)
-            )
-        } else {
-            Icon(
-                imageVector = Icons.Rounded.Add,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .size(20.dp)
-                    .aspectRatio(1f)
-            )
-        }
-        Spacer(Modifier.height(8.dp))
-        Box(
-            modifier = Modifier,
-            contentAlignment = Alignment.TopCenter
-        ) {
-            Text(
-                text = stringResource(id = R.string.save),
-                modifier = Modifier,
-                textAlign = TextAlign.Center,
-                fontSize = 12.sp,
-                lineHeight = 12.sp,
-                color = MaterialTheme.colorScheme.secondary
-            )
-        }
-    }
-}
-
-
-
-@Composable
-fun ShareButton(
-    visualizeModel: VisualizeModel,
-    context: Context) {
-    VisualizeOptionsButtons(
-        icon = Icons.Rounded.Share,
-        bottomText = stringResource(id = R.string.share)
-    ){
-        val imageUri = visualizeModel.imageBitmapState?.let { saveImageBitmapToCache(it, context) }
-
-        val shareIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "image/png" // Set MIME type for images
-            putExtra(Intent.EXTRA_STREAM, imageUri)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-        context.startActivity(Intent.createChooser(shareIntent, R.string.share_text.toString()))
-    }
-}
 
 fun saveImageBitmapToCache(imageBitmap: ImageBitmap, context: Context): Uri? {
     // Create a temporary file in the cache directory
@@ -536,44 +364,6 @@ fun VisualizeOptionsButtons(
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier
             .size(iconSize)
-            .aspectRatio(1f))
-        Spacer(Modifier.height(8.dp))
-        Box(
-            modifier = Modifier,
-            contentAlignment = Alignment.TopCenter
-        ){
-            Text(
-                text = bottomText,
-                modifier = Modifier,
-                textAlign = TextAlign.Center,
-                fontSize = 12.sp,
-                lineHeight = 12.sp,
-                color = MaterialTheme.colorScheme.secondary
-            )
-        } }
-}
-
-
-@Composable
-fun VisualizeOptionsButtons(
-    icon: ImageVector,
-    bottomText: String,
-    onClick: () -> Unit){
-    Column(
-        modifier = Modifier
-            .width(80.dp)
-            .clickable {
-                onClick()
-            },
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    )
-    {  Icon(
-        imageVector = icon,
-        contentDescription = null,
-        tint = MaterialTheme.colorScheme.primary,
-        modifier = Modifier
-            .size(20.dp)
             .aspectRatio(1f))
         Spacer(Modifier.height(8.dp))
         Box(
@@ -636,21 +426,29 @@ fun GeneratePlotButton(
             }
         )
 
-        // Right Icon (Favorite/Unfavorite)
-        Icon(
-            imageVector = if (visualizeModel.isFromGallery.not()) Icons.Default.StarBorder else Icons.Default.Star,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier
-                .size(26.dp)
-                .clickable {
-                    if (visualizeModel.isFromGallery.not()) {
-                        saveToGallery(visualizeModel, context)
-                    } else {
-                        deleteFromGallery(visualizeModel, context)
+        if (visualizeModel.isSavingLoading) {
+            CircularProgressIndicator(
+                color = MaterialTheme.colorScheme.secondary,
+                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                modifier = Modifier.size(26.dp),
+            )
+        } else {
+            Icon(
+                imageVector = if (visualizeModel.isFromGallery.not()) Icons.Default.StarBorder else Icons.Default.Star,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .size(26.dp)
+                    .clickable {
+                        if (visualizeModel.isFromGallery.not()) {
+                            saveToGallery(visualizeModel, context)
+                        } else {
+                            deleteFromGallery(visualizeModel, context)
+                        }
                     }
-                }
-        )
+            )
+        }
+
 
         Spacer(Modifier.width(16.dp))
     }
@@ -684,47 +482,6 @@ fun BackgroundColorButtons(visualizeModel: VisualizeModel){
 
             ){}
         }
-    }
-}
-
-
-fun selectColors(visualizeModel: VisualizeModel) {
-    visualizeModel.showColorDialog = true
-}
-
-
-
-@Composable
-fun VisualizeSettingsButtons(
-    visualizeModel: VisualizeModel,
-    context: Context,
-    mInterstitialAd: InterstitialAd?
-){
-    Row(
-        modifier = Modifier
-            .height(65.dp)
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        if (visualizeModel.isFromGallery.not()){
-            SaveToGalleryButton(visualizeModel, context)
-        } else {
-            DeleteFromGalleryButton(visualizeModel, context)
-        }
-        SetWallpaperButton(visualizeModel, context)
-        MoreInfoButton(visualizeModel)
-        ShareButton(visualizeModel, context)
-    }
-}
-
-@Composable
-fun MoreInfoButton(visualizeModel: VisualizeModel) {
-    VisualizeOptionsButtons(
-        icon = Icons.Rounded.Info,
-        bottomText = stringResource(id = R.string.more_info)
-    ){
-        visualizeModel.showInfo = !visualizeModel.showInfo
     }
 }
 
