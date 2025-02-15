@@ -2,6 +2,7 @@ package com.aleespa.randomsquare.data
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
@@ -31,13 +32,12 @@ class VisualizeModel(private val dao: ImageDao): ViewModel() {
     var bgColor by mutableStateOf(Color(0,0,0,0))
     var isDarkMode by mutableStateOf(true)
     var settingDarkMode by mutableStateOf(SettingDarkMode.Auto)
-    var randomSeed by mutableStateOf(0L)
+    var randomSeed by mutableLongStateOf(0L)
     var isSavingLoading by mutableStateOf(false)
     var temporalImageEntity by mutableStateOf<Builder>(Builder())
     var toFitAspectRatio by mutableStateOf(false)
 
     var showFilterDialog by mutableStateOf(false)
-    var showExitDialog by mutableStateOf(false)
     var showColorDialog by mutableStateOf(false)
     var showAspectRatioDialog by mutableStateOf(false)
 
