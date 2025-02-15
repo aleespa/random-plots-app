@@ -217,14 +217,7 @@ fun ThreeDotsDropDownMenu(visualizeModel: VisualizeModel,
             text = {Text(stringResource(id = R.string.share))},
             leadingIcon = {DropDownMenuIcon(Icons.Default.Share)},
             onClick = {
-                val imageUri = visualizeModel.imageBitmapState?.let { saveImageBitmapToCache(it, context) }
-
-                val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                    type = "image/png" // Set MIME type for images
-                    putExtra(Intent.EXTRA_STREAM, imageUri)
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                }
-                context.startActivity(Intent.createChooser(shareIntent, R.string.share_text.toString()))
+                shareImageBitmap(visualizeModel, context)
                 onDismiss()
             }
         )
@@ -237,6 +230,17 @@ fun ThreeDotsDropDownMenu(visualizeModel: VisualizeModel,
             }
         )
     }
+}
+
+fun shareImageBitmap(visualizeModel: VisualizeModel, context: Context){
+    val imageUri = visualizeModel.imageBitmapState?.let { saveImageBitmapToCache(it, context) }
+
+    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+        type = "image/png" // Set MIME type for images
+        putExtra(Intent.EXTRA_STREAM, imageUri)
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+    context.startActivity(Intent.createChooser(shareIntent, R.string.share_text.toString()))
 }
 
 
