@@ -24,15 +24,14 @@ import com.google.android.gms.ads.interstitial.InterstitialAd
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen(visualizeModel: VisualizeModel, mInterstitialAd: InterstitialAd?) {
+fun MainScreen(visualizeModel: VisualizeModel) {
     val navController = rememberNavController()
     Scaffold(
         bottomBar = {BottomBar(navController)}
     ) {
         BottomNavGraph(
             visualizeModel = remember {visualizeModel},
-            navController = navController,
-            mInterstitialAd = mInterstitialAd)
+            navController = navController)
     }
 }
 
@@ -70,8 +69,7 @@ fun BottomBar(navController: NavHostController){
 
 @Composable
 fun BottomNavGraph(visualizeModel: VisualizeModel = viewModel(),
-                   navController: NavHostController,
-                   mInterstitialAd: InterstitialAd?) {
+                   navController: NavHostController) {
     NavHost(
         navController = navController,
         startDestination = BottomBarScreen.Browse.route
@@ -80,7 +78,7 @@ fun BottomNavGraph(visualizeModel: VisualizeModel = viewModel(),
             Browse(visualizeModel, navController)
         }
         composable(route = BottomBarScreen.Visualize.route) {
-            Visualize(visualizeModel, navController, mInterstitialAd)
+            Visualize(visualizeModel, navController)
         }
         composable(route = BottomBarScreen.Gallery.route) {
             Gallery(visualizeModel, navController)
