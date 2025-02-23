@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
             })
 
         setContent {
-            MyApplicationTheme (darkTheme = visualizeModel.settingDarkMode){
+            MyApplicationTheme (darkThemeSetting = visualizeModel.settingDarkMode){
                 MainScreen(visualizeModel, mInterstitialAd)
             }
         }

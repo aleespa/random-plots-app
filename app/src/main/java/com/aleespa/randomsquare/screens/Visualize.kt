@@ -127,7 +127,7 @@ fun Visualize(visualizeModel: VisualizeModel,
         modifier = Modifier.fillMaxSize().safeDrawingPadding(),
         verticalArrangement = Arrangement.spacedBy(30.dp)
     ) {
-        item { Spacer(Modifier.height(35.dp)) }
+        item { Spacer(Modifier.height(20.dp)) }
         item { HeaderSection(visualizeModel, context) }
         item { VisualizeBox(visualizeModel) }
         item { GeneratePlotButton(visualizeModel, context) }
