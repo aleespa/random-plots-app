@@ -1,6 +1,7 @@
 package com.aleespa.randomsquare.ui.theme
 
 import android.app.Activity
+import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -29,29 +30,31 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun MyApplicationTheme(
-    darkTheme: SettingDarkMode = SettingDarkMode.Auto,
+    darkThemeSetting: SettingDarkMode = SettingDarkMode.Auto,
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val darkTheme = when (darkTheme) {
+    val darkTheme = when (darkThemeSetting) {
         SettingDarkMode.Auto -> isSystemInDarkTheme()
         SettingDarkMode.On -> true
         SettingDarkMode.Off -> false
     }
+
+    val context = LocalContext.current
     val colorScheme = when {
-        dynamicColor && true -> {
-            val context = LocalContext.current
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
+
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = colorScheme.surface.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme.not()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }
 
