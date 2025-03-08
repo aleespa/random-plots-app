@@ -28,8 +28,6 @@ class MainActivity : ComponentActivity() {
         val dao = DatabaseProvider.getDatabase(this).imageDao()
         val settingsRepository = AppSettingsRepository(dataStore)
         val factory = VisualizeModelFactory(dao, settingsRepository)
-
-        // Get ViewModel through factory
         val visualizeModel = ViewModelProvider(this, factory)[VisualizeModel::class.java]
 
 

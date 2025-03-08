@@ -61,6 +61,7 @@ fun Browse(
     visualizeModel: VisualizeModel,
     navController: NavHostController
 ) {
+
     val context = LocalContext.current
     val isDark = isSystemInDarkTheme()
 
@@ -88,16 +89,11 @@ fun Browse(
                                 SettingDarkMode.On -> SettingDarkMode.Off
                                 SettingDarkMode.Off -> SettingDarkMode.Auto
                             }
-                            visualizeModel.isDarkMode = when (visualizeModel.settingDarkMode) {
-                                SettingDarkMode.Auto -> isDark
-                                SettingDarkMode.On -> true
-                                SettingDarkMode.Off -> false
-                            }
                             visualizeModel.bgColor = when (visualizeModel.settingDarkMode) {
-                                SettingDarkMode.Auto -> if (isDark) BackgroundColors.BLACK.color
-                                else BackgroundColors.SAND.color
-                                SettingDarkMode.On -> BackgroundColors.BLACK.color
-                                SettingDarkMode.Off -> BackgroundColors.SAND.color
+                                SettingDarkMode.Auto -> if (isDark) BackgroundColors.BLACK
+                                else BackgroundColors.SAND
+                                SettingDarkMode.On -> BackgroundColors.BLACK
+                                SettingDarkMode.Off -> BackgroundColors.SAND
                             }
                         }) {
                             Icon(
