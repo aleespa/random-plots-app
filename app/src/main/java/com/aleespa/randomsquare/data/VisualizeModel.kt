@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.aleespa.randomsquare.Figures
 import kotlinx.coroutines.Dispatchers
@@ -17,21 +18,32 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.aleespa.randomsquare.data.ImageEntity.Builder
 
-class VisualizeModel(private val dao: ImageDao): ViewModel() {
+class VisualizeModelFactory(
+    private val dao: ImageDao,
+    private val settingsRepository: AppSettingsRepository
+) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return VisualizeModel(dao, settingsRepository) as T
+    }
+}
+
+class VisualizeModel(
+    private val dao: ImageDao,
+    private val settingsRepository: AppSettingsRepository
+): ViewModel() {
     var loadingPlotGenerator by mutableStateOf(false)
     var showInfo by mutableStateOf(false)
     var imageBitmapState by mutableStateOf<ImageBitmap?>(null)
     var latexString by mutableStateOf("")
-    var selectedFigure by mutableStateOf(Figures.POLYGON_FEEDBACK)
+
     var isFromGallery by mutableStateOf(false)
     var galleryURI by mutableStateOf("")
     var galleryId by mutableIntStateOf(0)
     var darkFilter by mutableStateOf(false)
     var lightFilter by mutableStateOf(false)
     var filterImageType by mutableStateOf("None")
-    var bgColor by mutableStateOf(Color(0,0,0,0))
     var isDarkMode by mutableStateOf(true)
-    var settingDarkMode by mutableStateOf(SettingDarkMode.Auto)
     var randomSeed by mutableLongStateOf(0L)
     var isSavingLoading by mutableStateOf(false)
     var temporalImageEntity by mutableStateOf<Builder>(Builder())
@@ -40,6 +52,63 @@ class VisualizeModel(private val dao: ImageDao): ViewModel() {
     var showFilterDialog by mutableStateOf(false)
     var showColorDialog by mutableStateOf(false)
     var showAspectRatioDialog by mutableStateOf(false)
+
+    private var _settingDarkMode by mutableStateOf(SettingDarkMode.Auto)
+    var settingDarkMode: SettingDarkMode
+        get() = _settingDarkMode
+        set(value) {
+            _settingDarkMode = value
+            viewModelScope.launch {
+                settingsRepository.saveDarkModeSetting(value) // Persist to DataStore
+            }
+        }
+    init {
+        // Load settingDarkMode from DataStore
+        viewModelScope.launch {
+            settingsRepository.darkModeSetting.collect { mode ->
+                _settingDarkMode = mode
+            }
+        }
+    }
+
+    private var _selectedFigure by mutableStateOf(Figures.POLYGON_FEEDBACK)
+    var selectedFigure: Figures
+        get() = _selectedFigure
+        set(value) {
+            _selectedFigure = value
+            viewModelScope.launch {
+                settingsRepository.saveSelectedFigure(value) // Persist to DataStore
+            }
+        }
+
+    init {
+        // Load selectedFigure from DataStore
+        viewModelScope.launch {
+            settingsRepository.selectedFigure.collect { figure ->
+                _selectedFigure = figure
+            }
+        }
+    }
+
+    private var _bgColor by mutableStateOf(Color(0, 0, 0, 0))
+    var bgColor: Color
+        get() = _bgColor
+        set(value) {
+            _bgColor = value
+            viewModelScope.launch {
+                settingsRepository.saveBgColor(value) // Persist to DataStore
+            }
+        }
+
+    init {
+        // Load bgColor from DataStore
+        viewModelScope.launch {
+            settingsRepository.bgColor.collect { color ->
+                _bgColor = color
+            }
+        }
+    }
+
 
     fun deleteImageById(imageId: Int) {
         viewModelScope.launch(Dispatchers.IO) {

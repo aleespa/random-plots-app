@@ -94,7 +94,13 @@ enum class Figures(
         FigureType.MISC,
         R.string.random_eigen,
         R.drawable.random_eigen_dark,
-        R.drawable.random_eigen_light)
+        R.drawable.random_eigen_light),
+    CUBISM(
+        "cubism",
+        FigureType.CHAOS,
+        R.string.cubism,
+        R.drawable.cubism_dark,
+        R.drawable.cubism_light),
     ;
 
     companion object {
