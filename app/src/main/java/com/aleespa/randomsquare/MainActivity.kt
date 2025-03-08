@@ -9,6 +9,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModelProvider
 import com.aleespa.randomsquare.data.AppSettingsRepository
 import com.aleespa.randomsquare.data.DatabaseProvider
+import com.aleespa.randomsquare.data.ImageRepository
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.data.VisualizeModelFactory
 import com.aleespa.randomsquare.screens.MainScreen
@@ -27,7 +28,8 @@ class MainActivity : ComponentActivity() {
 
         val dao = DatabaseProvider.getDatabase(this).imageDao()
         val settingsRepository = AppSettingsRepository(dataStore)
-        val factory = VisualizeModelFactory(dao, settingsRepository)
+        val imageRepository = ImageRepository(dao, applicationContext)
+        val factory = VisualizeModelFactory(imageRepository, settingsRepository)
         val visualizeModel = ViewModelProvider(this, factory)[VisualizeModel::class.java]
 
 
