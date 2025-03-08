@@ -557,12 +557,11 @@ fun VisualizeBox(visualizeModel: VisualizeModel){
 
         }else{
             Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize()
+                    .background(visualizeModel.bgColor.color),
                 contentAlignment = Alignment.Center
             ){
-                LatexMathView(
-                    latexString = visualizeModel.latexString
-                )
+                LatexMathView(visualizeModel)
             }
 
         }

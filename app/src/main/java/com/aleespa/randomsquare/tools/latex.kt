@@ -1,6 +1,7 @@
 package com.aleespa.randomsquare.tools
 
 import android.content.Context
+import android.graphics.Color
 import android.util.Log
 import android.view.View
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,18 +14,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.aleespa.randomsquare.data.VisualizeModel
 import ru.noties.jlatexmath.JLatexMathDrawable
 import ru.noties.jlatexmath.JLatexMathView
 import java.io.IOException
 
 
 @Composable
-fun LatexMathView(latexString: String) {
-    val textColor = MaterialTheme.colorScheme.onBackground.toArgb()
+fun LatexMathView(visualizeModel: VisualizeModel) {
+    var textColor = if (visualizeModel.bgColor.type == "Dark") Color.WHITE else Color.BLACK
     AndroidView(
         modifier = Modifier
-            .fillMaxWidth() // Fill available width
-            .wrapContentWidth(Alignment.CenterHorizontally) // Center content horizontally
+            .fillMaxWidth()
+            .wrapContentWidth(Alignment.CenterHorizontally)
             .padding(10.dp),
         factory = { context ->
             JLatexMathView(context).apply {
@@ -32,10 +34,10 @@ fun LatexMathView(latexString: String) {
             }
         },
         update = { view ->
-            val drawable = JLatexMathDrawable.builder(latexString)
+            val drawable = JLatexMathDrawable.builder(visualizeModel.latexString)
+                .align(JLatexMathDrawable.ALIGN_CENTER)
                 .textSize(70F)
                 .padding(8)
-                .align(JLatexMathDrawable.ALIGN_CENTER) // Center content within drawable
                 .color(textColor)
                 .build()
             view.setLatexDrawable(drawable)

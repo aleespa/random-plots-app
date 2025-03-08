@@ -44,4 +44,10 @@
     <string name="constellations">Groupes D\'étoiles</string>
     <string name="zoomed_rotations">Rotations</string>
     <string name="filter_types">Catégorie de figure</string>
+    <string name="all_images">Toutes les images</string>
+    <string name="aspect_ratio_dialog_title">Choisir un rapport d\'aspect</string>
+    <string name="cancel">Annuler</string>
+    <string name="dark">Sombre</string>
+    <string name="light">Claire</string>
+    <string name="auto">Auto</string>
 </resources>

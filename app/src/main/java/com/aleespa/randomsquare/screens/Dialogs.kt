@@ -35,7 +35,7 @@ fun AspectRatioDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Choose an aspect ratio") },
+        title = { Text(text = stringResource(R.string.aspect_ratio_dialog_title)) },
         text = {
             Column {
                 Spacer(modifier = Modifier.height(16.dp))
@@ -66,7 +66,7 @@ fun AspectRatioDialog(
         confirmButton = {},
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(text = stringResource(R.string.cancel))
             }
         }
     )
@@ -108,7 +108,7 @@ fun FilterTypesDialog(visualizeModel: VisualizeModel) {
                                     visualizeModel.showFilterDialog = false // Close the dialog
                                 }
                             ) {
-                                Text(text = "All figures")
+                                Text(text = stringResource(R.string.all_images))
                             }
                             HorizontalDivider(thickness = 1.dp)
                         }
@@ -136,7 +136,7 @@ fun FilterTypesDialog(visualizeModel: VisualizeModel) {
                         visualizeModel.showFilterDialog = false
                     }
                 ) {
-                    Text("Cancel")
+                    Text(text = stringResource(R.string.cancel))
                 }
             }
         )

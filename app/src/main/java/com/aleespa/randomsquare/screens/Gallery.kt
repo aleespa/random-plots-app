@@ -230,7 +230,7 @@ fun FilterChipWithDropdown(visualizeModel: VisualizeModel) {
         selected = (visualizeModel.filterImageType != "None" ), // Show selected state when dialog is visible
         onClick = { visualizeModel.showFilterDialog = true }, // Show dialog on click
         label = { if (visualizeModel.filterImageType == "None" ) {
-            Text("Figure type")
+            Text(text = stringResource(R.string.filter_types))
         } else {Text(stringResource(Figures.fromKey(visualizeModel.filterImageType).resourceStringId))}},
         modifier = Modifier.padding(start = 10.dp),
         trailingIcon = if (visualizeModel.filterImageType == "None") {
