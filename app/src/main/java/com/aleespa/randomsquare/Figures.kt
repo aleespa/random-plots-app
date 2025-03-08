@@ -51,7 +51,7 @@ enum class Figures(
         R.drawable.irrational_spiropgrah_light),
     RANDOM_EIGENVALUES(
         "random_eigen",
-        FigureType.STOCHASTIC,
+        FigureType.MISC,
         R.string.random_eigen,
         R.drawable.random_eigen_dark,
         R.drawable.random_eigen_light),
@@ -67,7 +67,13 @@ enum class Figures(
     R.string.noisy_cicles,
     R.drawable.noisy_circles_dark,
     R.drawable.noisy_circles_light),
-    ;
+    WAVES(
+        "waves",
+        FigureType.MISC,
+        R.string.waves,
+        R.drawable.waves_dark,
+        R.drawable.waves_light
+    );
 
     companion object {
         fun fromKey(key: String): Figures {
@@ -79,8 +85,8 @@ enum class Figures(
 enum class FigureType(val stringId: Int){
     CIRCULAR(R.string.circular),
     POLYGON(R.string.polygon),
+    MISC(R.string.misc),
     CHAOS(R.string.chaos),
-    STOCHASTIC(R.string.stochastic),
 //    FRACTAL(R.string.fractal)
     ;
 }
