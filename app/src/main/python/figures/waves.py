@@ -9,18 +9,11 @@ import matplotlib.colors as mcolors
 from matplotlib import colormaps as cmaps
 from Colors.ColorSelector import ColorSelector
 
-original1 = mcolors.LinearSegmentedColormap.from_list(
-    'original1',
-    ['#96ceb4', '#ffeead', '#ff6f69', '#ffcc5c', '#88d8b0','#f7f4a3', '#7fccec', '#6a81d9', '#a479c9', '#dfdfdf']
-)
-cmaps.register(cmap=original1)
-
 
 def generate_plot(seed, bg_color=(0, 0, 0), dark_mode=True):
     rng = np.random.default_rng(seed)
 
     dark_background_colormaps = [
-        'original1',
         'Spectral', 'viridis', 'plasma', 'inferno', 'cividis',
         'YlOrRd', 'RdPu', 'spring', 'summer', 'autumn', 'winter',
         'cool', 'Wistia', 'hot', 'afmhot', 'copper', 'gist_heat',
