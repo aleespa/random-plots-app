@@ -49,7 +49,6 @@ def generate_plot(seed, bg_color=(0, 0, 0), dark_mode=True):
     n_waves = rng.integers(12, 22)
     lws = np.random.uniform(1, 4, size=n_waves)
     cs = ColorSelector(mpl.colormaps[colormap], dark_mode)
-    print(colormap)
     for k in range(n_waves):
         bb = brownian_bridge(rng, n)
         i = np.arange(0, n)
