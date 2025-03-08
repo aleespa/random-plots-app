@@ -7,8 +7,8 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -20,8 +20,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.aleespa.randomsquare.BottomBarScreen
 import com.aleespa.randomsquare.data.VisualizeModel
-import androidx.compose.runtime.remember
-import com.google.android.gms.ads.interstitial.InterstitialAd
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable

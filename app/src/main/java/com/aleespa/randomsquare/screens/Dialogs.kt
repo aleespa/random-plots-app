@@ -1,6 +1,7 @@
 package com.aleespa.randomsquare.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,8 +15,13 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.VisualizeModel
@@ -76,34 +82,51 @@ fun FilterTypesDialog(visualizeModel: VisualizeModel) {
             onDismissRequest = {
                 visualizeModel.showFilterDialog = false
             }, // Close the dialog when clicked outside
-            title = { Text("Figure type") },
+            title = {
+                Text(
+                    text=stringResource(R.string.filter_types),
+                style = TextStyle(
+                    fontFamily = parkinsansFontFamily,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                ),
+                modifier = Modifier
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Center) },
             text = {
-                LazyColumn {
-                    item { HorizontalDivider(thickness = 2.dp) }
-                    item {
-                        options.forEach { option ->
+                Box(
+                    modifier = Modifier
+                        .height(400.dp) // Set the desired height here
+                        .fillMaxWidth()
+                ) {
+                    LazyColumn {
+                        item {
                             TextButton(
                                 onClick = {
                                     visualizeModel.filterImageType =
-                                        option.key // Update the selected option
+                                        "None" // Update the selected option
                                     visualizeModel.showFilterDialog = false // Close the dialog
                                 }
                             ) {
-                                Text(text = stringResource(option.resourceStringId))
+                                Text(text = "All figures")
                             }
                             HorizontalDivider(thickness = 1.dp)
                         }
-                    }
-                    item {
-                        TextButton(
-                            onClick = {
-                                visualizeModel.filterImageType =
-                                    "None" // Update the selected option
-                                visualizeModel.showFilterDialog = false // Close the dialog
+                        item {
+                            options.forEach { option ->
+                                TextButton(
+                                    onClick = {
+                                        visualizeModel.filterImageType =
+                                            option.key // Update the selected option
+                                        visualizeModel.showFilterDialog = false // Close the dialog
+                                    }
+                                ) {
+                                    Text(text = stringResource(option.resourceStringId))
+                                }
+                                HorizontalDivider(thickness = 1.dp)
                             }
-                        ) {
-                            Text(text = "All figures")
                         }
+
                     }
                 }
             },

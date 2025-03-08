@@ -2,9 +2,6 @@ package com.aleespa.randomsquare.data
 
 import android.content.Context
 import android.net.Uri
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.io.File
 
 class ImageRepository(
