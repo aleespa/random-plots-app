@@ -38,4 +38,7 @@
     <string name="orbits">Orbits</string>
     <string name="misc">Misc</string>
     <string name="waves">Waves</string>
+    <string name="constellations">Constellations</string>
+    <string name="zoomed_rotations">Zoomed Rotations</string>
+    <string name="bubbles">Bubbles</string>
 </resources>
