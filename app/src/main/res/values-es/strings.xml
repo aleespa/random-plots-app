@@ -37,6 +37,11 @@
     <string name="chaos">Caos</string>
     <string name="spiral">Espiral</string>
     <string name="orbits">Orbitas</string>
-    <string name="misc">Misc</string>
-    <string name="cubism">Cubism</string>
+    <string name="misc">Misceláneo</string>
+    <string name="bubbles">Burbujas</string>
+    <string name="cubism">Cubismo</string>
+    <string name="waves">Ondas</string>
+    <string name="constellations">Constelaciones</string>
+    <string name="zoomed_rotations">Giros</string>
+    <string name="filter_types">Tipo de figura</string>
 </resources>
