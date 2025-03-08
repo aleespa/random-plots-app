@@ -43,15 +43,13 @@ class VisualizeModel(
     var darkFilter by mutableStateOf(false)
     var lightFilter by mutableStateOf(false)
     var filterImageType by mutableStateOf("None")
-    var isDarkMode by mutableStateOf(true)
     var randomSeed by mutableLongStateOf(0L)
     var isSavingLoading by mutableStateOf(false)
     var temporalImageEntity by mutableStateOf<Builder>(Builder())
     var toFitAspectRatio by mutableStateOf(false)
-
     var showFilterDialog by mutableStateOf(false)
-    var showColorDialog by mutableStateOf(false)
     var showAspectRatioDialog by mutableStateOf(false)
+    var isDarkMode by mutableStateOf(true)
 
     private var _settingDarkMode by mutableStateOf(SettingDarkMode.Auto)
     var settingDarkMode: SettingDarkMode
@@ -90,8 +88,8 @@ class VisualizeModel(
         }
     }
 
-    private var _bgColor by mutableStateOf(Color(0, 0, 0, 0))
-    var bgColor: Color
+    private var _bgColor by mutableStateOf(BackgroundColors.BLACK)
+    var bgColor: BackgroundColors
         get() = _bgColor
         set(value) {
             _bgColor = value
@@ -101,13 +99,13 @@ class VisualizeModel(
         }
 
     init {
-        // Load bgColor from DataStore
         viewModelScope.launch {
             settingsRepository.bgColor.collect { color ->
                 _bgColor = color
             }
         }
     }
+
 
 
     fun deleteImageById(imageId: Int) {

@@ -20,8 +20,10 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.FileProvider
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
+import com.aleespa.randomsquare.data.BackgroundColors
 import com.aleespa.randomsquare.data.ImageEntity
 import com.aleespa.randomsquare.data.VisualizeModel
+import com.aleespa.randomsquare.data.getBackgroundColorByColor
 import com.aleespa.randomsquare.screens.loadImage
 import com.chaquo.python.Python
 import kotlinx.coroutines.CoroutineScope
@@ -51,8 +53,8 @@ fun generateRandomPlot(visualizeModel: VisualizeModel):
     val result = mainModule.callAttr(
         "generate",
         visualizeModel.randomSeed,
-        visualizeModel.isDarkMode,
-        colorToHexWithoutAlpha(visualizeModel.bgColor),
+        visualizeModel.bgColor.type == "Dark",
+        colorToHexWithoutAlpha(visualizeModel.bgColor.color),
         visualizeModel.selectedFigure.key)
 
     val imageBytes = Base64.getDecoder().decode(result.toString().toByteArray())
@@ -79,7 +81,7 @@ fun setWallpaper(context: Context, visualizeModel: VisualizeModel) {
                 bitmap,
                 resolution[0],
                 resolution[1],
-                visualizeModel.bgColor
+                visualizeModel.bgColor.color
             )
         }
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
@@ -175,10 +177,10 @@ fun generateNewPlot(visualizeModel: VisualizeModel, context: Context) {
     CoroutineScope(Dispatchers.Main).launch {
         visualizeModel.temporalImageEntity = ImageEntity.Builder()
             .setImageType(visualizeModel.selectedFigure.key)
-            .setIsDarkMode(visualizeModel.isDarkMode)
+            .setIsDarkMode(visualizeModel.bgColor.type == "Dark")
             .setTimestamp(System.currentTimeMillis())
             .setRandomSeed(visualizeModel.randomSeed)
-            .setBackgroundColor(fromColor(visualizeModel.bgColor))
+            .setBackgroundColor(fromColor(visualizeModel.bgColor.color))
         try {
             val result = withContext(Dispatchers.Default) {
                 generateRandomPlot(visualizeModel)
@@ -204,7 +206,7 @@ fun loadSavedImage(visualizeModel: VisualizeModel,
     visualizeModel.isFromGallery = true
     visualizeModel.galleryURI = image.uri
     visualizeModel.galleryId = image.id
-    visualizeModel.bgColor = toColor(image.backgroundColor)
+    visualizeModel.bgColor = getBackgroundColorByColor(toColor(image.backgroundColor))
 
     val figureKey = image.imageType
     visualizeModel.selectedFigure = Figures.fromKey(figureKey)

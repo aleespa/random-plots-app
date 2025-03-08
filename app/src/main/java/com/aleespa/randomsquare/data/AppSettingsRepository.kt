@@ -1,12 +1,8 @@
 package com.aleespa.randomsquare.data
 
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.aleespa.randomsquare.Figures
 import kotlinx.coroutines.flow.Flow
@@ -16,7 +12,7 @@ class AppSettingsRepository(private val dataStore: DataStore<Preferences>) {
     companion object {
         val DARK_MODE_SETTING = stringPreferencesKey("dark_mode_setting")
         val SELECTED_FIGURE = stringPreferencesKey("selected_figure")
-        val BG_COLOR = longPreferencesKey("bg_color")
+        val BG_COLOR = stringPreferencesKey("bg_color")
     }
 
     // Save settingDarkMode
@@ -48,16 +44,16 @@ class AppSettingsRepository(private val dataStore: DataStore<Preferences>) {
             } ?: Figures.POLYGON_FEEDBACK // Default value
         }
 
-    suspend fun saveBgColor(color: Color) {
+    suspend fun saveBgColor(color: BackgroundColors) {
         dataStore.edit { preferences ->
-            preferences[BG_COLOR] = color.toArgb().toLong()
+            preferences[BG_COLOR] = color.name
         }
     }
 
     // Load bgColor as Flow
-    val bgColor: Flow<Color> = dataStore.data
+    val bgColor: Flow<BackgroundColors> = dataStore.data
         .map { preferences ->
-            val colorLong = preferences[BG_COLOR] ?: Color(0, 0, 0, 0).toArgb().toLong()
-            Color(colorLong.toInt())
+            val colorLong = preferences[BG_COLOR] ?: BackgroundColors.BLACK.name
+            BackgroundColors.valueOf(colorLong)
         }
 }

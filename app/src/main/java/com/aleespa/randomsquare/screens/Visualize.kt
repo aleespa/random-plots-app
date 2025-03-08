@@ -58,6 +58,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -81,8 +82,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.aleespa.randomsquare.BottomBarScreen
 import com.aleespa.randomsquare.R
-import com.aleespa.randomsquare.data.BackgroundColors
 import com.aleespa.randomsquare.data.VisualizeModel
+import com.aleespa.randomsquare.data.getBackgroundColorsByType
 import com.aleespa.randomsquare.tools.LatexMathView
 import com.aleespa.randomsquare.tools.generateNewPlot
 import com.aleespa.randomsquare.tools.loadBitmapFromFile
@@ -119,7 +120,7 @@ fun Visualize(visualizeModel: VisualizeModel,
     }
     LazyColumn(
         modifier = Modifier.fillMaxSize().safeDrawingPadding(),
-        verticalArrangement = Arrangement.spacedBy(30.dp)
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         item { Spacer(Modifier.height(20.dp)) }
         item { HeaderSection(visualizeModel, context) }
@@ -451,43 +452,79 @@ fun GeneratePlotButton(
         Spacer(Modifier.width(16.dp))
     }
 }
-
-
 @Composable
 fun BackgroundColorButtons(visualizeModel: VisualizeModel) {
-    LazyRow(
+    Box(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp)
+        contentAlignment = Alignment.Center // Center the Column horizontally
     ) {
-        val backgroundOptions = BackgroundColors.entries.toTypedArray()
-
-        itemsIndexed(backgroundOptions) { index, backgroundColor ->
-            ElevatedCard(
-                modifier = Modifier
-                    .size(55.dp)
-                    .clickable {
-                        visualizeModel.bgColor = backgroundColor.color
-                        visualizeModel.isDarkMode = backgroundColor.type == "Dark"
-                    },
-                elevation = CardDefaults.elevatedCardElevation(
-                    defaultElevation = 8.dp
-                ),
-                shape = RoundedCornerShape(8.dp)
+        Column {
+            // Dark Background Colors
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(backgroundColor.color)
-                        .border(
-                            width = if (visualizeModel.bgColor == backgroundColor.color) 4.dp else 1.dp,
-                            color = if (visualizeModel.bgColor == backgroundColor.color)
-                                MaterialTheme.colorScheme.primary
-                            else
-                                MaterialTheme.colorScheme.outline,
-                            shape = RoundedCornerShape(8.dp)
+                val darkBackgroundOptions = getBackgroundColorsByType("Dark")
+                itemsIndexed(darkBackgroundOptions) { index, backgroundColor ->
+                    ElevatedCard(
+                        modifier = Modifier
+                            .size(50.dp)
+                            .clickable {
+                                visualizeModel.bgColor = backgroundColor
+                            },
+                        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 8.dp),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(backgroundColor.color)
+                                .border(
+                                    width = if (visualizeModel.bgColor == backgroundColor) 4.dp else 0.dp,
+                                    color = if (visualizeModel.bgColor == backgroundColor)
+                                        MaterialTheme.colorScheme.primary
+                                    else
+                                        Color.Transparent,
+                                    shape = RoundedCornerShape(8.dp)
+                                )
                         )
-                )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp)) // Add space between rows
+            // Light Background Colors
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp)
+            ) {
+                val lightBackgroundOptions = getBackgroundColorsByType("Light")
+                itemsIndexed(lightBackgroundOptions) { index, backgroundColor ->
+                    ElevatedCard(
+                        modifier = Modifier
+                            .size(50.dp)
+                            .clickable {
+                                visualizeModel.bgColor = backgroundColor
+                            },
+                        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 8.dp),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(backgroundColor.color)
+                                .border(
+                                    width = if (visualizeModel.bgColor == backgroundColor) 4.dp else 0.dp,
+                                    color = if (visualizeModel.bgColor == backgroundColor)
+                                        MaterialTheme.colorScheme.primary
+                                    else
+                                        Color.Transparent,
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                        )
+                    }
+                }
             }
         }
     }
