@@ -3,15 +3,8 @@
 
     <style name="Theme.MyApplication" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="android:windowBackground">@color/splashBackground</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@color/splashBackground</item>
         <item name="android:statusBarColor">@color/statusBarColor</item>
 
-    </style>
-
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <!-- Your light theme settings -->
-    </style>
-
-    <style name="AppTheme.Dark" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <!-- Your dark theme settings -->
     </style>
 </resources>

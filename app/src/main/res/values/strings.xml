@@ -36,4 +36,6 @@
     <string name="chaos">Chaos</string>
     <string name="spiral">Spiral</string>
     <string name="orbits">Orbits</string>
+    <string name="misc">Misc</string>
+    <string name="waves">Waves</string>
 </resources>
