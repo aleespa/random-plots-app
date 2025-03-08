@@ -58,7 +58,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -90,7 +89,6 @@ import com.aleespa.randomsquare.tools.loadBitmapFromFile
 import com.aleespa.randomsquare.tools.loadSavedImage
 import com.aleespa.randomsquare.tools.saveBitmapToGallery
 import com.aleespa.randomsquare.tools.setWallpaper
-import com.google.android.gms.ads.interstitial.InterstitialAd
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -456,41 +454,49 @@ fun GeneratePlotButton(
 
 
 @Composable
-fun BackgroundColorButtons(visualizeModel: VisualizeModel){
+fun BackgroundColorButtons(visualizeModel: VisualizeModel) {
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
-        var backgroundOptions = BackgroundColors.entries.toTypedArray();
+        val backgroundOptions = BackgroundColors.entries.toTypedArray()
 
         itemsIndexed(backgroundOptions) { index, backgroundColor ->
-            Box(
+            ElevatedCard(
                 modifier = Modifier
-                    .size(50.dp)
-                    .background(backgroundColor.color, shape = RoundedCornerShape(8.dp))
-                    .border(
-                        width = if (visualizeModel.bgColor == backgroundColor.color) 3.dp else 0.dp,
-                        color = if (visualizeModel.bgColor == backgroundColor.color) MaterialTheme.colorScheme.primary else Color.Transparent,
-                        shape = RoundedCornerShape(8.dp)
-                    )
+                    .size(55.dp)
                     .clickable {
                         visualizeModel.bgColor = backgroundColor.color
                         visualizeModel.isDarkMode = backgroundColor.type == "Dark"
                     },
-                contentAlignment = Alignment.Center
-
-            ){}
+                elevation = CardDefaults.elevatedCardElevation(
+                    defaultElevation = 8.dp
+                ),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(backgroundColor.color)
+                        .border(
+                            width = if (visualizeModel.bgColor == backgroundColor.color) 4.dp else 1.dp,
+                            color = if (visualizeModel.bgColor == backgroundColor.color)
+                                MaterialTheme.colorScheme.primary
+                            else
+                                MaterialTheme.colorScheme.outline,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                )
+            }
         }
     }
 }
-
-
 @Composable
 fun VisualizeBox(visualizeModel: VisualizeModel){
     ElevatedCard(
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 6.dp
+            defaultElevation = 8.dp
         ),
         modifier = Modifier
             .aspectRatio(1f)

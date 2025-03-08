@@ -50,12 +50,6 @@ enum class Figures(
         R.string.exponential_sum,
         R.drawable.exponential_sum_dark,
         R.drawable.exponential_sum_light),
-    RANDOM_EIGENVALUES(
-        "random_eigen",
-        FigureType.MISC,
-        R.string.random_eigen,
-        R.drawable.random_eigen_dark,
-        R.drawable.random_eigen_light),
     POLYGON_TUNNEL(
         "polygon_tunnel",
         FigureType.POLYGON,
@@ -64,10 +58,10 @@ enum class Figures(
         R.drawable.polygon_tunnel_light),
     NOISY_CIRCLES(
         "noisy_circles",
-    FigureType.CIRCULAR,
-    R.string.noisy_cicles,
-    R.drawable.noisy_circles_dark,
-    R.drawable.noisy_circles_light),
+        FigureType.CIRCULAR,
+        R.string.noisy_cicles,
+        R.drawable.noisy_circles_dark,
+        R.drawable.noisy_circles_light),
     WAVES(
         "waves",
         FigureType.MISC,
@@ -94,7 +88,13 @@ enum class Figures(
         FigureType.MISC,
         R.string.bubbles,
         R.drawable.bubbles_dark,
-        R.drawable.bubbles_light)
+        R.drawable.bubbles_light),
+    RANDOM_EIGENVALUES(
+        "random_eigen",
+        FigureType.MISC,
+        R.string.random_eigen,
+        R.drawable.random_eigen_dark,
+        R.drawable.random_eigen_light)
     ;
 
     companion object {

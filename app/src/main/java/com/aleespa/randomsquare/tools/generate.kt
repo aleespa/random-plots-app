@@ -244,7 +244,7 @@ fun convertToAspectRatio(
     val scaledWidth = (originalBitmap.width * scale).toInt()
     val scaledHeight = (originalBitmap.height * scale).toInt()
     val left = (targetWidth - scaledWidth) / 2
-    val top = (targetHeight - scaledHeight) / 2
+    val top = (targetHeight - scaledHeight) / 2.3
 
     // Draw the original bitmap onto the new canvas
     canvas.drawBitmap(
