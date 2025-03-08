@@ -54,6 +54,7 @@ import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.getFiguresByType
 import com.aleespa.randomsquare.tools.generateNewPlot
 import com.aleespa.randomsquare.tools.readTexAssets
+import com.aleespa.randomsquare.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,7 +80,12 @@ fun Browse(
                 actions = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = visualizeModel.settingDarkMode.text,
+                            text = when (visualizeModel.settingDarkMode)
+                            {
+                                SettingDarkMode.On -> ""
+                                SettingDarkMode.Off -> ""
+                                SettingDarkMode.Auto -> stringResource(id = R.string.auto)
+                            },
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.padding(end = 4.dp)
                         )

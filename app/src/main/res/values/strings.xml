@@ -43,4 +43,10 @@
     <string name="bubbles">Bubbles</string>
     <string name="cubism">Cubism</string>
     <string name="filter_types">Figure type</string>
+    <string name="all_images">All images</string>
+    <string name="aspect_ratio_dialog_title">Choose aspect ratio</string>
+    <string name="cancel" >Cancel</string>
+    <string name="dark">Dark</string>
+    <string name="light">Light</string>
+    <string name="auto">Auto</string>
 </resources>

@@ -44,4 +44,10 @@
     <string name="constellations">Constelaciones</string>
     <string name="zoomed_rotations">Giros</string>
     <string name="filter_types">Tipo de figura</string>
+    <string name="all_images">Todas las imagenes</string>
+    <string name="aspect_ratio_dialog_title">Escoger formato</string>
+    <string name="cancel">Cancelar</string>
+    <string name="dark">Oscuro</string>
+    <string name="light">Luminoso</string>
+    <string name="auto">Auto</string>
 </resources>
