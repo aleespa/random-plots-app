@@ -277,7 +277,6 @@ fun ScrollContent(
                 bottom = innerPadding.calculateBottomPadding() + 80.dp // Add padding for BottomNavigationBar height
             )
         ) {
-
             items(images) { image ->
                 AsyncImage(
                     model = ImageRequest.Builder(context)

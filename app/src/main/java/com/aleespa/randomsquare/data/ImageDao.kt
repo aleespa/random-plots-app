@@ -1,6 +1,7 @@
 package com.aleespa.randomsquare.data
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -19,6 +20,9 @@ interface ImageDao {
 
     @Query("DELETE FROM images WHERE id = :id")
     suspend fun deleteImageById(id: Int)
+
+    @Delete
+    suspend fun deleteImages(images: List<ImageEntity>)
 
     @Query("""
         SELECT * FROM images 

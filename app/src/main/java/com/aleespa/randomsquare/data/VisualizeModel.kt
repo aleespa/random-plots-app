@@ -1,5 +1,7 @@
 package com.aleespa.randomsquare.data
 
+import android.content.Context
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
@@ -17,26 +19,26 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.aleespa.randomsquare.data.ImageEntity.Builder
+import java.io.File
 
 class VisualizeModelFactory(
-    private val dao: ImageDao,
+    private val imageRepository: ImageRepository,
     private val settingsRepository: AppSettingsRepository
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return VisualizeModel(dao, settingsRepository) as T
+        return VisualizeModel(imageRepository, settingsRepository) as T
     }
 }
 
 class VisualizeModel(
-    private val dao: ImageDao,
+    private val imageRepository: ImageRepository,
     private val settingsRepository: AppSettingsRepository
 ): ViewModel() {
     var loadingPlotGenerator by mutableStateOf(false)
     var showInfo by mutableStateOf(false)
     var imageBitmapState by mutableStateOf<ImageBitmap?>(null)
     var latexString by mutableStateOf("")
-
     var isFromGallery by mutableStateOf(false)
     var galleryURI by mutableStateOf("")
     var galleryId by mutableIntStateOf(0)
@@ -49,7 +51,6 @@ class VisualizeModel(
     var toFitAspectRatio by mutableStateOf(false)
     var showFilterDialog by mutableStateOf(false)
     var showAspectRatioDialog by mutableStateOf(false)
-    var isDarkMode by mutableStateOf(true)
 
     private var _settingDarkMode by mutableStateOf(SettingDarkMode.Auto)
     var settingDarkMode: SettingDarkMode
@@ -106,16 +107,12 @@ class VisualizeModel(
         }
     }
 
-
-
-    fun deleteImageById(imageId: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            dao.deleteImageById(imageId)
-        }
+    suspend fun deleteImageById(imageId: Int) {
+        return imageRepository.deleteImageById(imageId)
     }
 
     suspend fun insertImage(imageEntity: ImageEntity): Long {
-        return dao.insertImage(imageEntity)
+        return imageRepository.insertImage(imageEntity)
     }
 
     fun getImageFilterConditions(): FilterConditions {
@@ -136,9 +133,16 @@ class VisualizeModel(
 
         return FilterConditions(isDarkMode, imageType)
     }
-    suspend fun getFilteredImages(filterConditions: FilterConditions): List<ImageEntity> {
-        return dao.getFilteredImages(filterConditions.isDarkMode, filterConditions.imageType)
+
+
+
+    private suspend fun getFilteredImages(filterConditions: FilterConditions): List<ImageEntity> {
+        return imageRepository.getFilteredImages(
+            isDarkMode = filterConditions.isDarkMode,
+            imageType = filterConditions.imageType
+        )
     }
+
     // MutableStateFlow to hold filtered images
     private val _filteredImages = MutableStateFlow<List<ImageEntity>>(emptyList())
     val filteredImages: StateFlow<List<ImageEntity>> = _filteredImages
@@ -158,10 +162,17 @@ class VisualizeModel(
         }
         galleryId = id.toInt() // This will be executed on the main thread
     }
+
+
 }
+
+
+
+
 
 data class FilterConditions(
     val isDarkMode: Boolean?,
     val imageType: String?
 )
+
 
