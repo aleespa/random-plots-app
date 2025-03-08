@@ -7,6 +7,13 @@ enum class Figures(
     val sampleDarkImage: Int,
     val sampleLightImage: Int) {
 
+
+    CONTINUOUS_SPIROGRAPH(
+        "irrational_spirograph",
+        FigureType.CIRCULAR,
+        R.string.irrational_spirograph,
+        R.drawable.irrational_spirograph_dark,
+        R.drawable.irrational_spiropgrah_light),
     ORBITS(
         "orbits",
         FigureType.CHAOS,
@@ -43,12 +50,6 @@ enum class Figures(
         R.string.exponential_sum,
         R.drawable.exponential_sum_dark,
         R.drawable.exponential_sum_light),
-    CONTINUOUS_SPIROGRAPH(
-        "irrational_spirograph",
-        FigureType.CIRCULAR,
-        R.string.irrational_spirograph,
-        R.drawable.irrational_spirograph_dark,
-        R.drawable.irrational_spiropgrah_light),
     RANDOM_EIGENVALUES(
         "random_eigen",
         FigureType.MISC,
@@ -73,7 +74,28 @@ enum class Figures(
         R.string.waves,
         R.drawable.waves_dark,
         R.drawable.waves_light
-    );
+    ),
+    CONSTELLATIONS(
+        "constellations",
+        FigureType.MISC,
+        R.string.constellations,
+        R.drawable.constellations_dark,
+        R.drawable.constellations_light
+    ),
+    ZOOMED_ROTATIONS(
+        "zoomed_rotations",
+        FigureType.POLYGON,
+        R.string.zoomed_rotations,
+        R.drawable.zoomed_rotations_dark,
+        R.drawable.zoomed_rotations_light
+    ),
+    BUBBLES(
+        "bubbles",
+        FigureType.MISC,
+        R.string.bubbles,
+        R.drawable.bubbles_dark,
+        R.drawable.bubbles_light)
+    ;
 
     companion object {
         fun fromKey(key: String): Figures {
