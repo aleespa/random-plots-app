@@ -82,7 +82,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.aleespa.randomsquare.BottomBarScreen
 import com.aleespa.randomsquare.R
+import com.aleespa.randomsquare.data.BackgroundColors
 import com.aleespa.randomsquare.data.VisualizeModel
+import com.aleespa.randomsquare.data.adjustColor
 import com.aleespa.randomsquare.data.getBackgroundColorsByType
 import com.aleespa.randomsquare.tools.LatexMathView
 import com.aleespa.randomsquare.tools.generateNewPlot
@@ -480,11 +482,14 @@ fun BackgroundColorButtons(visualizeModel: VisualizeModel) {
                                 .fillMaxSize()
                                 .background(backgroundColor.color)
                                 .border(
-                                    width = if (visualizeModel.bgColor == backgroundColor) 4.dp else 0.dp,
+                                    width = if (visualizeModel.bgColor == backgroundColor) 5.dp else 4.dp,
                                     color = if (visualizeModel.bgColor == backgroundColor)
-                                        MaterialTheme.colorScheme.primary
+                                        Color(255, 234, 0)
                                     else
-                                        Color.Transparent,
+                                        if (backgroundColor == BackgroundColors.BLACK)
+                                            backgroundColor.color.adjustColor(0.45f, 0.0f)
+                                        else
+                                            backgroundColor.color.adjustColor(0.45f, 0.2f),
                                     shape = RoundedCornerShape(8.dp)
                                 )
                         )
@@ -515,11 +520,14 @@ fun BackgroundColorButtons(visualizeModel: VisualizeModel) {
                                 .fillMaxSize()
                                 .background(backgroundColor.color)
                                 .border(
-                                    width = if (visualizeModel.bgColor == backgroundColor) 4.dp else 0.dp,
+                                    width = if (visualizeModel.bgColor == backgroundColor) 5.dp else 4.dp,
                                     color = if (visualizeModel.bgColor == backgroundColor)
-                                        MaterialTheme.colorScheme.primary
+                                        Color(255, 234, 0)
                                     else
-                                        Color.Transparent,
+                                        if (backgroundColor == BackgroundColors.WHITE)
+                                            backgroundColor.color.adjustColor(-0.2f,0f)
+                                        else
+                                            backgroundColor.color.adjustColor(-0.2f,0.4f),
                                     shape = RoundedCornerShape(8.dp)
                                 )
                         )
