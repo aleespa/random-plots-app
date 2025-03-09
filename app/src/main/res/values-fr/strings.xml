@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Random</string>
-    <string name="generate">Générer\nRandom Square</string>
+    <string name="generate">Générer\nCarré aléatoire</string>
     <string name="save">Enregistrer dans la galerie</string>
     <string name="set_wallpaper">Définir comme fond d\'écran</string>
     <string name="generate_img_first">Générer un graphique d\'abord</string>
@@ -19,16 +19,16 @@
     <string name="share_text">Partager le tableau aléatoire</string>
     <string name="more_info">Plus d\'informations</string>
     <string name="select_wallpaper_app">Choisir l\'application de fond d\'écran</string>
-    <string name="polygon_tunnel">Polygone Tunnel</string>
-    <string name="polygon_feedback">Polygon Feedback</string>
+    <string name="polygon_tunnel">Tunnel polygonal</string>
+    <string name="polygon_feedback">Rétroaction polygonale</string>
     <string name="browse">Naviguer</string>
     <string name="circular">Cercles</string>
     <string name="polygon">Polygones</string>
     <string name="stochastic">Nuages de points</string>
     <string name="spirograph">Spirographe</string>
     <string name="irrational_spirograph">Spirographe Irrationnel</string>
-    <string name="random_eigen">Valeur Propre Aléatoire</string>
-    <string name="noisy_cicles">Cercle Bruyant</string>
+    <string name="random_eigen">Valeurs Propres Aléatoires</string>
+    <string name="noisy_cicles">Cercles Bruyants</string>
     <string name="exponential_sum">Somme Exponentielle</string>
     <string name="dark_name">Sombre</string>
     <string name="light_name">Clair</string>
@@ -41,13 +41,13 @@
     <string name="bubbles">Bulles</string>
     <string name="cubism">Cubisme</string>
     <string name="waves">Ondes</string>
-    <string name="constellations">Groupes D\'étoiles</string>
+    <string name="constellations">Constellations</string>
     <string name="zoomed_rotations">Rotations</string>
     <string name="filter_types">Catégorie de figure</string>
     <string name="all_images">Toutes les images</string>
     <string name="aspect_ratio_dialog_title">Choisir un rapport d\'aspect</string>
     <string name="cancel">Annuler</string>
     <string name="dark">Sombre</string>
-    <string name="light">Claire</string>
+    <string name="light">Clair</string>
     <string name="auto">Auto</string>
 </resources>
