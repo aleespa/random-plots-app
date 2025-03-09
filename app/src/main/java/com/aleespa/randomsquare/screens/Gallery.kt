@@ -4,8 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -42,11 +44,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -245,10 +250,8 @@ fun FilterChipWithDropdown(visualizeModel: VisualizeModel) {
             null
         }
     )
-
     FilterTypesDialog(visualizeModel)
 }
-
 
 @Composable
 fun ScrollContent(
@@ -265,36 +268,63 @@ fun ScrollContent(
         visualizeModel.updateFilteredImages()
     }
 
-    Column {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3), // Display three items per row
-            modifier = Modifier
-                .fillMaxSize(),
-            contentPadding = PaddingValues(
-                start = innerPadding.calculateStartPadding(LayoutDirection.Ltr) ,
-                end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
-                top = innerPadding.calculateTopPadding(),
-                bottom = innerPadding.calculateBottomPadding() + 80.dp // Add padding for BottomNavigationBar height
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        if (images.isEmpty()) {
+            Image(
+                painter = painterResource(id = R.drawable.main_icon),
+                contentDescription = "Sin imágenes",
+                modifier = Modifier
+                    .size(150.dp)
+                    .padding(bottom = 16.dp)
+                    .graphicsLayer(alpha = 0.75f),
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+
             )
-        ) {
-            items(images) { image ->
-                AsyncImage(
-                    model = ImageRequest.Builder(context)
-                        .data(image.uri)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(2.dp)
-                        .clickable {
-                            loadSavedImage(visualizeModel, image, context)
-                            navController.navigate(BottomBarScreen.Visualize.route)
-                        }
+            Text(
+                text = stringResource(R.string.no_images),
+                textAlign = TextAlign.Center,
+                fontSize = 16.sp,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+            )
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(
+                    start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
+                    end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
+                    top = innerPadding.calculateTopPadding(),
+                    bottom = innerPadding.calculateBottomPadding() + 80.dp
                 )
+            ) {
+                items(images) { image ->
+                    AsyncImage(
+                        model = ImageRequest.Builder(context)
+                            .data(image.uri)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(2.dp)
+                            .clickable {
+                                loadSavedImage(visualizeModel, image, context)
+                                navController.navigate(BottomBarScreen.Visualize.route)
+                            }
+                    )
+                }
             }
         }
     }
 }
+
 
 fun calculateSampleSize(
     originalWidth: Int,

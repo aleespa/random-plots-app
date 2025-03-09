@@ -49,4 +49,5 @@
     <string name="dark">Dark</string>
     <string name="light">Light</string>
     <string name="auto">Auto</string>
+    <string name="no_images">Create and save your images from the \'Visualize\' section to see them here.</string>
 </resources>

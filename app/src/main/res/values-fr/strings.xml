@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Random</string>
-    <string name="generate">Générer\nCarré aléatoire</string>
+    <string name="generate">Générer\nRandom Plot</string>
     <string name="save">Enregistrer dans la galerie</string>
     <string name="set_wallpaper">Définir comme fond d\'écran</string>
     <string name="generate_img_first">Générer un graphique d\'abord</string>
@@ -13,7 +13,7 @@
     <string name="settings">Paramètres</string>
     <string name="customize">Personnaliser</string>
     <string name="visualize">Visualiser</string>
-    <string name="saved_images">Mes Graphiques Aléatoires</string>
+    <string name="saved_images">Ma Gallerie</string>
     <string name="delete_from_gallery">Supprimer de la galerie</string>
     <string name="share">Partager</string>
     <string name="share_text">Partager le tableau aléatoire</string>
@@ -27,7 +27,7 @@
     <string name="stochastic">Nuages de points</string>
     <string name="spirograph">Spirographe</string>
     <string name="irrational_spirograph">Spirographe Irrationnel</string>
-    <string name="random_eigen">Valeurs Propres Aléatoires</string>
+    <string name="random_eigen">Valeurs Propres</string>
     <string name="noisy_cicles">Cercles Bruyants</string>
     <string name="exponential_sum">Somme Exponentielle</string>
     <string name="dark_name">Sombre</string>
@@ -50,4 +50,5 @@
     <string name="dark">Sombre</string>
     <string name="light">Clair</string>
     <string name="auto">Auto</string>
+    <string name="no_images">Créez et enregistrez vos images depuis la section \'Visualiser\' pour les voir ici.</string>
 </resources>
