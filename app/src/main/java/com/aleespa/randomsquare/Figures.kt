@@ -1,5 +1,13 @@
 package com.aleespa.randomsquare
 
+enum class FigureType(val stringId: Int){
+    RANDOM(R.string.random),
+    CIRCULAR(R.string.circular),
+    POLYGON(R.string.polygon),
+    MISC(R.string.misc),
+    CHAOS(R.string.chaos),
+}
+
 enum class Figures(
     val key: String,
     val figureType: FigureType,
@@ -7,7 +15,11 @@ enum class Figures(
     val sampleDarkImage: Int,
     val sampleLightImage: Int) {
 
-
+    SUPER_RANDOM("super",
+        FigureType.RANDOM,
+        R.string.super_random,
+        R.drawable.super_random_dark,
+        R.drawable.super_random_light),
     CONTINUOUS_SPIROGRAPH(
         "irrational_spirograph",
         FigureType.CIRCULAR,
@@ -76,12 +88,12 @@ enum class Figures(
         R.drawable.constellations_dark,
         R.drawable.constellations_light
     ),
-    ZOOMED_ROTATIONS(
-        "zoomed_rotations",
+    ROTATIONS(
+        "rotations",
         FigureType.POLYGON,
-        R.string.zoomed_rotations,
-        R.drawable.zoomed_rotations_dark,
-        R.drawable.zoomed_rotations_light
+        R.string.rotations,
+        R.drawable.rotations_dark,
+        R.drawable.rotations_light
     ),
     BUBBLES(
         "bubbles",
@@ -110,14 +122,7 @@ enum class Figures(
     }
 }
 
-enum class FigureType(val stringId: Int){
-    CIRCULAR(R.string.circular),
-    POLYGON(R.string.polygon),
-    MISC(R.string.misc),
-    CHAOS(R.string.chaos),
-//    FRACTAL(R.string.fractal)
-    ;
-}
+
 
 fun getFiguresByType(figureType: FigureType): List<Figures> {
     return Figures.entries.filter { it.figureType == figureType }

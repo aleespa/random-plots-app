@@ -449,8 +449,6 @@ fun GeneratePlotButton(
                     }
             )
         }
-
-
         Spacer(Modifier.width(16.dp))
     }
 }
