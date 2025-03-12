@@ -76,7 +76,7 @@ fun AspectRatioDialog(
 @Composable
 fun FilterTypesDialog(visualizeModel: VisualizeModel) {
 
-    val options = Figures.entries.map { it }
+    val options = Figures.entries.map { it }.sortedBy { it.key }
     if (visualizeModel.showFilterDialog) {
         AlertDialog(
             onDismissRequest = {

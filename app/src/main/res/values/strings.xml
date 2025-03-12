@@ -39,7 +39,7 @@
     <string name="misc">"Miscellaneous "</string>
     <string name="waves">Waves</string>
     <string name="constellations">Constellations</string>
-    <string name="zoomed_rotations">Rotations</string>
+    <string name="rotations">Rotations</string>
     <string name="bubbles">Bubbles</string>
     <string name="cubism">Cubism</string>
     <string name="filter_types">Figure type</string>
@@ -50,4 +50,6 @@
     <string name="light">Light</string>
     <string name="auto">Auto</string>
     <string name="no_images">Create and save your images from the \'Visualize\' section to see them here.</string>
+    <string name="random">Fully Random\n</string>
+    <string name="super_random">Super random</string>
 </resources>

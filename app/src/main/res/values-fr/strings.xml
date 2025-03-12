@@ -42,7 +42,7 @@
     <string name="cubism">Cubisme</string>
     <string name="waves">Ondes</string>
     <string name="constellations">Constellations</string>
-    <string name="zoomed_rotations">Rotations</string>
+    <string name="rotations">Rotations</string>
     <string name="filter_types">Catégorie de figure</string>
     <string name="all_images">Toutes les images</string>
     <string name="aspect_ratio_dialog_title">Choisir un rapport d\'aspect</string>
