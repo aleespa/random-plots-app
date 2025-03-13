@@ -87,6 +87,7 @@ import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.data.adjustColor
 import com.aleespa.randomsquare.data.getBackgroundColorsByType
 import com.aleespa.randomsquare.tools.LatexMathView
+import com.aleespa.randomsquare.tools.generate32BitSeed
 import com.aleespa.randomsquare.tools.generateNewPlot
 import com.aleespa.randomsquare.tools.loadBitmapFromFile
 import com.aleespa.randomsquare.tools.loadSavedImage
@@ -100,7 +101,8 @@ import java.io.File
 
 @Composable
 fun Visualize(visualizeModel: VisualizeModel,
-              navController: NavHostController) {
+              navController: NavHostController,
+              showAd: () -> Unit) {
     val context = LocalContext.current
     BackHandler {
         navController.navigate(BottomBarScreen.Browse.route)
@@ -127,7 +129,7 @@ fun Visualize(visualizeModel: VisualizeModel,
         item { Spacer(Modifier.height(20.dp)) }
         item { HeaderSection(visualizeModel, context) }
         item { VisualizeBox(visualizeModel) }
-        item { GeneratePlotButton(visualizeModel, context) }
+        item { GeneratePlotButton(visualizeModel, context, showAd) }
         item { BackgroundColorButtons(visualizeModel) }
         item { Spacer(Modifier.height(80.dp)) }
     }
@@ -386,7 +388,8 @@ fun VisualizeOptionsButtons(
 @Composable
 fun GeneratePlotButton(
     visualizeModel: VisualizeModel,
-    context: Context
+    context: Context,
+    showAd: () -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -410,6 +413,9 @@ fun GeneratePlotButton(
             elevation = FloatingActionButtonDefaults.elevation(10.dp),
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             onClick = {
+                if ((generate32BitSeed().toLong()%3).toInt() ==0){
+                    showAd()
+                }
                 generateNewPlot(visualizeModel, context)
             },
             icon = {
