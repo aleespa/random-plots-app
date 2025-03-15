@@ -51,4 +51,8 @@
     <string name="light">Luminoso</string>
     <string name="auto">Auto</string>
     <string name="no_images">Crea y guarda tus imágenes desde la sección \'Visualizar\' para verlas aquí.</string>
+    <string name="super_random">Super</string>
+    <string name="compositions">Composiciones</string>
+    <string name="soft">Suave</string>
+    <string name="blackwhite">Blanco y Negro</string>
 </resources>
