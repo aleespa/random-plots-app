@@ -108,6 +108,6 @@ class MainActivity : ComponentActivity() {
     }
 
     companion object {
-        private const val AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712"
+        private const val AD_UNIT_ID = "ca-app-pub-1817119126251176/3331426294"
     }
 }

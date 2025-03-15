@@ -34,4 +34,5 @@
     <color name="darkModeButton2">#695E5F</color>
     <color name="darkModeButton3">#1c2866</color>
 
+    <color name="icon_background_color">#f4f0e7</color>
 </resources>
