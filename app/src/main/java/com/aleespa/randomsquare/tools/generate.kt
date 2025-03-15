@@ -50,18 +50,15 @@ fun generateRandomPlot(visualizeModel: VisualizeModel):
         ImageBitmap? {
     val py = Python.getInstance()
     val mainModule = py.getModule("main")
-    val result = mainModule.callAttr(
+    val imageBytes = mainModule.callAttr(
         "generate",
         visualizeModel.randomSeed,
         visualizeModel.bgColor.type == "Dark",
         colorToHexWithoutAlpha(visualizeModel.bgColor.color),
-        visualizeModel.selectedFigure.key)
+        visualizeModel.selectedFigure.key).toJava(ByteArray::class.java)
 
-    val imageBytes = Base64.getDecoder().decode(result.toString().toByteArray())
-
-    return  BitmapFactory
-            .decodeByteArray(imageBytes, 0, imageBytes.size)
-            ?.asImageBitmap()
+    return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+        ?.asImageBitmap()
 }
 
 
