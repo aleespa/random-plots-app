@@ -1,8 +1,8 @@
 package com.aleespa.randomsquare
 
 enum class FigureType(val stringId: Int){
-    RANDOM(R.string.random),
     CIRCULAR(R.string.circular),
+    COMPOSITIONS(R.string.compositions),
     POLYGON(R.string.polygon),
     MISC(R.string.misc),
     CHAOS(R.string.chaos),
@@ -16,10 +16,27 @@ enum class Figures(
     val sampleLightImage: Int) {
 
     SUPER_RANDOM("super",
-        FigureType.RANDOM,
+        FigureType.COMPOSITIONS,
         R.string.super_random,
         R.drawable.super_random_dark,
         R.drawable.super_random_light),
+    BLACKWHITE(
+        "bw",
+        FigureType.COMPOSITIONS,
+        R.string.blackwhite,
+        R.drawable.bw,
+        R.drawable.bw),
+    SOFT("soft",
+        FigureType.COMPOSITIONS,
+        R.string.soft,
+        R.drawable.soft_dark,
+        R.drawable.soft_light),
+    NOISE(
+        "noise",
+        FigureType.COMPOSITIONS,
+        R.string.noise,
+        R.drawable.noise,
+        R.drawable.noise),
     CONTINUOUS_SPIROGRAPH(
         "irrational_spirograph",
         FigureType.CIRCULAR,

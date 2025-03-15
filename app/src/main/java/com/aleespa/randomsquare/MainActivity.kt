@@ -59,15 +59,11 @@ class MainActivity : ComponentActivity() {
                 object : FullScreenContentCallback() {
                     override fun onAdDismissedFullScreenContent() {
                         Log.d(TAG, "Ad was dismissed.")
-                        // Don't forget to set the ad reference to null so you
-                        // don't show the ad a second time.
                         interstitialAd = null
                     }
 
                     override fun onAdFailedToShowFullScreenContent(adError: AdError) {
                         Log.d(TAG, "Ad failed to show.")
-                        // Don't forget to set the ad reference to null so you
-                        // don't show the ad a second time.
                         interstitialAd = null
                     }
 
@@ -100,34 +96,18 @@ class MainActivity : ComponentActivity() {
                     interstitialAd = null
                     val error =
                         "domain: ${adError.domain}, code: ${adError.code}, " + "message: ${adError.message}"
-                    Toast.makeText(
-                        this@MainActivity,
-                        "onAdFailedToLoad() with error $error",
-                        Toast.LENGTH_SHORT,
-                    )
-                        .show()
+                    Log.d(TAG, "\"onAdFailedToLoad() with error $error\".")
                 }
 
                 override fun onAdLoaded(ad: InterstitialAd) {
                     Log.d(TAG, "Ad was loaded.")
                     interstitialAd = ad
-                    Toast.makeText(this@MainActivity, "onAdLoaded()", Toast.LENGTH_SHORT).show()
                 }
             },
         )
     }
 
     companion object {
-        // This is an ad unit ID for a test ad. Replace with your own interstitial ad unit ID.
         private const val AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712"
-        private const val GAME_LENGTH_MILLISECONDS = 3000L
-        private const val TAG = "MainActivity"
-
-        // Check your logcat output for the test device hashed ID e.g.
-        // "Use RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList("ABCDEF012345"))
-        // to get test ads on this device" or
-        // "Use new ConsentDebugSettings.Builder().addTestDeviceHashedId("ABCDEF012345") to set this as
-        // a debug device".
-        const val TEST_DEVICE_HASHED_ID = "ABCDEF012345"
     }
 }

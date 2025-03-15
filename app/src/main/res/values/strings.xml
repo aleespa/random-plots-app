@@ -50,6 +50,9 @@
     <string name="light">Light</string>
     <string name="auto">Auto</string>
     <string name="no_images">Create and save your images from the \'Visualize\' section to see them here.</string>
-    <string name="random" translatable="false">Fully Random\n</string>
-    <string name="super_random" translatable="false">Super random</string>
+    <string name="super_random" >Super</string>
+    <string name="compositions">Compositions</string>
+    <string name="soft">Soft</string>
+    <string name="blackwhite"><![CDATA[Black & White]]></string>
+    <string name="noise">Noise</string>
 </resources>

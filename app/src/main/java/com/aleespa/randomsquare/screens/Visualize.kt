@@ -81,6 +81,7 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.aleespa.randomsquare.BottomBarScreen
+import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.BackgroundColors
 import com.aleespa.randomsquare.data.VisualizeModel
@@ -129,8 +130,13 @@ fun Visualize(visualizeModel: VisualizeModel,
         item { Spacer(Modifier.height(20.dp)) }
         item { HeaderSection(visualizeModel, context) }
         item { VisualizeBox(visualizeModel) }
+        if (visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS){
+            item {Spacer(Modifier.height(15.dp))}
+        }
         item { GeneratePlotButton(visualizeModel, context, showAd) }
-        item { BackgroundColorButtons(visualizeModel) }
+        if (visualizeModel.selectedFigure.figureType != FigureType.COMPOSITIONS){
+            item {BackgroundColorButtons(visualizeModel)}
+        }
         item { Spacer(Modifier.height(80.dp)) }
     }
 }
@@ -413,7 +419,7 @@ fun GeneratePlotButton(
             elevation = FloatingActionButtonDefaults.elevation(10.dp),
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             onClick = {
-                if ((generate32BitSeed().toLong()%3).toInt() ==0){
+                if ((generate32BitSeed().toLong() % 3).toInt() ==0){
                     showAd()
                 }
                 generateNewPlot(visualizeModel, context)
