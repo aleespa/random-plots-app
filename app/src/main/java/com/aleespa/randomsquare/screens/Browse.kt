@@ -3,6 +3,8 @@ package com.aleespa.randomsquare.screens
 import android.app.Activity
 import android.content.Context
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -30,6 +32,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.carousel.CarouselDefaults
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
@@ -160,7 +163,11 @@ fun Carousel(visualizeModel: VisualizeModel,navController: NavHostController,
             modifier = Modifier.width(412.dp).height(221.dp),
             preferredItemWidth = 186.dp,
             itemSpacing = 8.dp,
-            contentPadding = PaddingValues(horizontal = 16.dp)
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            flingBehavior = CarouselDefaults.singleAdvanceFlingBehavior(
+                state = rememberCarouselState { figures.count() },
+                snapAnimationSpec = spring(stiffness = Spring.StiffnessHigh)
+                )
         ) { i ->
             val item = figures[i]
             val isDark = isSystemInDarkTheme()

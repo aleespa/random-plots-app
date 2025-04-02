@@ -37,7 +37,6 @@ import kotlin.random.Random
 import kotlin.random.nextUInt
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.set
-import com.aleespa.randomsquare.figures.Julia
 
 fun colorToHexWithoutAlpha(color: Color): String {
     val red = (color.red * 255).toInt()
@@ -60,11 +59,6 @@ fun generateRandomPlot(visualizeModel: VisualizeModel):
 
     return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
         ?.asImageBitmap()
-
-//    val size = 1024
-//    Random.nextDouble()
-//    return createJuliaBitmap(iterations, 256);
-
 }
 
 
