@@ -1,8 +1,8 @@
 package com.aleespa.randomsquare
 
 enum class FigureType(val stringId: Int){
-    CIRCULAR(R.string.circular),
     COMPOSITIONS(R.string.compositions),
+    CIRCULAR(R.string.circular),
     POLYGON(R.string.polygon),
     MISC(R.string.misc),
     CHAOS(R.string.chaos),

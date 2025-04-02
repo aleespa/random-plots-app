@@ -42,6 +42,7 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-1817119126251176~6763699998"/>
+        <profileable android:shell="true" />
     </application>
 
 </manifest>
