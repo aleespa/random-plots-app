@@ -20,7 +20,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.FileProvider
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
-import com.aleespa.randomsquare.data.BackgroundColors
 import com.aleespa.randomsquare.data.ImageEntity
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.data.getBackgroundColorByColor
@@ -33,10 +32,12 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.util.Base64
 import kotlin.math.min
 import kotlin.random.Random
 import kotlin.random.nextUInt
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.set
+import com.aleespa.randomsquare.figures.Julia
 
 fun colorToHexWithoutAlpha(color: Color): String {
     val red = (color.red * 255).toInt()
@@ -59,6 +60,11 @@ fun generateRandomPlot(visualizeModel: VisualizeModel):
 
     return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
         ?.asImageBitmap()
+
+//    val size = 1024
+//    Random.nextDouble()
+//    return createJuliaBitmap(iterations, 256);
+
 }
 
 
@@ -274,4 +280,26 @@ fun fromColor(color: Color): Int {
 
 fun toColor(value: Int): Color {
     return Color(value) // Convert Int back to Color
+}
+
+fun calculateColor(iteration: Double, maxIter: Int): Color {
+    return if (iteration >= maxIter) {
+        Color.Black // Points inside the set
+    } else {
+        // Map iteration to a color (example: smooth HSV gradient)
+        val hue = (iteration * 360.0 / maxIter).toFloat()
+        Color.hsv(hue, 1f, 1f)
+    }
+}
+fun createJuliaBitmap(iterations: Array<DoubleArray>, maxIter: Int): ImageBitmap {
+    val size = iterations.size
+    val bitmap = createBitmap(size, size)
+    for (y in 0 until size) {
+        for (x in 0 until size) {
+            val iteration = iterations[y][x]
+            val color = calculateColor(iteration, maxIter)
+            bitmap[x, size - 1 - y] = color.toArgb()
+        }
+    }
+    return bitmap.asImageBitmap()
 }
