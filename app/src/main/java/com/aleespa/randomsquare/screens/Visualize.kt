@@ -11,12 +11,10 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -28,9 +26,6 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddPhotoAlternate
@@ -83,10 +78,7 @@ import androidx.navigation.NavHostController
 import com.aleespa.randomsquare.BottomBarScreen
 import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.R
-import com.aleespa.randomsquare.data.BackgroundColors
 import com.aleespa.randomsquare.data.VisualizeModel
-import com.aleespa.randomsquare.data.adjustColor
-import com.aleespa.randomsquare.data.getBackgroundColorsByType
 import com.aleespa.randomsquare.tools.LatexMathView
 import com.aleespa.randomsquare.tools.generate32BitSeed
 import com.aleespa.randomsquare.tools.generateNewPlot
@@ -466,86 +458,7 @@ fun GeneratePlotButton(
 }
 @Composable
 fun BackgroundColorButtons(visualizeModel: VisualizeModel) {
-    Box(
-        modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center // Center the Column horizontally
-    ) {
-        Column {
-            // Dark Background Colors
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp)
-            ) {
-                val darkBackgroundOptions = getBackgroundColorsByType("Dark")
-                itemsIndexed(darkBackgroundOptions) { index, backgroundColor ->
-                    ElevatedCard(
-                        modifier = Modifier
-                            .size(50.dp)
-                            .clickable {
-                                visualizeModel.bgColor = backgroundColor
-                            },
-                        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 8.dp),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(backgroundColor.color)
-                                .border(
-                                    width = if (visualizeModel.bgColor == backgroundColor) 5.dp else 4.dp,
-                                    color = if (visualizeModel.bgColor == backgroundColor)
-                                        Color(255, 234, 0)
-                                    else
-                                        if (backgroundColor == BackgroundColors.BLACK)
-                                            backgroundColor.color.adjustColor(0.45f, 0.0f)
-                                        else
-                                            backgroundColor.color.adjustColor(0.45f, 0.2f),
-                                    shape = RoundedCornerShape(8.dp)
-                                )
-                        )
-                    }
-                }
-            }
 
-            Spacer(modifier = Modifier.height(12.dp)) // Add space between rows
-            // Light Background Colors
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp)
-            ) {
-                val lightBackgroundOptions = getBackgroundColorsByType("Light")
-                itemsIndexed(lightBackgroundOptions) { index, backgroundColor ->
-                    ElevatedCard(
-                        modifier = Modifier
-                            .size(50.dp)
-                            .clickable {
-                                visualizeModel.bgColor = backgroundColor
-                            },
-                        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 8.dp),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(backgroundColor.color)
-                                .border(
-                                    width = if (visualizeModel.bgColor == backgroundColor) 5.dp else 4.dp,
-                                    color = if (visualizeModel.bgColor == backgroundColor)
-                                        Color(255, 234, 0)
-                                    else
-                                        if (backgroundColor == BackgroundColors.WHITE)
-                                            backgroundColor.color.adjustColor(-0.2f,0f)
-                                        else
-                                            backgroundColor.color.adjustColor(-0.2f,0.4f),
-                                    shape = RoundedCornerShape(8.dp)
-                                )
-                        )
-                    }
-                }
-            }
-        }
-    }
 }
 @Composable
 fun VisualizeBox(visualizeModel: VisualizeModel){
@@ -576,7 +489,7 @@ fun VisualizeBox(visualizeModel: VisualizeModel){
         }else{
             Box(
                 modifier = Modifier.fillMaxSize()
-                    .background(visualizeModel.bgColor.color),
+                    .background(Color(visualizeModel.bgColor)),
                 contentAlignment = Alignment.Center
             ){
                 LatexMathView(visualizeModel)

@@ -85,8 +85,8 @@ class VisualizeModel(
         }
     }
 
-    private var _bgColor by mutableStateOf(BackgroundColors.BLACK)
-    var bgColor: BackgroundColors
+    private var _bgColor by mutableStateOf(0)
+    var bgColor: Int
         get() = _bgColor
         set(value) {
             _bgColor = value

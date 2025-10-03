@@ -22,7 +22,6 @@ import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.ImageEntity
 import com.aleespa.randomsquare.data.VisualizeModel
-import com.aleespa.randomsquare.data.getBackgroundColorByColor
 import com.aleespa.randomsquare.screens.loadImage
 import com.chaquo.python.Python
 import kotlinx.coroutines.CoroutineScope
@@ -53,8 +52,8 @@ fun generateRandomPlot(visualizeModel: VisualizeModel):
     val imageBytes = mainModule.callAttr(
         "generate",
         visualizeModel.randomSeed,
-        visualizeModel.bgColor.type == "Dark",
-        colorToHexWithoutAlpha(visualizeModel.bgColor.color),
+        true,
+        colorToHexWithoutAlpha(Color(visualizeModel.bgColor)),
         visualizeModel.selectedFigure.key).toJava(ByteArray::class.java)
 
     return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
@@ -78,7 +77,7 @@ fun setWallpaper(context: Context, visualizeModel: VisualizeModel) {
                 bitmap,
                 resolution[0],
                 resolution[1],
-                visualizeModel.bgColor.color
+                Color(visualizeModel.bgColor)
             )
         }
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
@@ -174,10 +173,10 @@ fun generateNewPlot(visualizeModel: VisualizeModel, context: Context) {
     CoroutineScope(Dispatchers.Main).launch {
         visualizeModel.temporalImageEntity = ImageEntity.Builder()
             .setImageType(visualizeModel.selectedFigure.key)
-            .setIsDarkMode(visualizeModel.bgColor.type == "Dark")
+            .setIsDarkMode(true)
             .setTimestamp(System.currentTimeMillis())
             .setRandomSeed(visualizeModel.randomSeed)
-            .setBackgroundColor(fromColor(visualizeModel.bgColor.color))
+            .setBackgroundColor(fromColor(Color(visualizeModel.bgColor)))
         try {
             val result = withContext(Dispatchers.Default) {
                 generateRandomPlot(visualizeModel)
@@ -203,7 +202,7 @@ fun loadSavedImage(visualizeModel: VisualizeModel,
     visualizeModel.isFromGallery = true
     visualizeModel.galleryURI = image.uri
     visualizeModel.galleryId = image.id
-    visualizeModel.bgColor = getBackgroundColorByColor(toColor(image.backgroundColor))
+    visualizeModel.bgColor =0
 
     val figureKey = image.imageType
     visualizeModel.selectedFigure = Figures.fromKey(figureKey)
