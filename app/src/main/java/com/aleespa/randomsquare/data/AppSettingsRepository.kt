@@ -44,16 +44,16 @@ class AppSettingsRepository(private val dataStore: DataStore<Preferences>) {
             } ?: Figures.POLYGON_FEEDBACK // Default value
         }
 
-    suspend fun saveBgColor(color: BackgroundColors) {
+    suspend fun saveBgColor(color: Int) {
         dataStore.edit { preferences ->
-            preferences[BG_COLOR] = color.name
+            preferences[BG_COLOR] = color.toString()
         }
     }
 
     // Load bgColor as Flow
-    val bgColor: Flow<BackgroundColors> = dataStore.data
+    val bgColor: Flow<Int> = dataStore.data
         .map { preferences ->
-            val colorLong = preferences[BG_COLOR] ?: BackgroundColors.BLACK.name
-            BackgroundColors.valueOf(colorLong)
+            val colorLong = preferences[BG_COLOR] ?: "0"
+            colorLong.toInt()
         }
 }

@@ -51,7 +51,6 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.aleespa.randomsquare.BottomBarScreen
 import com.aleespa.randomsquare.FigureType
-import com.aleespa.randomsquare.data.BackgroundColors
 import com.aleespa.randomsquare.data.SettingDarkMode
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.getFiguresByType
@@ -98,12 +97,7 @@ fun Browse(
                                 SettingDarkMode.On -> SettingDarkMode.Off
                                 SettingDarkMode.Off -> SettingDarkMode.Auto
                             }
-                            visualizeModel.bgColor = when (visualizeModel.settingDarkMode) {
-                                SettingDarkMode.Auto -> if (isDark) BackgroundColors.BLACK
-                                else BackgroundColors.SAND
-                                SettingDarkMode.On -> BackgroundColors.BLACK
-                                SettingDarkMode.Off -> BackgroundColors.SAND
-                            }
+                            visualizeModel.bgColor = 0
                         }) {
                             Icon(
                                 imageVector = when (visualizeModel.settingDarkMode) {

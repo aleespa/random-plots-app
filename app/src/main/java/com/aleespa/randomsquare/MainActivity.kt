@@ -2,7 +2,6 @@ package com.aleespa.randomsquare
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.datastore.core.DataStore
