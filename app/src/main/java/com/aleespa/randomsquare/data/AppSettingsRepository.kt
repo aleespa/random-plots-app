@@ -19,6 +19,7 @@ class AppSettingsRepository(private val dataStore: DataStore<Preferences>) {
         // Use different keys for the old String and new Int formats to avoid type errors.
         // We will keep the original key name for the string to read the old data.
         val BG_COLOR_STRING = stringPreferencesKey("bg_color")
+
         // We will define a new key for the integer color.
         val BG_COLOR_INT = intPreferencesKey("bg_color_int")
     }
@@ -79,6 +80,6 @@ class AppSettingsRepository(private val dataStore: DataStore<Preferences>) {
             // Success: The value is already an Int. Return it directly.
             intColor ?: Color.Black.toArgb() // Default to black
         }
-        }
+}
 
 

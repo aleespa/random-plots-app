@@ -1,4 +1,5 @@
 package com.aleespa.randomsquare.data
+
 import android.content.Context
 import androidx.room.Room
 
@@ -10,7 +11,8 @@ object DatabaseProvider {
             instance = Room.databaseBuilder(
                 context.applicationContext,
                 AppDatabase::class.java,
-                "images_database")
+                "images_database"
+            )
                 .build()
         }
         return instance!!

@@ -44,15 +44,17 @@ class MainActivity : ComponentActivity() {
 
 
         setContent {
-            MyApplicationTheme (darkThemeSetting = visualizeModel.settingDarkMode){
-                MainScreen(visualizeModel,
-                    {showInterstitial()})
+            MyApplicationTheme(darkThemeSetting = visualizeModel.settingDarkMode) {
+                MainScreen(
+                    visualizeModel,
+                    { showInterstitial() })
             }
         }
 
     }
+
     private fun showInterstitial() {
-        Log.d("MainActivity","showInterstitial called")
+        Log.d("MainActivity", "showInterstitial called")
         if (interstitialAd != null) {
             interstitialAd?.fullScreenContentCallback =
                 object : FullScreenContentCallback() {

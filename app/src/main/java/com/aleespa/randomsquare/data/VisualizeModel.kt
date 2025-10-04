@@ -30,7 +30,7 @@ class VisualizeModelFactory(
 class VisualizeModel(
     private val imageRepository: ImageRepository,
     private val settingsRepository: AppSettingsRepository
-): ViewModel() {
+) : ViewModel() {
     var loadingPlotGenerator by mutableStateOf(false)
     var showInfo by mutableStateOf(false)
     var imageBitmapState by mutableStateOf<ImageBitmap?>(null)
@@ -57,6 +57,7 @@ class VisualizeModel(
                 settingsRepository.saveDarkModeSetting(value) // Persist to DataStore
             }
         }
+
     init {
         // Load settingDarkMode from DataStore
         viewModelScope.launch {
@@ -131,7 +132,6 @@ class VisualizeModel(
     }
 
 
-
     private suspend fun getFilteredImages(filterConditions: FilterConditions): List<ImageEntity> {
         return imageRepository.getFilteredImages(
             isDarkMode = filterConditions.isDarkMode,
@@ -161,9 +161,6 @@ class VisualizeModel(
 
 
 }
-
-
-
 
 
 data class FilterConditions(
