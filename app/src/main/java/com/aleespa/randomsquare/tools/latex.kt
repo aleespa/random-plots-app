@@ -20,7 +20,7 @@ import java.io.IOException
 
 @Composable
 fun LatexMathView(visualizeModel: VisualizeModel) {
-    var textColor = if (true) Color.WHITE else Color.BLACK
+    var textColor = if (isColorDark(visualizeModel.bgColor)) Color.WHITE else Color.BLACK
     AndroidView(
         modifier = Modifier
             .fillMaxWidth()
