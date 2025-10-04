@@ -149,28 +149,27 @@ fun Visualize(
     ) {
         item { Spacer(Modifier.height(20.dp)) }
         item { HeaderSection(visualizeModel, context) }
-        item { Spacer(Modifier.height(20.dp)) }
+        item { Spacer(Modifier.height(18.dp)) }
         item { VisualizeBox(visualizeModel) }
 
-        item { Spacer(Modifier.height(20.dp)) }
+        item { Spacer(Modifier.height(2.dp)) }
         if (visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS) {
             item { Spacer(Modifier.height(35.dp)) }
         }
         item { GeneratePlotButton(visualizeModel, context, showAd) }
         if (visualizeModel.selectedFigure.figureType != FigureType.COMPOSITIONS) {
-            item { Spacer(Modifier.height(18.dp)) }
+            item { Spacer(Modifier.height(30.dp)) }
             item {
                 Box(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center,
                 ) {
                     ColormapDropdown(
-                        visualizeModel = visualizeModel,
-                        modifier = Modifier.widthIn(max = 280.dp)
+                        visualizeModel = visualizeModel
                     )
                 }
             }
-            item { Spacer(Modifier.height(10.dp)) }
+            item { Spacer(Modifier.height(8.dp)) }
             item { BackgroundColorSelector(visualizeModel) }
 
         }
@@ -767,11 +766,11 @@ fun ColormapDropdown(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(colormap.key, modifier = Modifier.weight(1f))
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(35.dp))
 
                             ColormapSineWaveLine(
                                 colormap = colormap,
-                                modifier = Modifier.size(width = 70.dp, height = 20.dp)
+                                modifier = Modifier.size(width = 80.dp, height = 18.dp)
                             )
 
                         }
