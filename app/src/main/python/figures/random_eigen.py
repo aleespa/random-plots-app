@@ -24,7 +24,7 @@ def calculate_eigenvalues(x: np.array):
     return np.linalg.eigvals(x)
 
 
-def generate_plot(z, dark_mode=False, bg_color=(0, 0, 0)):
+def generate_plot(seed, bg_color=(0, 0, 0), dark_mode=True, cmap=None):
     # Create a figure with adjusted layout
     fig, ax = plt.subplots(figsize=(12, 12), dpi=100, tight_layout=True)
     fig.patch.set_facecolor(bg_color)
@@ -47,7 +47,7 @@ def generate_plot(z, dark_mode=False, bg_color=(0, 0, 0)):
     return buffer
 
 
-def create_image(seed=0, dark_mode=True, bg_color=(0, 0, 0)):
+def create_image(seed=0, dark_mode=True, bg_color=(0, 0, 0), cmap=None):
     rng = np.random.default_rng(seed)
     sample_size = 10000
     sample = vectorized_sample_complex_pairs(rng, sample_size)

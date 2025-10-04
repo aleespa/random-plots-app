@@ -232,7 +232,7 @@ def generate(k, rng):
         return op(*args, rng=rng)
 
 
-def generate_plot(seed, bg_color=(0, 0, 0), dark_mode=True):
+def generate_plot(seed, bg_color=(0, 0, 0), dark_mode=True, cmap=None):
     rng = np.random.default_rng(seed)
     size = 512
     fig = plt.figure(figsize=(12, 12), dpi=100)
@@ -263,7 +263,7 @@ def generate_plot(seed, bg_color=(0, 0, 0), dark_mode=True):
     return buffer
 
 
-def create_image(seed=0, dark_mode=True, bg_color=(0, 0, 0)):
+def create_image(seed=0, dark_mode=True, bg_color=(0, 0, 0), cmap=None):
     buffer = generate_plot(seed, bg_color, dark_mode)
     plt.close()
     return buffer.getvalue()

@@ -7,7 +7,7 @@ import matplotlib as mpl
 import gc
 
 
-def generate_plot(seed, bg_color, dark_mode):
+def generate_plot(seed, bg_color=(0, 0, 0), dark_mode=True, cmap=None):
     rng = np.random.default_rng(seed)
 
     dark_background_colormaps = [
@@ -49,7 +49,7 @@ def generate_plot(seed, bg_color, dark_mode):
     return buffer
 
 
-def create_image(seed=0, dark_mode=True, bg_color=(0, 0, 0)):
+def create_image(seed=0, dark_mode=True, bg_color=(0, 0, 0), cmap=None):
     buffer = generate_plot(seed, bg_color, dark_mode)
     plt.close()
     return buffer.getvalue()
