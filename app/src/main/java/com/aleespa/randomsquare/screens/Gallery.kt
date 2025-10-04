@@ -65,14 +65,16 @@ import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.tools.loadSavedImage
 
 @Composable
-fun Gallery(visualizeModel: VisualizeModel,
-            navController: NavHostController) {
+fun Gallery(
+    visualizeModel: VisualizeModel,
+    navController: NavHostController
+) {
     val context = LocalContext.current
 
     BackHandler {
         navController.navigate(BottomBarScreen.Visualize.route)
     }
-    Column(modifier = Modifier.safeDrawingPadding()){
+    Column(modifier = Modifier.safeDrawingPadding()) {
         RandomGalleryTopBar(navController, context, visualizeModel)
     }
 
@@ -81,9 +83,11 @@ fun Gallery(visualizeModel: VisualizeModel,
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RandomGalleryTopBar(navController: NavHostController,
-                        context: Context,
-                        visualizeModel: VisualizeModel) {
+fun RandomGalleryTopBar(
+    navController: NavHostController,
+    context: Context,
+    visualizeModel: VisualizeModel
+) {
 
     Scaffold(
         topBar = {
@@ -102,7 +106,7 @@ fun RandomGalleryTopBar(navController: NavHostController,
                             contentAlignment = Alignment.Center // Centers the content inside the Box
                         ) {
                             Text(
-                                text = stringResource(id=R.string.saved_images),
+                                text = stringResource(id = R.string.saved_images),
                                 style = TextStyle(
                                     fontFamily = parkinsansFontFamily,
                                     fontSize = 25.sp,
@@ -153,9 +157,9 @@ fun RandomGalleryTopBar(navController: NavHostController,
                 FilterChips(visualizeModel)
 
             }
-                 },
+        },
 
-    ) { innerPadding ->
+        ) { innerPadding ->
         ScrollContent(innerPadding, context, navController, visualizeModel)
     }
 
@@ -176,8 +180,9 @@ fun FilterChips(visualizeModel: VisualizeModel) {
                     if (visualizeModel.darkFilter) {
                         visualizeModel.darkFilter = false
                     } else {
-                    visualizeModel.darkFilter = true
-                    visualizeModel.lightFilter = false}
+                        visualizeModel.darkFilter = true
+                        visualizeModel.lightFilter = false
+                    }
                 },
                 label = { Text(stringResource(R.string.dark_name)) },
                 selected = visualizeModel.darkFilter,
@@ -232,11 +237,15 @@ fun FilterChips(visualizeModel: VisualizeModel) {
 fun FilterChipWithDropdown(visualizeModel: VisualizeModel) {
     // The FilterChip
     FilterChip(
-        selected = (visualizeModel.filterImageType != "None" ), // Show selected state when dialog is visible
+        selected = (visualizeModel.filterImageType != "None"), // Show selected state when dialog is visible
         onClick = { visualizeModel.showFilterDialog = true }, // Show dialog on click
-        label = { if (visualizeModel.filterImageType == "None" ) {
-            Text(text = stringResource(R.string.filter_types))
-        } else {Text(stringResource(Figures.fromKey(visualizeModel.filterImageType).resourceStringId))}},
+        label = {
+            if (visualizeModel.filterImageType == "None") {
+                Text(text = stringResource(R.string.filter_types))
+            } else {
+                Text(stringResource(Figures.fromKey(visualizeModel.filterImageType).resourceStringId))
+            }
+        },
         modifier = Modifier.padding(start = 10.dp),
         trailingIcon = if (visualizeModel.filterImageType == "None") {
             {
@@ -262,9 +271,11 @@ fun ScrollContent(
 ) {
 
     val images by visualizeModel.filteredImages.collectAsState()
-    LaunchedEffect(visualizeModel.darkFilter,
+    LaunchedEffect(
+        visualizeModel.darkFilter,
         visualizeModel.lightFilter,
-        visualizeModel.filterImageType) {
+        visualizeModel.filterImageType
+    ) {
         visualizeModel.updateFilteredImages()
     }
 

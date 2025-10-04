@@ -15,7 +15,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -42,27 +41,28 @@ fun AspectRatioDialog(
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically)
-            {
-                VisualizeOptionsButtons(
-                    id = R.drawable.fit,
-                    iconSize=50.dp,
-                    bottomText = "Fit"
-                ){
-                    visualizeModel.toFitAspectRatio = true
-                    onConfirm()
+                    verticalAlignment = Alignment.CenterVertically
+                )
+                {
+                    VisualizeOptionsButtons(
+                        id = R.drawable.fit,
+                        iconSize = 50.dp,
+                        bottomText = "Fit"
+                    ) {
+                        visualizeModel.toFitAspectRatio = true
+                        onConfirm()
                     }
-                VisualizeOptionsButtons(
-                    id = R.drawable.fill,
-                    iconSize=50.dp,
-                    bottomText = "Fill"
-                ){
-                    visualizeModel.toFitAspectRatio = false
-                    onConfirm()
+                    VisualizeOptionsButtons(
+                        id = R.drawable.fill,
+                        iconSize = 50.dp,
+                        bottomText = "Fill"
+                    ) {
+                        visualizeModel.toFitAspectRatio = false
+                        onConfirm()
                     }
+                }
             }
-               }
-               },
+        },
         confirmButton = {},
         dismissButton = {
             TextButton(onClick = onDismiss) {
@@ -84,15 +84,17 @@ fun FilterTypesDialog(visualizeModel: VisualizeModel) {
             }, // Close the dialog when clicked outside
             title = {
                 Text(
-                    text=stringResource(R.string.filter_types),
-                style = TextStyle(
-                    fontFamily = parkinsansFontFamily,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                modifier = Modifier
-                    .fillMaxWidth(),
-                textAlign = TextAlign.Center) },
+                    text = stringResource(R.string.filter_types),
+                    style = TextStyle(
+                        fontFamily = parkinsansFontFamily,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            },
             text = {
                 Box(
                     modifier = Modifier

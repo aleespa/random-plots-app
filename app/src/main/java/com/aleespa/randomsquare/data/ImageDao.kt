@@ -24,14 +24,16 @@ interface ImageDao {
     @Delete
     suspend fun deleteImages(images: List<ImageEntity>)
 
-    @Query("""
+    @Query(
+        """
         SELECT * FROM images 
         WHERE 
         (:isDarkMode IS NULL OR isDarkMode = :isDarkMode) 
         AND 
         (:imageType IS NULL OR imageType = :imageType)
         ORDER BY timestamp DESC
-    """)
+    """
+    )
     suspend fun getFilteredImages(isDarkMode: Boolean?, imageType: String?): List<ImageEntity>
 
 }

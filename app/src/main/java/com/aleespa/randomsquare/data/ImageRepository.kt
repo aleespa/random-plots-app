@@ -16,6 +16,7 @@ class ImageRepository(
                 "content" -> {
                     context.contentResolver.openInputStream(uri)?.use { true } ?: false
                 }
+
                 else -> false
             }
         } catch (e: Exception) {

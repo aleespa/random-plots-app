@@ -93,9 +93,11 @@ import java.io.File
 
 
 @Composable
-fun Visualize(visualizeModel: VisualizeModel,
-              navController: NavHostController,
-              showAd: () -> Unit) {
+fun Visualize(
+    visualizeModel: VisualizeModel,
+    navController: NavHostController,
+    showAd: () -> Unit
+) {
     val context = LocalContext.current
     BackHandler {
         navController.navigate(BottomBarScreen.Browse.route)
@@ -116,22 +118,25 @@ fun Visualize(visualizeModel: VisualizeModel,
         )
     }
     LazyColumn(
-        modifier = Modifier.fillMaxSize().safeDrawingPadding(),
+        modifier = Modifier
+            .fillMaxSize()
+            .safeDrawingPadding(),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         item { Spacer(Modifier.height(20.dp)) }
         item { HeaderSection(visualizeModel, context) }
         item { VisualizeBox(visualizeModel) }
-        if (visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS){
-            item {Spacer(Modifier.height(15.dp))}
+        if (visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS) {
+            item { Spacer(Modifier.height(15.dp)) }
         }
         item { GeneratePlotButton(visualizeModel, context, showAd) }
-        if (visualizeModel.selectedFigure.figureType != FigureType.COMPOSITIONS){
-            item {BackgroundColorButtons(visualizeModel)}
+        if (visualizeModel.selectedFigure.figureType != FigureType.COMPOSITIONS) {
+            item { BackgroundColorButtons(visualizeModel) }
         }
         item { Spacer(Modifier.height(80.dp)) }
     }
 }
+
 @Composable
 fun HeaderSection(visualizeModel: VisualizeModel, context: Context) {
     var showMenu by remember { mutableStateOf(false) }
@@ -159,7 +164,7 @@ fun HeaderSection(visualizeModel: VisualizeModel, context: Context) {
 
 
 @Composable
-fun TitleText(text: String){
+fun TitleText(text: String) {
     Text(
         text = text,
         style = TextStyle(
@@ -174,10 +179,12 @@ fun TitleText(text: String){
 }
 
 @Composable
-fun ThreeDotsDropDownMenu(visualizeModel: VisualizeModel,
-                          context: Context,
-                          showMenu: Boolean,
-                          onDismiss: () -> Unit){
+fun ThreeDotsDropDownMenu(
+    visualizeModel: VisualizeModel,
+    context: Context,
+    showMenu: Boolean,
+    onDismiss: () -> Unit
+) {
     Icon(
         imageVector = Icons.Default.MoreVert,
         contentDescription = "Options",
@@ -188,13 +195,17 @@ fun ThreeDotsDropDownMenu(visualizeModel: VisualizeModel,
         onDismissRequest = { onDismiss() }
     ) {
         DropdownMenuItem(
-            text = {if (visualizeModel.isFromGallery.not())
-                Text(stringResource(id = R.string.save))
-                   else Text(stringResource(id = R.string.delete_from_gallery))},
-            leadingIcon = {if (visualizeModel.isFromGallery.not()) DropDownMenuIcon(Icons.Default.Add)
-                          else DropDownMenuIcon(Icons.Default.Delete)},
+            text = {
+                if (visualizeModel.isFromGallery.not())
+                    Text(stringResource(id = R.string.save))
+                else Text(stringResource(id = R.string.delete_from_gallery))
+            },
+            leadingIcon = {
+                if (visualizeModel.isFromGallery.not()) DropDownMenuIcon(Icons.Default.Add)
+                else DropDownMenuIcon(Icons.Default.Delete)
+            },
             onClick = {
-                if (visualizeModel.isFromGallery.not()){
+                if (visualizeModel.isFromGallery.not()) {
                     saveToGallery(visualizeModel, context)
                 } else {
                     deleteFromGallery(visualizeModel, context)
@@ -203,24 +214,24 @@ fun ThreeDotsDropDownMenu(visualizeModel: VisualizeModel,
             }
         )
         DropdownMenuItem(
-            text = {Text(stringResource(id = R.string.set_wallpaper))},
-            leadingIcon = {DropDownMenuIcon(Icons.Default.AddPhotoAlternate)},
+            text = { Text(stringResource(id = R.string.set_wallpaper)) },
+            leadingIcon = { DropDownMenuIcon(Icons.Default.AddPhotoAlternate) },
             onClick = {
                 visualizeModel.showAspectRatioDialog = true
                 onDismiss()
             }
         )
         DropdownMenuItem(
-            text = {Text(stringResource(id = R.string.share))},
-            leadingIcon = {DropDownMenuIcon(Icons.Default.Share)},
+            text = { Text(stringResource(id = R.string.share)) },
+            leadingIcon = { DropDownMenuIcon(Icons.Default.Share) },
             onClick = {
                 shareImageBitmap(visualizeModel, context)
                 onDismiss()
             }
         )
         DropdownMenuItem(
-            text = {Text(stringResource(id = R.string.more_info))},
-            leadingIcon = {DropDownMenuIcon(Icons.Default.Info)},
+            text = { Text(stringResource(id = R.string.more_info)) },
+            leadingIcon = { DropDownMenuIcon(Icons.Default.Info) },
             onClick = {
                 visualizeModel.showInfo = !visualizeModel.showInfo
                 onDismiss()
@@ -229,7 +240,7 @@ fun ThreeDotsDropDownMenu(visualizeModel: VisualizeModel,
     }
 }
 
-fun shareImageBitmap(visualizeModel: VisualizeModel, context: Context){
+fun shareImageBitmap(visualizeModel: VisualizeModel, context: Context) {
     val imageUri = visualizeModel.imageBitmapState?.let { saveImageBitmapToCache(it, context) }
 
     val shareIntent = Intent(Intent.ACTION_SEND).apply {
@@ -242,12 +253,12 @@ fun shareImageBitmap(visualizeModel: VisualizeModel, context: Context){
 
 
 @Composable
-fun DropDownMenuIcon(icon: ImageVector){
+fun DropDownMenuIcon(icon: ImageVector) {
     Icon(
-            imageVector = icon, // Replace with your desired icon
-            contentDescription = "Save Icon",
-            modifier = Modifier.size(20.dp) // Adjust icon size as needed
-        )
+        imageVector = icon, // Replace with your desired icon
+        contentDescription = "Save Icon",
+        modifier = Modifier.size(20.dp) // Adjust icon size as needed
+    )
 }
 
 @Composable
@@ -266,8 +277,9 @@ fun ImageWithNullFallback(imageBitmap: ImageBitmap?) {
 }
 
 
-fun deleteFromGallery(visualizeModel: VisualizeModel, context: Context){
-    visualizeModel.viewModelScope.launch {try {
+fun deleteFromGallery(visualizeModel: VisualizeModel, context: Context) {
+    visualizeModel.viewModelScope.launch {
+        try {
             withContext(Dispatchers.IO) {
                 visualizeModel.deleteImageById(visualizeModel.galleryId)
                 deleteImageFromUri(context, Uri.parse(visualizeModel.galleryURI))
@@ -280,7 +292,6 @@ fun deleteFromGallery(visualizeModel: VisualizeModel, context: Context){
         }
     }
 }
-
 
 
 fun deleteImageFromUri(context: Context, uri: Uri): Boolean {
@@ -297,13 +308,16 @@ fun deleteImageFromUri(context: Context, uri: Uri): Boolean {
 private fun setWallpaperAfterAd(visualizeModel: VisualizeModel, context: Context) {
     val androidBitmap = visualizeModel.imageBitmapState?.asAndroidBitmap()
     if (androidBitmap != null) {
-        setWallpaper(context, visualizeModel) // Set wallpaper after the ad is dismissed or if the ad is not loaded
+        setWallpaper(
+            context,
+            visualizeModel
+        ) // Set wallpaper after the ad is dismissed or if the ad is not loaded
     } else {
         Toast.makeText(context, "Failed to set wallpaper", Toast.LENGTH_SHORT).show()
     }
 }
 
-fun saveToGallery(visualizeModel: VisualizeModel, context: Context){
+fun saveToGallery(visualizeModel: VisualizeModel, context: Context) {
     visualizeModel.isSavingLoading = true
     var uri: Uri? = null
     visualizeModel.viewModelScope.launch {
@@ -347,9 +361,10 @@ fun saveImageBitmapToCache(imageBitmap: ImageBitmap, context: Context): Uri? {
 @Composable
 fun VisualizeOptionsButtons(
     id: Int,
-    iconSize: Dp= 30.dp,
+    iconSize: Dp = 30.dp,
     bottomText: String,
-    onClick: () -> Unit){
+    onClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .width(80.dp)
@@ -359,18 +374,20 @@ fun VisualizeOptionsButtons(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     )
-    {  Icon(
-        painter = painterResource(id = id),
-        contentDescription = null,
-        tint = MaterialTheme.colorScheme.primary,
-        modifier = Modifier
-            .size(iconSize)
-            .aspectRatio(1f))
+    {
+        Icon(
+            painter = painterResource(id = id),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .size(iconSize)
+                .aspectRatio(1f)
+        )
         Spacer(Modifier.height(8.dp))
         Box(
             modifier = Modifier,
             contentAlignment = Alignment.TopCenter
-        ){
+        ) {
             Text(
                 text = bottomText,
                 modifier = Modifier,
@@ -379,7 +396,8 @@ fun VisualizeOptionsButtons(
                 lineHeight = 12.sp,
                 color = MaterialTheme.colorScheme.secondary
             )
-        } }
+        }
+    }
 }
 
 
@@ -411,7 +429,7 @@ fun GeneratePlotButton(
             elevation = FloatingActionButtonDefaults.elevation(10.dp),
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             onClick = {
-                if ((generate32BitSeed().toLong() % 3).toInt() ==0){
+                if ((generate32BitSeed().toLong() % 3).toInt() == 0) {
                     showAd()
                 }
                 generateNewPlot(visualizeModel, context)
@@ -456,12 +474,14 @@ fun GeneratePlotButton(
         Spacer(Modifier.width(16.dp))
     }
 }
+
 @Composable
 fun BackgroundColorButtons(visualizeModel: VisualizeModel) {
 
 }
+
 @Composable
-fun VisualizeBox(visualizeModel: VisualizeModel){
+fun VisualizeBox(visualizeModel: VisualizeModel) {
     ElevatedCard(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 8.dp
@@ -471,7 +491,7 @@ fun VisualizeBox(visualizeModel: VisualizeModel){
             .padding(10.dp)
             .clickable { visualizeModel.showInfo = !visualizeModel.showInfo },
     ) {
-        if (!visualizeModel.showInfo){
+        if (!visualizeModel.showInfo) {
             if (visualizeModel.loadingPlotGenerator) {
                 Box(
                     modifier = Modifier
@@ -480,18 +500,20 @@ fun VisualizeBox(visualizeModel: VisualizeModel){
                 ) {
                     CircularProgressIndicator(
                         color = MaterialTheme.colorScheme.secondary,
-                        trackColor = MaterialTheme.colorScheme.surfaceVariant)
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
                 }
-            } else{
+            } else {
                 ImageWithNullFallback(visualizeModel.imageBitmapState)
             }
 
-        }else{
+        } else {
             Box(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
                     .background(Color(visualizeModel.bgColor)),
                 contentAlignment = Alignment.Center
-            ){
+            ) {
                 LatexMathView(visualizeModel)
             }
 
@@ -515,7 +537,8 @@ fun loadImage(
             BitmapFactory.decodeStream(inputStream, null, options)
 
             // Calculate sample size
-            options.inSampleSize = calculateSampleSize(options.outWidth, options.outHeight, targetWidth, targetHeight)
+            options.inSampleSize =
+                calculateSampleSize(options.outWidth, options.outHeight, targetWidth, targetHeight)
             options.inJustDecodeBounds = false
 
             // Decode the scaled bitmap

@@ -1,4 +1,5 @@
 package com.aleespa.randomsquare.screens
+
 import android.annotation.SuppressLint
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -23,23 +24,24 @@ import com.aleespa.randomsquare.data.VisualizeModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen(visualizeModel: VisualizeModel,
-               showAd: () -> Unit
+fun MainScreen(
+    visualizeModel: VisualizeModel,
+    showAd: () -> Unit
 ) {
     val navController = rememberNavController()
     Scaffold(
-        bottomBar = {BottomBar(navController)}
+        bottomBar = { BottomBar(navController) }
     ) {
         BottomNavGraph(
-            visualizeModel = remember {visualizeModel},
+            visualizeModel = remember { visualizeModel },
             navController = navController,
             showAd = showAd
-            )
+        )
     }
 }
 
 @Composable
-fun BottomBar(navController: NavHostController){
+fun BottomBar(navController: NavHostController) {
 
     val screens = listOf(
         BottomBarScreen.Browse,
@@ -53,17 +55,19 @@ fun BottomBar(navController: NavHostController){
         containerColor = NavigationBarDefaults.containerColor
     )
     {
-        screens.forEach  { screen ->
+        screens.forEach { screen ->
             NavigationBarItem(
                 icon = { Icon(screen.icon, contentDescription = null) },
                 label = { Text(stringResource(id = screen.titleResourceId)) },
-                selected = currentDestination?.hierarchy?.any{
+                selected = currentDestination?.hierarchy?.any {
                     it.route == screen.route
                 } == true,
-                onClick = { navController.navigate(screen.route){
-                    popUpTo(navController.graph.findStartDestination().id)
-                    launchSingleTop = true
-                } }
+                onClick = {
+                    navController.navigate(screen.route) {
+                        popUpTo(navController.graph.findStartDestination().id)
+                        launchSingleTop = true
+                    }
+                }
             )
         }
 
@@ -72,9 +76,11 @@ fun BottomBar(navController: NavHostController){
 
 
 @Composable
-fun BottomNavGraph(visualizeModel: VisualizeModel = viewModel(),
-                   navController: NavHostController,
-                   showAd: () -> Unit) {
+fun BottomNavGraph(
+    visualizeModel: VisualizeModel = viewModel(),
+    navController: NavHostController,
+    showAd: () -> Unit
+) {
     NavHost(
         navController = navController,
         startDestination = BottomBarScreen.Browse.route

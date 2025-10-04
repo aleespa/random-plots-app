@@ -1,8 +1,9 @@
 package com.aleespa.randomsquare.data
+
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "images",)
+@Entity(tableName = "images")
 data class ImageEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val uri: String = "",
@@ -26,7 +27,8 @@ data class ImageEntity(
         fun setTimestamp(timestamp: Long) = apply { this.timestamp = timestamp }
         fun setIsDarkMode(isDarkMode: Boolean) = apply { this.isDarkMode = isDarkMode }
         fun setRandomSeed(randomSeed: Long) = apply { this.randomSeed = randomSeed }
-        fun setBackgroundColor(backgroundColor: Int) = apply { this.backgroundColor = backgroundColor }
+        fun setBackgroundColor(backgroundColor: Int) =
+            apply { this.backgroundColor = backgroundColor }
 
         fun build(): ImageEntity {
             return ImageEntity(

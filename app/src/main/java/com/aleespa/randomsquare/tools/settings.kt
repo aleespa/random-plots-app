@@ -17,8 +17,12 @@ class SettingsViewModel : ViewModel() {
     fun setSettings(plotSettings: PlotSettings) {
         this.plotSettings = plotSettings.copy()
     }
+
     var plotSettings by mutableStateOf(
-        PlotSettings(Color.Blue.value.toInt(),
+        PlotSettings(
+            Color.Blue.value.toInt(),
             "circle",
-            10f))
+            10f
+        )
+    )
 }

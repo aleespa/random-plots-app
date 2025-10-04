@@ -51,12 +51,12 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.aleespa.randomsquare.BottomBarScreen
 import com.aleespa.randomsquare.FigureType
+import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.SettingDarkMode
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.getFiguresByType
 import com.aleespa.randomsquare.tools.generateNewPlot
 import com.aleespa.randomsquare.tools.readTexAssets
-import com.aleespa.randomsquare.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,8 +82,7 @@ fun Browse(
                 actions = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = when (visualizeModel.settingDarkMode)
-                            {
+                            text = when (visualizeModel.settingDarkMode) {
                                 SettingDarkMode.On -> ""
                                 SettingDarkMode.Off -> ""
                                 SettingDarkMode.Auto -> stringResource(id = R.string.auto)
@@ -115,38 +114,43 @@ fun Browse(
         }
     ) { innerPadding ->
         // Place your scrolling content here
-        BrowserScrollable(visualizeModel,
+        BrowserScrollable(
+            visualizeModel,
             innerPadding,
-            navController,context
+            navController, context
         )
     }
 }
 
 
 @Composable
-fun BrowserScrollable(visualizeModel: VisualizeModel,
-                      innerPadding: PaddingValues,
-                      navController: NavHostController,
-                      context: Context){
+fun BrowserScrollable(
+    visualizeModel: VisualizeModel,
+    innerPadding: PaddingValues,
+    navController: NavHostController,
+    context: Context
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(20.dp),
         contentPadding = PaddingValues(
-            start = innerPadding.calculateStartPadding(LayoutDirection.Ltr) ,
+            start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
             end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
             top = innerPadding.calculateTopPadding(),
             bottom = innerPadding.calculateBottomPadding() + 80.dp
-    )
+        )
     ) {
-        item { Carousel(visualizeModel, navController, context)}
+        item { Carousel(visualizeModel, navController, context) }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Carousel(visualizeModel: VisualizeModel,navController: NavHostController,
-             context: Context = LocalContext.current) {
+fun Carousel(
+    visualizeModel: VisualizeModel, navController: NavHostController,
+    context: Context = LocalContext.current
+) {
 
     for (figureType in FigureType.entries) {
         val figures = getFiguresByType(figureType)
@@ -154,18 +158,20 @@ fun Carousel(visualizeModel: VisualizeModel,navController: NavHostController,
         PlotTypeDescription(stringResource(figureType.stringId))
         HorizontalMultiBrowseCarousel(
             state = rememberCarouselState { figures.count() },
-            modifier = Modifier.width(412.dp).height(221.dp),
+            modifier = Modifier
+                .width(412.dp)
+                .height(221.dp),
             preferredItemWidth = 186.dp,
             itemSpacing = 8.dp,
             contentPadding = PaddingValues(horizontal = 16.dp),
             flingBehavior = CarouselDefaults.singleAdvanceFlingBehavior(
                 state = rememberCarouselState { figures.count() },
                 snapAnimationSpec = spring(stiffness = Spring.StiffnessHigh)
-                )
+            )
         ) { i ->
             val item = figures[i]
             val isDark = isSystemInDarkTheme()
-            val sampleImage = when (visualizeModel.settingDarkMode){
+            val sampleImage = when (visualizeModel.settingDarkMode) {
                 SettingDarkMode.Auto -> if (isDark) item.sampleDarkImage else (item.sampleLightImage)
                 SettingDarkMode.On -> item.sampleDarkImage
                 SettingDarkMode.Off -> item.sampleLightImage
@@ -184,9 +190,11 @@ fun Carousel(visualizeModel: VisualizeModel,navController: NavHostController,
 
                         visualizeModel.latexString = readTexAssets(
                             context,
-                            visualizeModel.selectedFigure.key)
+                            visualizeModel.selectedFigure.key
+                        )
                         generateNewPlot(visualizeModel, context)
-                        navController.navigate(BottomBarScreen.Visualize.route)},
+                        navController.navigate(BottomBarScreen.Visualize.route)
+                    },
                 painter = painter,
                 contentDescription = stringResource(item.resourceStringId),
                 contentScale = ContentScale.Crop

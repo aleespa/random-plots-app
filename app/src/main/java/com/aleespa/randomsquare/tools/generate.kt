@@ -18,6 +18,8 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.FileProvider
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.set
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.ImageEntity
@@ -34,8 +36,6 @@ import java.io.IOException
 import kotlin.math.min
 import kotlin.random.Random
 import kotlin.random.nextUInt
-import androidx.core.graphics.createBitmap
-import androidx.core.graphics.set
 
 fun colorToHexWithoutAlpha(color: Color): String {
     val red = (color.red * 255).toInt()
@@ -54,7 +54,8 @@ fun generateRandomPlot(visualizeModel: VisualizeModel):
         visualizeModel.randomSeed,
         true,
         colorToHexWithoutAlpha(Color(visualizeModel.bgColor)),
-        visualizeModel.selectedFigure.key).toJava(ByteArray::class.java)
+        visualizeModel.selectedFigure.key
+    ).toJava(ByteArray::class.java)
 
     return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
         ?.asImageBitmap()
@@ -99,7 +100,12 @@ fun setWallpaper(context: Context, visualizeModel: VisualizeModel) {
         }
 
         // Start the Intent
-        context.startActivity(Intent.createChooser(intent, context.getString(R.string.select_wallpaper_app)))
+        context.startActivity(
+            Intent.createChooser(
+                intent,
+                context.getString(R.string.select_wallpaper_app)
+            )
+        )
 
     } catch (_: IOException) {
         Toast.makeText(context, R.string.wallpaper_fail, Toast.LENGTH_SHORT).show()
@@ -107,10 +113,11 @@ fun setWallpaper(context: Context, visualizeModel: VisualizeModel) {
 }
 
 
-
-fun saveBitmapToGallery(context: Context,
-                        bitmap: Bitmap,
-                        prefix: String) : Uri? {
+fun saveBitmapToGallery(
+    context: Context,
+    bitmap: Bitmap,
+    prefix: String
+): Uri? {
     val displayName = "${prefix}_${System.currentTimeMillis()}.png"
     val values = ContentValues().apply {
         put(MediaStore.MediaColumns.DISPLAY_NAME, displayName)
@@ -130,7 +137,7 @@ fun saveBitmapToGallery(context: Context,
 }
 
 
-fun setBitmapToCache(context: Context, bitmap: Bitmap, filename: String){
+fun setBitmapToCache(context: Context, bitmap: Bitmap, filename: String) {
     try {
         deleteFileIfExists(context, filename)
         val file = File(context.filesDir, filename)
@@ -142,6 +149,7 @@ fun setBitmapToCache(context: Context, bitmap: Bitmap, filename: String){
         e.printStackTrace()
     }
 }
+
 fun deleteFileIfExists(context: Context, filename: String) {
     val file = File(context.filesDir, filename)
     if (file.exists()) {
@@ -151,11 +159,12 @@ fun deleteFileIfExists(context: Context, filename: String) {
         }
     }
 }
+
 fun loadBitmapFromFile(context: Context, filename: String): Bitmap? {
     return try {
         val file = File(context.filesDir, filename)
         if (file.exists()) {
-            Log.d("","File exists")
+            Log.d("", "File exists")
             BitmapFactory.decodeFile(file.absolutePath)
         } else {
             null // Return null if the file doesn't exist
@@ -196,27 +205,30 @@ fun generateNewPlot(visualizeModel: VisualizeModel, context: Context) {
     }
 }
 
-fun loadSavedImage(visualizeModel: VisualizeModel,
-                   image: ImageEntity,
-                   context: Context) {
+fun loadSavedImage(
+    visualizeModel: VisualizeModel,
+    image: ImageEntity,
+    context: Context
+) {
     visualizeModel.isFromGallery = true
     visualizeModel.galleryURI = image.uri
     visualizeModel.galleryId = image.id
-    visualizeModel.bgColor =0
+    visualizeModel.bgColor = 0
 
     val figureKey = image.imageType
     visualizeModel.selectedFigure = Figures.fromKey(figureKey)
     visualizeModel.latexString = readTexAssets(
-    context,
-    visualizeModel.selectedFigure.key
+        context,
+        visualizeModel.selectedFigure.key
     )
-    visualizeModel.imageBitmapState = loadImage(context,Uri.parse(image.uri))
+    visualizeModel.imageBitmapState = loadImage(context, Uri.parse(image.uri))
     visualizeModel.showInfo = false
 }
 
 fun generate32BitSeed(): UInt {
     return Random.nextUInt()
 }
+
 fun convertToAspectRatio(
     originalBitmap: Bitmap,
     targetWidth: Int,
@@ -284,6 +296,7 @@ fun calculateColor(iteration: Double, maxIter: Int): Color {
         Color.hsv(hue, 1f, 1f)
     }
 }
+
 fun createJuliaBitmap(iterations: Array<DoubleArray>, maxIter: Int): ImageBitmap {
     val size = iterations.size
     val bitmap = createBitmap(size, size)
