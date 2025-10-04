@@ -56,7 +56,6 @@ fun generateRandomPlot(visualizeModel: VisualizeModel): ImageBitmap? {
     val imageBytes = mainModule.callAttr(
         "generate",
         visualizeModel.randomSeed,
-        isColorDark(visualizeModel.bgColor),
         colorToHexWithoutAlpha(Color(visualizeModel.bgColor)),
         visualizeModel.selectedFigure.key,
         pythonList

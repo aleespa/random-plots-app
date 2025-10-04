@@ -23,18 +23,18 @@ android {
             useSupportLibrary true
         }
         python {
-            buildPython "C:/Users/Alejandro/AppData/Local/Programs/Python/Python38-32/python.exe"
+            buildPython "C:/Users/Alejandro/AppData/Local/Programs/Python/Python313/python.exe"
             pip {
                 install "matplotlib"
             }
         }
         chaquopy {
             defaultConfig {
-                version = "3.8"
+                version = "3.13"
             }
         }
         ndk {
-            abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+            abiFilters "arm64-v8a", "x86_64"
         }
 
         buildTypes {
