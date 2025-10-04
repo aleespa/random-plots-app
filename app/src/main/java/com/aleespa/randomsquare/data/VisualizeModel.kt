@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.aleespa.randomsquare.Colormaps
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.data.ImageEntity.Builder
 import kotlinx.coroutines.Dispatchers
@@ -48,6 +49,7 @@ class VisualizeModel(
     var showFilterDialog by mutableStateOf(false)
     var showAspectRatioDialog by mutableStateOf(false)
 
+    var selectedColormap by mutableStateOf(Colormaps.RAINBOW)
     private var _settingDarkMode by mutableStateOf(SettingDarkMode.Auto)
     var settingDarkMode: SettingDarkMode
         get() = _settingDarkMode
@@ -82,6 +84,32 @@ class VisualizeModel(
         viewModelScope.launch {
             settingsRepository.selectedFigure.collect { figure ->
                 _selectedFigure = figure
+            }
+        }
+    }
+
+    private var _selectedColormapColors by mutableStateOf(
+        listOf(
+            0xFFFF0000.toInt(), // red
+            0xFF0000FF.toInt(), // blue
+            0xFFFFFF00.toInt(), // yellow
+            0xFF00FFFF.toInt()  // cyan
+        )
+    )
+
+    var selectedColormapColors: List<Int>
+        get() = _selectedColormapColors
+        set(value) {
+            _selectedColormapColors = value
+            viewModelScope.launch {
+                settingsRepository.saveSelectedColormapColors(value) // Persist to DataStore
+            }
+        }
+    init {
+        // Load selectedColormapColors from DataStore
+        viewModelScope.launch {
+            settingsRepository.selectedColormapColors.collect { colors ->
+                _selectedColormapColors = colors
             }
         }
     }

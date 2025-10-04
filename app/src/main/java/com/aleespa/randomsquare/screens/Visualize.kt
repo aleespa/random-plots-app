@@ -9,6 +9,7 @@ import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,8 +27,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddPhotoAlternate
@@ -96,6 +98,16 @@ import com.aleespa.randomsquare.tools.loadBitmapFromFile
 import com.aleespa.randomsquare.tools.loadSavedImage
 import com.aleespa.randomsquare.tools.saveBitmapToGallery
 import com.aleespa.randomsquare.tools.setWallpaper
+import androidx.compose.material3.ContainedLoadingIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.fromColorLong
+import com.aleespa.randomsquare.Colormaps
+import com.aleespa.randomsquare.tools.contrasted
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -104,6 +116,7 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun Visualize(
     visualizeModel: VisualizeModel,
@@ -133,17 +146,33 @@ fun Visualize(
         modifier = Modifier
             .fillMaxSize()
             .safeDrawingPadding(),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         item { Spacer(Modifier.height(20.dp)) }
         item { HeaderSection(visualizeModel, context) }
+        item { Spacer(Modifier.height(20.dp)) }
         item { VisualizeBox(visualizeModel) }
+
+        item { Spacer(Modifier.height(20.dp)) }
         if (visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS) {
-            item { Spacer(Modifier.height(15.dp)) }
+            item { Spacer(Modifier.height(35.dp)) }
         }
         item { GeneratePlotButton(visualizeModel, context, showAd) }
         if (visualizeModel.selectedFigure.figureType != FigureType.COMPOSITIONS) {
+            item { Spacer(Modifier.height(18.dp)) }
+            item {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    ColormapDropdown(
+                        visualizeModel = visualizeModel,
+                        modifier = Modifier.widthIn(max = 280.dp)
+                    )
+                }
+            }
+            item { Spacer(Modifier.height(10.dp)) }
             item { BackgroundColorSelector(visualizeModel) }
+
         }
         item { Spacer(Modifier.height(80.dp)) }
     }
@@ -413,7 +442,9 @@ fun VisualizeOptionsButtons(
 }
 
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
+@ExperimentalMaterial3ExpressiveApi
 fun GeneratePlotButton(
     visualizeModel: VisualizeModel,
     context: Context,
@@ -435,13 +466,11 @@ fun GeneratePlotButton(
                     visualizeModel.showAspectRatioDialog = true
                 }
         )
-
-        // Center Button
         ExtendedFloatingActionButton(
             elevation = FloatingActionButtonDefaults.elevation(10.dp),
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             onClick = {
-                if ((generate32BitSeed().toLong() % 3).toInt() == 0) {
+                if ((generate32BitSeed().toLong() % 8978945).toInt() == 0) {
                     showAd()
                 }
                 generateNewPlot(visualizeModel, context)
@@ -485,16 +514,18 @@ fun GeneratePlotButton(
         }
         Spacer(Modifier.width(16.dp))
     }
-}@Composable
+}
+
+@Composable
 fun BackgroundColorSelector(visualizeModel: VisualizeModel) {
     // Read initial HSL from model
     val initialHsl = remember(visualizeModel.bgColor) {
         Color(visualizeModel.bgColor).toHsl()
     }
 
-    var hue by remember { mutableStateOf(initialHsl[0]) }
-    var saturation by remember { mutableStateOf(initialHsl[1]) }
-    var lightness by remember { mutableStateOf(initialHsl[2]) }
+    var hue by remember { mutableFloatStateOf(initialHsl[0]) }
+    var saturation by remember { mutableFloatStateOf(initialHsl[1]) }
+    var lightness by remember { mutableFloatStateOf(initialHsl[2]) }
 
     val currentColor = hslToColor(hue, saturation, lightness)
 
@@ -506,67 +537,69 @@ fun BackgroundColorSelector(visualizeModel: VisualizeModel) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(start=16.dp, end=16.dp)
     ) {
-        Text("Color Picker", style = MaterialTheme.typography.titleMedium)
-
-        Spacer(Modifier.height(12.dp))
-
-        // Preview box
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
-                .background(currentColor)
-        )
-
-        Spacer(Modifier.height(16.dp))
-
         // Hue
         Text("Hue: ${hue.roundToInt()}")
+
+
+        val hueGradientColors = (0..6).map { i ->
+            val hueValue = i * 60f
+            hslToColor(hueValue, saturation, lightness)
+        } + listOf(hslToColor(0f, saturation, lightness)) // wrap around to red
+
+
         GradientSlider(
             value = hue,
             onValueChange = { hue = it },
             valueRange = 0f..360f,
-            gradient = Brush.horizontalGradient(
-                listOf(
-                    Color.Red, Color.Yellow, Color.Green,
-                    Color.Cyan, Color.Blue, Color.Magenta, Color.Red
-                )
-            ),
-            thumbColor = hslToColor(hue, 1f, 0.5f)
+            gradient = Brush.horizontalGradient(hueGradientColors),
+            thumbColor = currentColor
         )
 
         Spacer(Modifier.height(12.dp))
 
         // Saturation
-        Text("Saturation: ${(saturation * 100).roundToInt()}%")
-        GradientSlider(
-            value = saturation,
-            onValueChange = { saturation = it },
-            valueRange = 0f..1f,
-            gradient = Brush.horizontalGradient(
-                listOf(
-                    hslToColor(hue, 0f, lightness),
-                    hslToColor(hue, 1f, lightness)
-                )
-            ),
-            thumbColor = currentColor
-        )
 
-        Spacer(Modifier.height(12.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Box(modifier = Modifier.weight(1f)) {
+                Column {
+                    Text("Saturation: ${(saturation * 100).roundToInt()}%")
+                    GradientSlider(
+                        value = saturation,
+                        onValueChange = { saturation = it },
+                        valueRange = 0f..1f,
+                        gradient = Brush.horizontalGradient(
+                            listOf(
+                                hslToColor(hue, 0f, lightness),
+                                hslToColor(hue, 1f, lightness)
+                            )
+                        ),
+                        thumbColor = currentColor
+                    )
+                }
+            }
 
-        // Lightness
-        Text("Lightness: ${(lightness * 100).roundToInt()}%")
-        GradientSlider(
-            value = lightness,
-            onValueChange = { lightness = it },
-            valueRange = 0f..1f,
-            gradient = Brush.horizontalGradient(
-                listOf(Color.Black, hslToColor(hue, saturation, 0.5f), Color.White)
-            ),
-            thumbColor = currentColor
-        )
+            Box(modifier = Modifier.weight(1f)) {
+                Column {
+                    Text("Lightness: ${(lightness * 100).roundToInt()}%")
+                    GradientSlider(
+                        value = lightness,
+                        onValueChange = { lightness = it },
+                        valueRange = 0f..1f,
+                        gradient = Brush.horizontalGradient(
+                            listOf(Color.Black, hslToColor(hue, saturation, 0.5f), Color.White)
+                        ),
+                        thumbColor = currentColor
+                    )
+                }
+            }
+        }
+
     }
 }
 
@@ -583,7 +616,7 @@ fun GradientSlider(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(30.dp)
+            .height(25.dp)
             .background(brush = gradient, shape = MaterialTheme.shapes.small),
         contentAlignment = androidx.compose.ui.Alignment.Center
     ) {
@@ -600,16 +633,22 @@ fun GradientSlider(
             thumb = {
                 Box(
                     modifier = Modifier
-                        .size(24.dp) // bigger thumb
-                        .shadow(4.dp, CircleShape)
-                        .background(thumbColor, CircleShape)
-                        .border(2.dp, Color.White, CircleShape) // white border
+                        .width(18.dp)   // narrow, vertical shape
+                        .height(32.dp)  // taller than wide
+                        .shadow(4.dp, RoundedCornerShape(6.dp))
+                        .background(thumbColor, RoundedCornerShape(6.dp))
+                        .border(
+                            3.dp,
+                            Color.White.copy(alpha = 0.7f),
+                            RoundedCornerShape(6.dp)
+                        ) // semi-transparent border
                 )
             }
         )
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun VisualizeBox(visualizeModel: VisualizeModel) {
     ElevatedCard(
@@ -628,9 +667,9 @@ fun VisualizeBox(visualizeModel: VisualizeModel) {
                         .fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(
-                        color = MaterialTheme.colorScheme.secondary,
-                        trackColor = MaterialTheme.colorScheme.surfaceVariant
+                    ContainedLoadingIndicator(
+                        containerColor = Color(visualizeModel.bgColor).contrasted(),
+                        indicatorColor = Color(visualizeModel.bgColor)
                     )
                 }
             } else {
@@ -679,6 +718,71 @@ fun loadImage(
     } catch (e: Exception) {
         e.printStackTrace()
         null // Return null in case of an error
+    }
+}
+
+@Composable
+fun ColormapDropdown(
+    visualizeModel: VisualizeModel,
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    val selectedColormap = visualizeModel.selectedColormap
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .widthIn(max = 200.dp) // max width
+            .fillMaxWidth()        // center horizontally in parent
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { expanded = true }
+                .background(MaterialTheme.colorScheme.surface),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = selectedColormap.key,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.weight(1f)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            ColormapSineWaveLine(
+                colormap = selectedColormap,
+                modifier = Modifier.size(width = 80.dp, height = 20.dp)
+            )
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.widthIn(max = 280.dp)
+        ) {
+            Colormaps.entries.forEach { colormap ->
+                DropdownMenuItem(
+                    text = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(colormap.key, modifier = Modifier.weight(1f))
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            ColormapSineWaveLine(
+                                colormap = colormap,
+                                modifier = Modifier.size(width = 70.dp, height = 20.dp)
+                            )
+
+                        }
+                    },
+                    onClick = {
+                        visualizeModel.selectedColormap = colormap
+                        expanded = false
+                    }
+                )
+            }
+        }
     }
 }
 
@@ -739,3 +843,38 @@ fun hslToColor(hue: Float, saturation: Float, lightness: Float): Color {
     )
 }
 
+@Composable
+fun ColormapSineWaveLine(
+    colormap: Colormaps,
+    modifier: Modifier = Modifier,
+    strokeWidth: Float = 18f
+) {
+    Canvas(
+        modifier = modifier
+            .height(40.dp)
+            .fillMaxWidth()
+    ) {
+        val width = size.width
+        val height = size.height
+        val amplitude = height / 4f
+        val frequency = 4 * Math.PI / width
+
+        val path = Path().apply {
+            moveTo(0f, height / 2f)
+            for (x in 0..width.toInt()) {
+                val y = (height / 2f + amplitude * kotlin.math.sin(frequency * x)).toFloat()
+                lineTo(x.toFloat(), y)
+            }
+        }
+
+        drawPath(
+            path = path,
+            brush = Brush.horizontalGradient(colormap.colorlist.map { Color(it) }),
+            style = Stroke(
+                width = strokeWidth,
+                cap = StrokeCap.Round,   // makes the ends rounded
+                join = StrokeJoin.Round  // makes corners/spline joins rounded
+            )
+        )
+    }
+}

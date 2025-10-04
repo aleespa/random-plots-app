@@ -25,6 +25,7 @@ import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.ImageEntity
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.screens.loadImage
+import com.chaquo.python.PyObject
 import com.chaquo.python.Python
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,44 +38,33 @@ import kotlin.math.min
 import kotlin.random.Random
 import kotlin.random.nextUInt
 
-fun colorToHexWithoutAlpha(color: Color): String {
-    val red = (color.red * 255).toInt()
-    val green = (color.green * 255).toInt()
-    val blue = (color.blue * 255).toInt()
-
-    return String.format("#%02X%02X%02X", red, green, blue)
-}
 
 
+fun generateRandomPlot(visualizeModel: VisualizeModel): ImageBitmap? {
+    val colormapColors = visualizeModel
+        .selectedColormap.colorlist.toTypedArray().map { color ->
+        intColorToHexWithoutAlpha(color)
+    }
 
-fun isColorDark(colorInt: Int): Boolean {
-    val color = Color(colorInt)
-    val r = (color.red * 255).toInt()
-    val g = (color.green * 255).toInt()
-    val b = (color.blue * 255).toInt()
-
-    // Perceived luminance formula
-    val luminance = (0.299 * r + 0.587 * g + 0.114 * b)
-
-    return luminance < 128
-}
-
-fun generateRandomPlot(visualizeModel: VisualizeModel):
-        ImageBitmap? {
     val py = Python.getInstance()
     val mainModule = py.getModule("main")
+
+    // Correct way to get the list function and call it
+    val listFunction = py.builtins.get("list")
+    val pythonList = listFunction?.call(colormapColors.toTypedArray())
+
     val imageBytes = mainModule.callAttr(
         "generate",
         visualizeModel.randomSeed,
         isColorDark(visualizeModel.bgColor),
         colorToHexWithoutAlpha(Color(visualizeModel.bgColor)),
-        visualizeModel.selectedFigure.key
+        visualizeModel.selectedFigure.key,
+        pythonList
     ).toJava(ByteArray::class.java)
 
     return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
         ?.asImageBitmap()
 }
-
 
 fun setWallpaper(context: Context, visualizeModel: VisualizeModel) {
     var bitmap = visualizeModel.imageBitmapState?.asAndroidBitmap()

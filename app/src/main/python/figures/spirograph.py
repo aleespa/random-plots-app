@@ -23,7 +23,7 @@ colors_light = [
 cmap_light = mcolors.LinearSegmentedColormap.from_list("custom_cmap", colors_light, N=250)
 
 
-def generate_plot(seed, bg_color, dark_mode):
+def generate_plot(seed, bg_color=(0, 0, 0), dark_mode=True, cmap=None):
     rng = np.random.default_rng(seed)
     # Generate data
     t = np.linspace(0, 2 * np.pi, 5000)
@@ -36,7 +36,7 @@ def generate_plot(seed, bg_color, dark_mode):
             line_color = cmap_dark(rng.uniform())
         else:
             line_color = cmap_light(rng.uniform())
-        plot_spiro(t, a, b, c, d, ax, line_color)
+        plot_spiro(t, a, b, c, d, ax, cmap(rng.uniform()))
 
     # Ensure the center is always at (0, 0)
     ax.set_aspect('equal')  # Ensure equal scaling for x and y axes
@@ -85,8 +85,8 @@ def generate_k_l(rng):
             return a, b, c, d
 
 
-def create_image(seed=0, dark_mode=True, bg_color=(0, 0, 0)):
-    buffer = generate_plot(seed, bg_color, dark_mode)
+def create_image(seed=0, dark_mode=True, bg_color=(0, 0, 0), cmap=None):
+    buffer = generate_plot(seed, bg_color, dark_mode, cmap)
     plt.close()
     return buffer.getvalue()
 

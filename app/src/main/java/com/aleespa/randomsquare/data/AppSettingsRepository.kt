@@ -22,6 +22,8 @@ class AppSettingsRepository(private val dataStore: DataStore<Preferences>) {
 
         // We will define a new key for the integer color.
         val BG_COLOR_INT = intPreferencesKey("bg_color_int")
+
+        val COLORMAP_COLORS = stringPreferencesKey("colormap_colors")
     }
 
     // --- Dark Mode and Figure settings remain the same ---
@@ -67,6 +69,17 @@ class AppSettingsRepository(private val dataStore: DataStore<Preferences>) {
         }
     }
 
+    suspend fun saveSelectedColormapColors(colormap: List<Int>) {
+        val stringValue = colormap.joinToString(separator = ",")
+        dataStore.edit { preferences ->
+            preferences[COLORMAP_COLORS] = stringValue
+        }
+    }
+    val selectedColormapColors: Flow<List<Int>> = dataStore.data
+        .map { preferences ->
+            preferences[COLORMAP_COLORS]?.split(",")
+                ?.mapNotNull { it.toIntOrNull() } ?: emptyList()
+        }
     /**
      * Loads the background color as a Flow of Int.
      * This logic is now migration-aware. It first tries to read the new Int format.

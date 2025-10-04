@@ -24,7 +24,7 @@ colors_light = [
 cmap_light = mcolors.LinearSegmentedColormap.from_list("custom_cmap", colors_light, N=250)
 
 
-def generate_plot(seed, bg_color, dark_mode) -> io.BytesIO:
+def generate_plot(seed, bg_color=(0, 0, 0), dark_mode=True, cmap=None):
     rng = np.random.default_rng(seed)
     t = np.linspace(0, 2 * np.pi, 10000)
     fig, ax = plt.subplots(figsize=(12, 12), dpi=200, tight_layout=True)
@@ -59,7 +59,7 @@ def plot_spiro(t, k, l, ax, color):
             color=color)
 
 
-def create_image(seed=0, dark_mode=True, bg_color=(0, 0, 0)):
+def create_image(seed=0, dark_mode=True, bg_color=(0, 0, 0), cmap=None):
     buffer = generate_plot(seed, bg_color, dark_mode)
     plt.close()
     return buffer.getvalue()
