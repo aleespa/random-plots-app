@@ -45,6 +45,20 @@ fun colorToHexWithoutAlpha(color: Color): String {
     return String.format("#%02X%02X%02X", red, green, blue)
 }
 
+
+
+fun isColorDark(colorInt: Int): Boolean {
+    val color = Color(colorInt)
+    val r = (color.red * 255).toInt()
+    val g = (color.green * 255).toInt()
+    val b = (color.blue * 255).toInt()
+
+    // Perceived luminance formula
+    val luminance = (0.299 * r + 0.587 * g + 0.114 * b)
+
+    return luminance < 128
+}
+
 fun generateRandomPlot(visualizeModel: VisualizeModel):
         ImageBitmap? {
     val py = Python.getInstance()
@@ -52,7 +66,7 @@ fun generateRandomPlot(visualizeModel: VisualizeModel):
     val imageBytes = mainModule.callAttr(
         "generate",
         visualizeModel.randomSeed,
-        true,
+        isColorDark(visualizeModel.bgColor),
         colorToHexWithoutAlpha(Color(visualizeModel.bgColor)),
         visualizeModel.selectedFigure.key
     ).toJava(ByteArray::class.java)
@@ -182,7 +196,7 @@ fun generateNewPlot(visualizeModel: VisualizeModel, context: Context) {
     CoroutineScope(Dispatchers.Main).launch {
         visualizeModel.temporalImageEntity = ImageEntity.Builder()
             .setImageType(visualizeModel.selectedFigure.key)
-            .setIsDarkMode(true)
+            .setIsDarkMode(isColorDark(visualizeModel.bgColor))
             .setTimestamp(System.currentTimeMillis())
             .setRandomSeed(visualizeModel.randomSeed)
             .setBackgroundColor(fromColor(Color(visualizeModel.bgColor)))
@@ -213,7 +227,7 @@ fun loadSavedImage(
     visualizeModel.isFromGallery = true
     visualizeModel.galleryURI = image.uri
     visualizeModel.galleryId = image.id
-    visualizeModel.bgColor = 0
+    visualizeModel.bgColor = image.backgroundColor
 
     val figureKey = image.imageType
     visualizeModel.selectedFigure = Figures.fromKey(figureKey)

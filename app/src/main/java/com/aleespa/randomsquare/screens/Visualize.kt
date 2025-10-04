@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +27,7 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddPhotoAlternate
@@ -41,23 +43,31 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -90,6 +100,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import kotlin.math.abs
+import kotlin.math.roundToInt
 
 
 @Composable
@@ -131,7 +143,7 @@ fun Visualize(
         }
         item { GeneratePlotButton(visualizeModel, context, showAd) }
         if (visualizeModel.selectedFigure.figureType != FigureType.COMPOSITIONS) {
-            item { BackgroundColorButtons(visualizeModel) }
+            item { BackgroundColorSelector(visualizeModel) }
         }
         item { Spacer(Modifier.height(80.dp)) }
     }
@@ -473,11 +485,129 @@ fun GeneratePlotButton(
         }
         Spacer(Modifier.width(16.dp))
     }
+}@Composable
+fun BackgroundColorSelector(visualizeModel: VisualizeModel) {
+    // Read initial HSL from model
+    val initialHsl = remember(visualizeModel.bgColor) {
+        Color(visualizeModel.bgColor).toHsl()
+    }
+
+    var hue by remember { mutableStateOf(initialHsl[0]) }
+    var saturation by remember { mutableStateOf(initialHsl[1]) }
+    var lightness by remember { mutableStateOf(initialHsl[2]) }
+
+    val currentColor = hslToColor(hue, saturation, lightness)
+
+    // Update the model only when sliders change
+    LaunchedEffect(hue, saturation, lightness) {
+        visualizeModel.bgColor = currentColor.toArgb()
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Text("Color Picker", style = MaterialTheme.typography.titleMedium)
+
+        Spacer(Modifier.height(12.dp))
+
+        // Preview box
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp)
+                .background(currentColor)
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        // Hue
+        Text("Hue: ${hue.roundToInt()}")
+        GradientSlider(
+            value = hue,
+            onValueChange = { hue = it },
+            valueRange = 0f..360f,
+            gradient = Brush.horizontalGradient(
+                listOf(
+                    Color.Red, Color.Yellow, Color.Green,
+                    Color.Cyan, Color.Blue, Color.Magenta, Color.Red
+                )
+            ),
+            thumbColor = hslToColor(hue, 1f, 0.5f)
+        )
+
+        Spacer(Modifier.height(12.dp))
+
+        // Saturation
+        Text("Saturation: ${(saturation * 100).roundToInt()}%")
+        GradientSlider(
+            value = saturation,
+            onValueChange = { saturation = it },
+            valueRange = 0f..1f,
+            gradient = Brush.horizontalGradient(
+                listOf(
+                    hslToColor(hue, 0f, lightness),
+                    hslToColor(hue, 1f, lightness)
+                )
+            ),
+            thumbColor = currentColor
+        )
+
+        Spacer(Modifier.height(12.dp))
+
+        // Lightness
+        Text("Lightness: ${(lightness * 100).roundToInt()}%")
+        GradientSlider(
+            value = lightness,
+            onValueChange = { lightness = it },
+            valueRange = 0f..1f,
+            gradient = Brush.horizontalGradient(
+                listOf(Color.Black, hslToColor(hue, saturation, 0.5f), Color.White)
+            ),
+            thumbColor = currentColor
+        )
+    }
 }
 
-@Composable
-fun BackgroundColorButtons(visualizeModel: VisualizeModel) {
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun GradientSlider(
+    value: Float,
+    onValueChange: (Float) -> Unit,
+    valueRange: ClosedFloatingPointRange<Float>,
+    gradient: Brush,
+    thumbColor: Color
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(30.dp)
+            .background(brush = gradient, shape = MaterialTheme.shapes.small),
+        contentAlignment = androidx.compose.ui.Alignment.Center
+    ) {
+        Slider(
+            value = value,
+            onValueChange = onValueChange,
+            valueRange = valueRange,
+            modifier = Modifier.fillMaxWidth(),
+            colors = SliderDefaults.colors(
+                activeTrackColor = Color.Transparent,
+                inactiveTrackColor = Color.Transparent,
+                thumbColor = Color.Transparent // we override it with a custom thumb
+            ),
+            thumb = {
+                Box(
+                    modifier = Modifier
+                        .size(24.dp) // bigger thumb
+                        .shadow(4.dp, CircleShape)
+                        .background(thumbColor, CircleShape)
+                        .border(2.dp, Color.White, CircleShape) // white border
+                )
+            }
+        )
+    }
 }
 
 @Composable
@@ -558,3 +688,54 @@ val parkinsansFontFamily = FontFamily(
     Font(R.font.parkinsans_medium, FontWeight.Bold),
     Font(R.font.parkinsans, FontWeight.Normal, FontStyle.Italic)
 )
+
+fun Color.toHsl(): FloatArray {
+    val r = red
+    val g = green
+    val b = blue
+
+    val max = maxOf(r, g, b)
+    val min = minOf(r, g, b)
+    val delta = max - min
+
+    var h = 0f
+    val l = (max + min) / 2f
+    val s: Float
+
+    if (delta == 0f) {
+        h = 0f
+        s = 0f
+    } else {
+        s = delta / (1f - kotlin.math.abs(2f * l - 1f))
+        h = when (max) {
+            r -> ((g - b) / delta) % 6f
+            g -> (b - r) / delta + 2f
+            else -> (r - g) / delta + 4f
+        }
+        h *= 60f
+        if (h < 0f) h += 360f
+    }
+    return floatArrayOf(h, s, l)
+}
+
+fun hslToColor(hue: Float, saturation: Float, lightness: Float): Color {
+    val c = (1f - abs(2f * lightness - 1f)) * saturation
+    val x = c * (1f - abs((hue / 60f) % 2f - 1f))
+    val m = lightness - c / 2f
+
+    val (r, g, b) = when {
+        hue < 60f -> Triple(c, x, 0f)
+        hue < 120f -> Triple(x, c, 0f)
+        hue < 180f -> Triple(0f, c, x)
+        hue < 240f -> Triple(0f, x, c)
+        hue < 300f -> Triple(x, 0f, c)
+        else -> Triple(c, 0f, x)
+    }
+
+    return Color(
+        red = (r + m).coerceIn(0f, 1f),
+        green = (g + m).coerceIn(0f, 1f),
+        blue = (b + m).coerceIn(0f, 1f)
+    )
+}
+
