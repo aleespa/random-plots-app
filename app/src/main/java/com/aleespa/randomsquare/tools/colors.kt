@@ -1,6 +1,7 @@
 package com.aleespa.randomsquare.tools
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import kotlin.math.abs
 
 fun Color.contrasted(): Color {
@@ -19,6 +20,9 @@ fun colorToHexWithoutAlpha(color: Color): String {
     return String.format("#%02X%02X%02X", red, green, blue)
 }
 
+fun fromColor(color: Color): Int {
+    return color.toArgb() // Convert Color to Int (ARGB format)
+}
 
 
 fun isColorDark(colorInt: Int): Boolean {

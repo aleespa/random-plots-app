@@ -339,24 +339,3 @@ fun ScrollContent(
 }
 
 
-fun calculateSampleSize(
-    originalWidth: Int,
-    originalHeight: Int,
-    requiredWidth: Int,
-    requiredHeight: Int
-): Int {
-    var inSampleSize = 1
-
-    if (originalHeight > requiredHeight || originalWidth > requiredWidth) {
-        val halfHeight = originalHeight / 2
-        val halfWidth = originalWidth / 2
-
-        // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-        // height and width larger than the requested height and width.
-        while (halfHeight / inSampleSize >= requiredHeight && halfWidth / inSampleSize >= requiredWidth) {
-            inSampleSize *= 2
-        }
-    }
-
-    return inSampleSize
-}

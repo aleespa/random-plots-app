@@ -162,22 +162,3 @@ fun saveToGallery(visualizeModel: VisualizeModel, context: Context) {
         visualizeModel.isSavingLoading = false
     }
 }
-
-
-fun saveImageBitmapToCache(imageBitmap: ImageBitmap, context: Context): Uri? {
-    // Create a temporary file in the cache directory
-    val file = File(context.cacheDir, "shared_image.png")
-    file.outputStream().use { outputStream ->
-        // Convert ImageBitmap to Bitmap and compress it to PNG format
-        val bitmap = imageBitmap.asAndroidBitmap()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-    }
-
-    // Return a content URI for the file using FileProvider
-    return FileProvider.getUriForFile(
-        context,
-        "${context.packageName}.fileprovider",
-        file
-    )
-}
-

@@ -2,6 +2,8 @@ package com.aleespa.randomsquare.pages.visualize
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +28,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -33,9 +37,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.tools.parkinsansFontFamily
+import java.io.File
 
 
 @Composable
@@ -162,4 +168,21 @@ fun shareImageBitmap(visualizeModel: VisualizeModel, context: Context) {
         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
     context.startActivity(Intent.createChooser(shareIntent, R.string.share_text.toString()))
+}
+
+fun saveImageBitmapToCache(imageBitmap: ImageBitmap, context: Context): Uri? {
+    // Create a temporary file in the cache directory
+    val file = File(context.cacheDir, "shared_image.png")
+    file.outputStream().use { outputStream ->
+        // Convert ImageBitmap to Bitmap and compress it to PNG format
+        val bitmap = imageBitmap.asAndroidBitmap()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+    }
+
+    // Return a content URI for the file using FileProvider
+    return FileProvider.getUriForFile(
+        context,
+        "${context.packageName}.fileprovider",
+        file
+    )
 }

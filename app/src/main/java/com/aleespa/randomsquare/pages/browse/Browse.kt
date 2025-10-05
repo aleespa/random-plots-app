@@ -67,7 +67,6 @@ fun Browse(
 ) {
 
     val context = LocalContext.current
-    val isDark = isSystemInDarkTheme()
 
     BackHandler {
         (context as? Activity)?.finish()
