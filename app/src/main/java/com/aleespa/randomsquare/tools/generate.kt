@@ -18,13 +18,10 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.FileProvider
-import androidx.core.graphics.createBitmap
-import androidx.core.graphics.set
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.ImageEntity
 import com.aleespa.randomsquare.data.VisualizeModel
-import com.aleespa.randomsquare.pages.gallery.calculateSampleSize
 import com.chaquo.python.Python
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -38,12 +35,10 @@ import kotlin.random.Random
 import kotlin.random.nextUInt
 
 
-
 fun generateRandomPlot(visualizeModel: VisualizeModel): ImageBitmap? {
-    val colormapColors = visualizeModel
-        .selectedColormap.colorlist.toTypedArray().map { color ->
-        intColorToHexWithoutAlpha(color)
-    }
+    val colormapColors = visualizeModel.selectedColormap.colorlist.toTypedArray().map { color ->
+            intColorToHexWithoutAlpha(color)
+        }
 
     val py = Python.getInstance()
     val mainModule = py.getModule("main")
@@ -60,16 +55,12 @@ fun generateRandomPlot(visualizeModel: VisualizeModel): ImageBitmap? {
         pythonList
     ).toJava(ByteArray::class.java)
 
-    return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-        ?.asImageBitmap()
+    return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)?.asImageBitmap()
 }
 
 
 fun loadImage(
-    context: Context,
-    imageFile: Uri,
-    targetWidth: Int = 1200,
-    targetHeight: Int = 1200
+    context: Context, imageFile: Uri, targetWidth: Int = 1200, targetHeight: Int = 1200
 ): ImageBitmap? {
     return try {
         // Open InputStream using ContentResolver
@@ -110,10 +101,7 @@ fun setWallpaper(context: Context, visualizeModel: VisualizeModel) {
         var resolution = getScreenResolution(context)
         if (visualizeModel.toFitAspectRatio) {
             bitmap = convertToAspectRatio(
-                bitmap,
-                resolution[0],
-                resolution[1],
-                Color(visualizeModel.bgColor)
+                bitmap, resolution[0], resolution[1], Color(visualizeModel.bgColor)
             )
         }
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
@@ -122,9 +110,7 @@ fun setWallpaper(context: Context, visualizeModel: VisualizeModel) {
 
         // Create a URI for the file
         val uri = FileProvider.getUriForFile(
-            context,
-            "${context.packageName}.fileprovider",
-            file
+            context, "${context.packageName}.fileprovider", file
         )
 
         // Create an Intent to open the default wallpaper app
@@ -137,8 +123,7 @@ fun setWallpaper(context: Context, visualizeModel: VisualizeModel) {
         // Start the Intent
         context.startActivity(
             Intent.createChooser(
-                intent,
-                context.getString(R.string.select_wallpaper_app)
+                intent, context.getString(R.string.select_wallpaper_app)
             )
         )
 
@@ -149,9 +134,7 @@ fun setWallpaper(context: Context, visualizeModel: VisualizeModel) {
 
 
 fun saveBitmapToGallery(
-    context: Context,
-    bitmap: Bitmap,
-    prefix: String
+    context: Context, bitmap: Bitmap, prefix: String
 ): Uri? {
     val displayName = "${prefix}_${System.currentTimeMillis()}.png"
     val values = ContentValues().apply {
@@ -215,12 +198,11 @@ fun generateNewPlot(visualizeModel: VisualizeModel, context: Context) {
     visualizeModel.showInfo = false
     visualizeModel.randomSeed = generate32BitSeed().toLong()
     CoroutineScope(Dispatchers.Main).launch {
-        visualizeModel.temporalImageEntity = ImageEntity.Builder()
-            .setImageType(visualizeModel.selectedFigure.key)
-            .setIsDarkMode(isColorDark(visualizeModel.bgColor))
-            .setTimestamp(System.currentTimeMillis())
-            .setRandomSeed(visualizeModel.randomSeed)
-            .setBackgroundColor(fromColor(Color(visualizeModel.bgColor)))
+        visualizeModel.temporalImageEntity =
+            ImageEntity.Builder().setImageType(visualizeModel.selectedFigure.key)
+                .setIsDarkMode(isColorDark(visualizeModel.bgColor))
+                .setTimestamp(System.currentTimeMillis()).setRandomSeed(visualizeModel.randomSeed)
+                .setBackgroundColor(fromColor(Color(visualizeModel.bgColor)))
         try {
             val result = withContext(Dispatchers.Default) {
                 generateRandomPlot(visualizeModel)
@@ -241,9 +223,7 @@ fun generateNewPlot(visualizeModel: VisualizeModel, context: Context) {
 }
 
 fun loadSavedImage(
-    visualizeModel: VisualizeModel,
-    image: ImageEntity,
-    context: Context
+    visualizeModel: VisualizeModel, image: ImageEntity, context: Context
 ) {
     visualizeModel.isFromGallery = true
     visualizeModel.galleryURI = image.uri
@@ -253,8 +233,7 @@ fun loadSavedImage(
     val figureKey = image.imageType
     visualizeModel.selectedFigure = Figures.fromKey(figureKey)
     visualizeModel.latexString = readTexAssets(
-        context,
-        visualizeModel.selectedFigure.key
+        context, visualizeModel.selectedFigure.key
     )
     visualizeModel.imageBitmapState = loadImage(context, Uri.parse(image.uri))
     visualizeModel.showInfo = false
@@ -283,8 +262,7 @@ fun convertToAspectRatio(
 
     // Calculate the scaling factor and position to center the original bitmap
     val scale = min(
-        targetWidth.toFloat() / originalBitmap.width,
-        targetHeight.toFloat() / originalBitmap.height
+        targetWidth.toFloat() / originalBitmap.width, targetHeight.toFloat() / originalBitmap.height
     )
     val scaledWidth = (originalBitmap.width * scale).toInt()
     val scaledHeight = (originalBitmap.height * scale).toInt()
@@ -314,33 +292,21 @@ fun getScreenResolution(context: Context): List<Int> {
 }
 
 
-fun fromColor(color: Color): Int {
-    return color.toArgb() // Convert Color to Int (ARGB format)
-}
+fun calculateSampleSize(
+    originalWidth: Int, originalHeight: Int, requiredWidth: Int, requiredHeight: Int
+): Int {
+    var inSampleSize = 1
 
-fun toColor(value: Int): Color {
-    return Color(value) // Convert Int back to Color
-}
+    if (originalHeight > requiredHeight || originalWidth > requiredWidth) {
+        val halfHeight = originalHeight / 2
+        val halfWidth = originalWidth / 2
 
-fun calculateColor(iteration: Double, maxIter: Int): Color {
-    return if (iteration >= maxIter) {
-        Color.Black // Points inside the set
-    } else {
-        // Map iteration to a color (example: smooth HSV gradient)
-        val hue = (iteration * 360.0 / maxIter).toFloat()
-        Color.hsv(hue, 1f, 1f)
-    }
-}
-
-fun createJuliaBitmap(iterations: Array<DoubleArray>, maxIter: Int): ImageBitmap {
-    val size = iterations.size
-    val bitmap = createBitmap(size, size)
-    for (y in 0 until size) {
-        for (x in 0 until size) {
-            val iteration = iterations[y][x]
-            val color = calculateColor(iteration, maxIter)
-            bitmap[x, size - 1 - y] = color.toArgb()
+        // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+        // height and width larger than the requested height and width.
+        while (halfHeight / inSampleSize >= requiredHeight && halfWidth / inSampleSize >= requiredWidth) {
+            inSampleSize *= 2
         }
     }
-    return bitmap.asImageBitmap()
+
+    return inSampleSize
 }
