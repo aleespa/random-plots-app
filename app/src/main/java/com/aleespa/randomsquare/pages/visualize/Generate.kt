@@ -60,7 +60,7 @@ fun GeneratePlotButton(
             elevation = FloatingActionButtonDefaults.elevation(10.dp),
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             onClick = {
-                if ((generate32BitSeed().toLong() % 4).toInt() == 0) {
+                if ((generate32BitSeed().toLong() % 546786854).toInt() == 0) {
                     showAd()
                 }
                 generateNewPlot(visualizeModel, context)

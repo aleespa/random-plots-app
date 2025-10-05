@@ -74,7 +74,7 @@ fun Visualize(
         item { HeaderSection(visualizeModel, context) }
         item { Spacer(Modifier.height(18.dp)) }
         item { VisualizeBox(visualizeModel) }
-
+        item { SeedText(visualizeModel)}
         item { Spacer(Modifier.height(2.dp)) }
         if (visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS) {
             item { Spacer(Modifier.height(35.dp)) }
@@ -95,6 +95,10 @@ fun Visualize(
             item { Spacer(Modifier.height(8.dp)) }
             item { BackgroundColorSelector(visualizeModel) }
 
+        }
+        else{
+            item { Spacer(Modifier.height(25.dp)) }
+            item { SeedButton(visualizeModel)}
         }
         item { Spacer(Modifier.height(80.dp)) }
     }
