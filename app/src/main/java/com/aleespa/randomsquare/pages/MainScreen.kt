@@ -1,4 +1,4 @@
-package com.aleespa.randomsquare.screens
+package com.aleespa.randomsquare.pages
 
 import android.annotation.SuppressLint
 import androidx.compose.material3.Icon
@@ -21,6 +21,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.aleespa.randomsquare.BottomBarScreen
 import com.aleespa.randomsquare.data.VisualizeModel
+import com.aleespa.randomsquare.pages.browse.Browse
+import com.aleespa.randomsquare.pages.gallery.Gallery
+import com.aleespa.randomsquare.pages.visualize.Visualize
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
