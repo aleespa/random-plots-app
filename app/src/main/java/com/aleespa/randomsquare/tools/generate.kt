@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.FileProvider
+import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.ImageEntity
@@ -196,7 +197,11 @@ fun loadBitmapFromFile(context: Context, filename: String): Bitmap? {
 fun generateNewPlot(visualizeModel: VisualizeModel, context: Context) {
     visualizeModel.loadingPlotGenerator = true
     visualizeModel.showInfo = false
-    visualizeModel.randomSeed = generate32BitSeed().toLong()
+    if (visualizeModel.userSeed.not()
+        or (visualizeModel.selectedFigure.figureType != FigureType.COMPOSITIONS)) {
+        visualizeModel.randomSeed = generate32BitSeed()
+        visualizeModel.userSeed = false
+    }
     CoroutineScope(Dispatchers.Main).launch {
         visualizeModel.temporalImageEntity =
             ImageEntity.Builder().setImageType(visualizeModel.selectedFigure.key)
@@ -229,6 +234,7 @@ fun loadSavedImage(
     visualizeModel.galleryURI = image.uri
     visualizeModel.galleryId = image.id
     visualizeModel.bgColor = image.backgroundColor
+    visualizeModel.randomSeed = image.randomSeed
 
     val figureKey = image.imageType
     visualizeModel.selectedFigure = Figures.fromKey(figureKey)
@@ -239,8 +245,8 @@ fun loadSavedImage(
     visualizeModel.showInfo = false
 }
 
-fun generate32BitSeed(): UInt {
-    return Random.nextUInt()
+fun generate32BitSeed(): Long {
+    return Random.nextLong(0, Long.MAX_VALUE)
 }
 
 fun convertToAspectRatio(

@@ -16,13 +16,21 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -40,6 +48,8 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.aleespa.randomsquare.Colormaps
 import com.aleespa.randomsquare.data.VisualizeModel
@@ -280,3 +290,44 @@ fun ColormapSineWaveLine(
         )
     }
 }
+
+@Composable
+fun SeedButton(visualizeModel: VisualizeModel) {
+    var text by remember { mutableStateOf(visualizeModel.randomSeed.toString()) }
+
+    OutlinedTextField(
+        value = if (visualizeModel.userSeed.not()) "" else visualizeModel.randomSeed.toString(),
+        onValueChange = { input ->
+            if (input.all { it.isDigit() } && input.length <= 19) {
+                text = input
+                if (input.isNotEmpty()) {
+                    visualizeModel.userSeed = true
+                    visualizeModel.randomSeed = input.toLong()
+                }
+            } else if (input.isEmpty()) {
+                visualizeModel.userSeed = false
+            }
+        },
+        modifier = Modifier
+            .padding(horizontal = 95.dp),
+        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        label = { Text("Seed") },
+        trailingIcon = {
+            if (text.isNotEmpty()) {
+                IconButton(onClick = {
+                    visualizeModel.randomSeed = 0L
+                    visualizeModel.userSeed = false
+                    text = ""
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Clear"
+                    )
+                }
+            }
+        }
+    )
+}
+

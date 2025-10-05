@@ -43,6 +43,7 @@ class VisualizeModel(
     var lightFilter by mutableStateOf(false)
     var filterImageType by mutableStateOf("None")
     var randomSeed by mutableLongStateOf(0L)
+    var userSeed by mutableStateOf(false)
     var isSavingLoading by mutableStateOf(false)
     var temporalImageEntity by mutableStateOf<Builder>(Builder())
     var toFitAspectRatio by mutableStateOf(false)
