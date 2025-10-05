@@ -24,8 +24,7 @@ import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.ImageEntity
 import com.aleespa.randomsquare.data.VisualizeModel
-import com.aleespa.randomsquare.screens.loadImage
-import com.chaquo.python.PyObject
+import com.aleespa.randomsquare.pages.gallery.calculateSampleSize
 import com.chaquo.python.Python
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -64,6 +63,39 @@ fun generateRandomPlot(visualizeModel: VisualizeModel): ImageBitmap? {
     return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
         ?.asImageBitmap()
 }
+
+
+fun loadImage(
+    context: Context,
+    imageFile: Uri,
+    targetWidth: Int = 1200,
+    targetHeight: Int = 1200
+): ImageBitmap? {
+    return try {
+        // Open InputStream using ContentResolver
+        context.contentResolver.openInputStream(imageFile)?.use { inputStream ->
+            // Load the image dimensions first to calculate scaling
+            val options = BitmapFactory.Options().apply {
+                inJustDecodeBounds = true
+            }
+            BitmapFactory.decodeStream(inputStream, null, options)
+
+            // Calculate sample size
+            options.inSampleSize =
+                calculateSampleSize(options.outWidth, options.outHeight, targetWidth, targetHeight)
+            options.inJustDecodeBounds = false
+
+            // Decode the scaled bitmap
+            context.contentResolver.openInputStream(imageFile)?.use { scaledInputStream ->
+                BitmapFactory.decodeStream(scaledInputStream, null, options)?.asImageBitmap()
+            }
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null // Return null in case of an error
+    }
+}
+
 
 fun setWallpaper(context: Context, visualizeModel: VisualizeModel) {
     var bitmap = visualizeModel.imageBitmapState?.asAndroidBitmap()

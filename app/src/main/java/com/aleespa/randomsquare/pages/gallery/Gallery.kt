@@ -1,4 +1,4 @@
-package com.aleespa.randomsquare.screens
+package com.aleespa.randomsquare.pages.gallery
 
 import android.content.Context
 import android.content.Intent
@@ -62,7 +62,9 @@ import com.aleespa.randomsquare.BottomBarScreen
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.VisualizeModel
+import com.aleespa.randomsquare.pages.FilterTypesDialog
 import com.aleespa.randomsquare.tools.loadSavedImage
+import com.aleespa.randomsquare.tools.parkinsansFontFamily
 
 @Composable
 fun Gallery(

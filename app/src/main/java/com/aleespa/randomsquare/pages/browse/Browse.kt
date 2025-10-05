@@ -1,4 +1,4 @@
-package com.aleespa.randomsquare.screens
+package com.aleespa.randomsquare.pages.browse
 
 import android.app.Activity
 import android.content.Context
@@ -56,6 +56,7 @@ import com.aleespa.randomsquare.data.SettingDarkMode
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.getFiguresByType
 import com.aleespa.randomsquare.tools.generateNewPlot
+import com.aleespa.randomsquare.tools.parkinsansFontFamily
 import com.aleespa.randomsquare.tools.readTexAssets
 
 @OptIn(ExperimentalMaterial3Api::class)

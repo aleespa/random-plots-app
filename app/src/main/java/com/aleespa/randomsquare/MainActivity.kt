@@ -13,7 +13,7 @@ import com.aleespa.randomsquare.data.DatabaseProvider
 import com.aleespa.randomsquare.data.ImageRepository
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.data.VisualizeModelFactory
-import com.aleespa.randomsquare.screens.MainScreen
+import com.aleespa.randomsquare.pages.MainScreen
 import com.aleespa.randomsquare.ui.theme.MyApplicationTheme
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
