@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.aleespa.randomsquare.AD_FREQUENCY
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.tools.generate32BitSeed
@@ -60,7 +61,7 @@ fun GeneratePlotButton(
             elevation = FloatingActionButtonDefaults.elevation(10.dp),
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             onClick = {
-                if ((generate32BitSeed().toLong() % 546786854).toInt() == 0) {
+                if ((generate32BitSeed().toLong() % AD_FREQUENCY).toInt() == 0) {
                     showAd()
                 }
                 generateNewPlot(visualizeModel, context)

@@ -29,6 +29,7 @@ import androidx.navigation.NavHostController
 import com.aleespa.randomsquare.BottomBarScreen
 import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.data.VisualizeModel
+import com.aleespa.randomsquare.pages.AspectRatioDialog
 import com.aleespa.randomsquare.tools.loadBitmapFromFile
 import com.aleespa.randomsquare.tools.loadSavedImage
 import com.aleespa.randomsquare.tools.saveBitmapToGallery
@@ -56,7 +57,7 @@ fun Visualize(
         visualizeModel.imageBitmapState = savedBitmap?.asImageBitmap()
     }
     if (visualizeModel.showAspectRatioDialog) {
-        _root_ide_package_.com.aleespa.randomsquare.pages.AspectRatioDialog(
+        AspectRatioDialog(
             visualizeModel,
             onDismiss = { visualizeModel.showAspectRatioDialog = false },
             onConfirm = {
