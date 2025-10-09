@@ -1,7 +1,5 @@
 package com.aleespa.randomsquare
 
-import android.graphics.Color
-
 enum class Colormaps(
     val key: String,
     val colorlist: List<Int>,
