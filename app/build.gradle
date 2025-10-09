@@ -70,6 +70,9 @@ android {
 
 
 dependencies {
+    implementation 'androidx.glance:glance-appwidget:1.1.1'
+    implementation 'androidx.glance:glance-material3:1.1.1'
+
     implementation 'com.google.android.gms:play-services-ads:24.6.0'
 
     implementation 'ru.noties:jlatexmath-android:0.2.0'

@@ -21,6 +21,17 @@
         android:theme="@style/Theme.MyApplication"
         android:requestLegacyExternalStorage="true"
         tools:targetApi="35">
+        <receiver
+            android:name=".widget.SampleGlanceWidgetReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/sample_glance_widget_info" />
+        </receiver>
         <activity
             android:name="com.aleespa.randomsquare.MainActivity"
             android:exported="true"
