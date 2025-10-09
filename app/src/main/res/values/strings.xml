@@ -55,4 +55,6 @@
     <string name="soft">Soft</string>
     <string name="blackwhite"><![CDATA[Black & White]]></string>
     <string name="noise">Noise</string>
+    <string name="glance_widget_description">Widget test</string>
+
 </resources>
