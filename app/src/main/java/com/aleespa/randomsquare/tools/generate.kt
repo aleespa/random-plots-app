@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.FileProvider
+import com.aleespa.randomsquare.Colormaps
 import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
@@ -33,13 +34,36 @@ import java.io.FileOutputStream
 import java.io.IOException
 import kotlin.math.min
 import kotlin.random.Random
-import kotlin.random.nextUInt
 
+fun generateRandomPlot(
+    seed: Int,
+    bgColor: Int,
+    figure: Figures,
+    colormap: Colormaps
+): ImageBitmap? {
+    val colormapColors = colormap.colorlist.toTypedArray().map { color ->
+        intColorToHexWithoutAlpha(color)
+    }
+    val py = Python.getInstance()
+    val mainModule = py.getModule("main")
+    val listFunction = py.builtins.get("list")
+    val pythonList = listFunction?.call(colormapColors.toTypedArray())
+
+    val imageBytes = mainModule.callAttr(
+        "generate",
+        seed,
+        colorToHexWithoutAlpha(Color(bgColor)),
+        figure.key,
+        pythonList
+    ).toJava(ByteArray::class.java)
+
+    return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)?.asImageBitmap()
+}
 
 fun generateRandomPlot(visualizeModel: VisualizeModel): ImageBitmap? {
     val colormapColors = visualizeModel.selectedColormap.colorlist.toTypedArray().map { color ->
-            intColorToHexWithoutAlpha(color)
-        }
+        intColorToHexWithoutAlpha(color)
+    }
 
     val py = Python.getInstance()
     val mainModule = py.getModule("main")
@@ -198,7 +222,8 @@ fun generateNewPlot(visualizeModel: VisualizeModel, context: Context) {
     visualizeModel.loadingPlotGenerator = true
     visualizeModel.showInfo = false
     if (visualizeModel.userSeed.not()
-        or (visualizeModel.selectedFigure.figureType != FigureType.COMPOSITIONS)) {
+        or (visualizeModel.selectedFigure.figureType != FigureType.COMPOSITIONS)
+    ) {
         visualizeModel.randomSeed = generate32BitSeed()
         visualizeModel.userSeed = false
     }
