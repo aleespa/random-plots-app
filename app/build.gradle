@@ -1,6 +1,5 @@
 plugins {
     id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
     id 'com.chaquo.python'
     id "com.google.devtools.ksp" version "2.3.2"
     id "org.jetbrains.kotlin.plugin.compose" version "2.3.10" // this version matches your Kotlin version
@@ -45,9 +44,6 @@ android {
         compileOptions {
             sourceCompatibility JavaVersion.VERSION_1_8
             targetCompatibility JavaVersion.VERSION_1_8
-        }
-        kotlinOptions {
-            jvmTarget = '1.8'
         }
         buildFeatures {
             compose true
