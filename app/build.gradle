@@ -73,7 +73,7 @@ dependencies {
     implementation 'androidx.glance:glance-appwidget:1.1.1'
     implementation 'androidx.glance:glance-material3:1.1.1'
 
-    implementation 'com.google.android.gms:play-services-ads:24.6.0'
+    implementation 'com.google.android.gms:play-services-ads:25.0.0'
 
     implementation 'ru.noties:jlatexmath-android:0.2.0'
     implementation 'ru.noties:jlatexmath-android-font-cyrillic:0.2.0'
@@ -83,32 +83,32 @@ dependencies {
     implementation "androidx.compose.material3:material3-window-size-class:1.4.0"
     implementation "androidx.compose.material3:material3-adaptive-navigation-suite:1.4.0"
 
-    implementation 'androidx.activity:activity-compose:1.11.0'
-    implementation 'androidx.navigation:navigation-compose:2.9.5'
-    implementation 'androidx.compose.material:material:1.9.3'
-    implementation platform('androidx.compose:compose-bom:2025.10.00')
-    implementation 'androidx.activity:activity-compose:1.11.0'
-    implementation 'androidx.navigation:navigation-compose:2.9.5'
-    implementation 'androidx.compose.material:material:1.9.3'
-    implementation platform('androidx.compose:compose-bom:2025.10.00')
+    implementation 'androidx.activity:activity-compose:1.12.4'
+    implementation 'androidx.navigation:navigation-compose:2.9.7'
+    implementation 'androidx.compose.material:material:1.10.4'
+    implementation platform('androidx.compose:compose-bom:2026.02.01')
+    implementation 'androidx.activity:activity-compose:1.12.4'
+    implementation 'androidx.navigation:navigation-compose:2.9.7'
+    implementation 'androidx.compose.material:material:1.10.4'
+    implementation platform('androidx.compose:compose-bom:2026.02.01')
 
     implementation 'androidx.compose.ui:ui'
     implementation 'androidx.compose.ui:ui-graphics'
     implementation 'androidx.compose.ui:ui-tooling-preview'
-    implementation 'androidx.compose.runtime:runtime-livedata:1.9.3'
+    implementation 'androidx.compose.runtime:runtime-livedata:1.10.4'
     implementation("io.coil-kt:coil-compose:2.7.0")
-    implementation 'androidx.room:room-common:2.8.2'
-    implementation 'androidx.room:room-ktx:2.8.2'
-    implementation 'androidx.compose.foundation:foundation-layout:1.9.3'
-    ksp 'androidx.room:room-compiler:2.8.2'
+    implementation 'androidx.room:room-common:2.8.4'
+    implementation 'androidx.room:room-ktx:2.8.4'
+    implementation 'androidx.compose.foundation:foundation-layout:1.10.4'
+    ksp 'androidx.room:room-compiler:2.8.4'
 
-    androidTestImplementation platform('androidx.compose:compose-bom:2025.10.00')
+    androidTestImplementation platform('androidx.compose:compose-bom:2026.02.01')
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
 
     implementation 'androidx.core:core-ktx:1.17.0'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.9.4'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.10.0'
     implementation 'com.google.android.material:material:1.13.0'
     implementation 'androidx.appcompat:appcompat:1.7.1'
     implementation 'androidx.cardview:cardview:1.0.0'
@@ -120,12 +120,12 @@ dependencies {
     implementation "androidx.compose.material:material-icons-core:1.7.8"
     implementation "androidx.compose.material:material-icons-extended:1.7.8"
 
-    implementation "androidx.core:core-splashscreen:1.0.1"
-    implementation "androidx.compose.material3:material3:1.5.0-alpha06"
+    implementation "androidx.core:core-splashscreen:1.2.0"
+    implementation "androidx.compose.material3:material3:1.5.0-alpha15"
     implementation "com.google.accompanist:accompanist-insets:0.30.1"
 
-    implementation "androidx.datastore:datastore-preferences:1.1.7"
-    implementation "androidx.datastore:datastore-preferences-core:1.1.7"
+    implementation "androidx.datastore:datastore-preferences:1.2.0"
+    implementation "androidx.datastore:datastore-preferences-core:1.2.0"
 
 }
 
