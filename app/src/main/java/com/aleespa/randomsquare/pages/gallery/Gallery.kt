@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,17 +19,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -59,10 +53,8 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.aleespa.randomsquare.BottomBarScreen
-import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.VisualizeModel
-import com.aleespa.randomsquare.pages.FilterTypesDialog
 import com.aleespa.randomsquare.tools.loadSavedImage
 import com.aleespa.randomsquare.tools.parkinsansFontFamily
 
@@ -104,8 +96,8 @@ fun RandomGalleryTopBar(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .fillMaxHeight(), // Optional padding
-                            contentAlignment = Alignment.Center // Centers the content inside the Box
+                                .fillMaxHeight(),
+                            contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = stringResource(id = R.string.saved_images),
@@ -120,15 +112,15 @@ fun RandomGalleryTopBar(
                     navigationIcon = {
                         Box(
                             modifier = Modifier
-                                .fillMaxHeight(), // Optional padding
-                            contentAlignment = Alignment.Center // Centers the content inside the Box
+                                .fillMaxHeight(),
+                            contentAlignment = Alignment.Center
                         ) {
                             IconButton(onClick = {
                                 navController.navigate(BottomBarScreen.Visualize.route)
                             }) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "Localized description"
+                                    contentDescription = "Back"
                                 )
                             }
                         }
@@ -136,8 +128,8 @@ fun RandomGalleryTopBar(
                     actions = {
                         Box(
                             modifier = Modifier
-                                .fillMaxHeight(), // Optional padding
-                            contentAlignment = Alignment.Center // Centers the content inside the Box
+                                .fillMaxHeight(),
+                            contentAlignment = Alignment.Center
                         ) {
                             IconButton(onClick = {
                                 val intent = Intent(
@@ -168,103 +160,6 @@ fun RandomGalleryTopBar(
 }
 
 @Composable
-fun FilterChips(visualizeModel: VisualizeModel) {
-    LazyRow(
-        modifier = Modifier
-            .background(MaterialTheme.colorScheme.background)
-            .fillMaxWidth()
-    ) {
-        item {
-            FilterChip(
-                modifier = Modifier
-                    .padding(start = 10.dp),
-                onClick = {
-                    if (visualizeModel.darkFilter) {
-                        visualizeModel.darkFilter = false
-                    } else {
-                        visualizeModel.darkFilter = true
-                        visualizeModel.lightFilter = false
-                    }
-                },
-                label = { Text(stringResource(R.string.dark_name)) },
-                selected = visualizeModel.darkFilter,
-                leadingIcon = if (visualizeModel.darkFilter) {
-                    {
-                        Icon(
-                            imageVector = Icons.Filled.Done,
-                            contentDescription = "Done icon",
-                            modifier = Modifier.size(FilterChipDefaults.IconSize)
-                        )
-                    }
-                } else {
-                    null
-                },
-            )
-        }
-        item {
-            FilterChip(
-                modifier = Modifier
-                    .padding(start = 10.dp),
-                onClick = {
-                    if (visualizeModel.lightFilter) {
-                        visualizeModel.lightFilter = false
-                    } else {
-                        visualizeModel.lightFilter = true
-                        visualizeModel.darkFilter = false
-                    }
-                },
-                label = { Text(stringResource(R.string.light_name)) },
-                selected = visualizeModel.lightFilter,
-                leadingIcon = if (visualizeModel.lightFilter) {
-                    {
-                        Icon(
-                            imageVector = Icons.Filled.Done,
-                            contentDescription = "Done icon",
-                            modifier = Modifier.size(FilterChipDefaults.IconSize)
-                        )
-                    }
-                } else {
-                    null
-                },
-            )
-        }
-        item {
-            FilterChipWithDropdown(visualizeModel)
-        }
-    }
-}
-
-
-@Composable
-fun FilterChipWithDropdown(visualizeModel: VisualizeModel) {
-    // The FilterChip
-    FilterChip(
-        selected = (visualizeModel.filterImageType != "None"), // Show selected state when dialog is visible
-        onClick = { visualizeModel.showFilterDialog = true }, // Show dialog on click
-        label = {
-            if (visualizeModel.filterImageType == "None") {
-                Text(text = stringResource(R.string.filter_types))
-            } else {
-                Text(stringResource(Figures.fromKey(visualizeModel.filterImageType).resourceStringId))
-            }
-        },
-        modifier = Modifier.padding(start = 10.dp),
-        trailingIcon = if (visualizeModel.filterImageType == "None") {
-            {
-                Icon(
-                    imageVector = Icons.Filled.ArrowDropDown,
-                    contentDescription = "Done icon",
-                    modifier = Modifier.size(FilterChipDefaults.IconSize)
-                )
-            }
-        } else {
-            null
-        }
-    )
-    FilterTypesDialog(visualizeModel)
-}
-
-@Composable
 fun ScrollContent(
     innerPadding: PaddingValues,
     context: Context,
@@ -290,7 +185,7 @@ fun ScrollContent(
         if (images.isEmpty()) {
             Image(
                 painter = painterResource(id = R.drawable.main_icon),
-                contentDescription = "Sin imágenes",
+                contentDescription = null,
                 modifier = Modifier
                     .size(150.dp)
                     .padding(bottom = 16.dp)
@@ -337,5 +232,3 @@ fun ScrollContent(
         }
     }
 }
-
-
