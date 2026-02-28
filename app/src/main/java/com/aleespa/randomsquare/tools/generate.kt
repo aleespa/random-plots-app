@@ -36,7 +36,7 @@ import kotlin.math.min
 import kotlin.random.Random
 
 fun generateRandomPlot(
-    seed: Int,
+    seed: Long,
     bgColor: Int,
     figure: Figures,
     colormap: Colormaps
@@ -271,7 +271,7 @@ fun loadSavedImage(
 }
 
 fun generate32BitSeed(): Long {
-    return Random.nextLong(0, Long.MAX_VALUE)
+    return Random.nextLong(0, 0xFFFFFFFFL)
 }
 
 fun convertToAspectRatio(

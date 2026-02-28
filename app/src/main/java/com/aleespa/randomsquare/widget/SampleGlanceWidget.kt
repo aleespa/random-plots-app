@@ -1,26 +1,55 @@
 package com.aleespa.randomsquare.widget
 
 import android.content.Context
-import androidx.glance.Button
+import android.content.res.Configuration
+import androidx.datastore.preferences.core.Preferences
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
+import androidx.glance.Image
+import androidx.glance.ImageProvider
+import androidx.glance.LocalContext
+import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.provideContent
+import androidx.glance.currentState
+import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
+import androidx.glance.layout.ContentScale
 import androidx.glance.layout.fillMaxSize
+import androidx.glance.state.GlanceStateDefinition
+import androidx.glance.state.PreferencesGlanceStateDefinition
+import com.aleespa.randomsquare.Figures
+import com.aleespa.randomsquare.widget.WidgetConfigurationActivity.Companion.SELECTED_FIGURES_KEY
 
 class SampleGlanceWidget : GlanceAppWidget() {
 
+    override val stateDefinition: GlanceStateDefinition<*> = PreferencesGlanceStateDefinition
+
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
+            val context = LocalContext.current
+            val isDark = (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+            
+            val prefs = currentState<Preferences>()
+            // Use SELECTED_FIGURES_KEY and pick the first one for the preview
+            val figureKeysString = prefs[SELECTED_FIGURES_KEY] ?: Figures.SUPER_RANDOM.key
+            val firstFigureKey = figureKeysString.split(",").first()
+            val figure = Figures.fromKey(firstFigureKey)
+            
+            val imageRes = if (isDark) figure.sampleDarkImage else figure.sampleLightImage
+
             Box(
                 modifier = GlanceModifier.fillMaxSize(),
-                contentAlignment = androidx.glance.layout.Alignment.Center
+                contentAlignment = Alignment.Center
             ) {
-                Button(
-                    text = "Click me",
-                    onClick = actionRunCallback<SampleGlanceWidgetActionCallback>()
+                Image(
+                    provider = ImageProvider(imageRes),
+                    contentDescription = "Generate Plot",
+                    modifier = GlanceModifier
+                        .fillMaxSize()
+                        .clickable(actionRunCallback<SampleGlanceWidgetActionCallback>()),
+                    contentScale = ContentScale.Crop
                 )
             }
         }
