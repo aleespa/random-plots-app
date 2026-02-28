@@ -2,8 +2,8 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'com.chaquo.python'
-    id "com.google.devtools.ksp" version "2.2.20-2.0.3"
-    id "org.jetbrains.kotlin.plugin.compose" version "2.2.20" // this version matches your Kotlin version
+    id "com.google.devtools.ksp" version "2.3.2"
+    id "org.jetbrains.kotlin.plugin.compose" version "2.3.10" // this version matches your Kotlin version
 }
 
 android {

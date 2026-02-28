@@ -1,6 +1,8 @@
 [versions]
 agp = "8.2.0"
 foundationLayout = "1.10.4"
+gradle = "17.0.0"
+gradleVersion = "9.0.1"
 kotlin = "2.3.10"
 ksp = "2.3.10-1.0.26"
 chaquopy = "17.0.0"
@@ -70,10 +72,12 @@ androidx-datastore-preferences-core = { group = "androidx.datastore", name = "da
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-cardview = { group = "androidx.cardview", name = "cardview", version = "1.0.0" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
+build-gradle = { module = "com.android.tools.build:gradle", version.ref = "gradleVersion" }
 google-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 google-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 accompanist-insets = { group = "com.google.accompanist", name = "accompanist-insets", version.ref = "accompanist" }
+gradle = { module = "com.chaquo.python:gradle", version.ref = "gradle" }
 jlatexmath-android = { group = "ru.noties", name = "jlatexmath-android", version.ref = "jlatexmath" }
 jlatexmath-font-cyrillic = { group = "ru.noties", name = "jlatexmath-android-font-cyrillic", version.ref = "jlatexmath" }
 jlatexmath-font-greek = { group = "ru.noties", name = "jlatexmath-android-font-greek", version.ref = "jlatexmath" }
