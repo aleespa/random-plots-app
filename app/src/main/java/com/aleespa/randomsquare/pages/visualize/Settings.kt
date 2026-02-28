@@ -4,50 +4,18 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -57,12 +25,13 @@ import com.aleespa.randomsquare.tools.hslToColor
 import com.aleespa.randomsquare.tools.toHsl
 import kotlin.math.roundToInt
 
-
 @Composable
-fun BackgroundColorSelector(visualizeModel: VisualizeModel) {
-    // Read initial HSL from model
-    val initialHsl = remember(visualizeModel.bgColor) {
-        Color(visualizeModel.bgColor).toHsl()
+fun BackgroundColorSelector(
+    bgColor: Int,
+    onColorChange: (Int) -> Unit
+) {
+    val initialHsl = remember(bgColor) {
+        Color(bgColor).toHsl()
     }
 
     var hue by remember { mutableFloatStateOf(initialHsl[0]) }
@@ -71,9 +40,8 @@ fun BackgroundColorSelector(visualizeModel: VisualizeModel) {
 
     val currentColor = hslToColor(hue, saturation, lightness)
 
-    // Update the model only when sliders change
     LaunchedEffect(hue, saturation, lightness) {
-        visualizeModel.bgColor = currentColor.toArgb()
+        onColorChange(currentColor.toArgb())
     }
 
     Column(
@@ -81,15 +49,11 @@ fun BackgroundColorSelector(visualizeModel: VisualizeModel) {
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp)
     ) {
-        // Hue
         Text("Hue: ${hue.roundToInt()}")
-
-
         val hueGradientColors = (0..6).map { i ->
             val hueValue = i * 60f
             hslToColor(hueValue, saturation, lightness)
-        } + listOf(hslToColor(0f, saturation, lightness)) // wrap around to red
-
+        } + listOf(hslToColor(0f, saturation, lightness))
 
         GradientSlider(
             value = hue,
@@ -100,8 +64,6 @@ fun BackgroundColorSelector(visualizeModel: VisualizeModel) {
         )
 
         Spacer(Modifier.height(12.dp))
-
-        // Saturation
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -141,8 +103,15 @@ fun BackgroundColorSelector(visualizeModel: VisualizeModel) {
                 }
             }
         }
-
     }
+}
+
+@Composable
+fun BackgroundColorSelector(visualizeModel: VisualizeModel) {
+    BackgroundColorSelector(
+        bgColor = visualizeModel.bgColor,
+        onColorChange = { visualizeModel.bgColor = it }
+    )
 }
 
 
@@ -170,20 +139,20 @@ fun GradientSlider(
             colors = SliderDefaults.colors(
                 activeTrackColor = Color.Transparent,
                 inactiveTrackColor = Color.Transparent,
-                thumbColor = Color.Transparent // we override it with a custom thumb
+                thumbColor = Color.Transparent
             ),
             thumb = {
                 Box(
                     modifier = Modifier
-                        .width(18.dp)   // narrow, vertical shape
-                        .height(32.dp)  // taller than wide
+                        .width(18.dp)
+                        .height(32.dp)
                         .shadow(4.dp, RoundedCornerShape(6.dp))
                         .background(thumbColor, RoundedCornerShape(6.dp))
                         .border(
                             3.dp,
                             Color.White.copy(alpha = 0.7f),
                             RoundedCornerShape(6.dp)
-                        ) // semi-transparent border
+                        )
                 )
             }
         )
@@ -192,18 +161,17 @@ fun GradientSlider(
 
 @Composable
 fun ColormapDropdown(
-    visualizeModel: VisualizeModel,
+    selectedColormap: Colormaps,
+    onColormapChange: (Colormaps) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    val selectedColormap = visualizeModel.selectedColormap
-
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .widthIn(max = 200.dp) // max width
-            .fillMaxWidth()        // center horizontally in parent
+            .widthIn(max = 200.dp)
+            .fillMaxWidth()
     ) {
         Row(
             modifier = Modifier
@@ -232,27 +200,35 @@ fun ColormapDropdown(
             Colormaps.entries.forEach { colormap ->
                 DropdownMenuItem(
                     text = {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(colormap.key, modifier = Modifier.weight(1f))
                             Spacer(modifier = Modifier.width(35.dp))
-
                             ColormapSineWaveLine(
                                 colormap = colormap,
                                 modifier = Modifier.size(width = 80.dp, height = 18.dp)
                             )
-
                         }
                     },
                     onClick = {
-                        visualizeModel.selectedColormap = colormap
+                        onColormapChange(colormap)
                         expanded = false
                     }
                 )
             }
         }
     }
+}
+
+@Composable
+fun ColormapDropdown(
+    visualizeModel: VisualizeModel,
+    modifier: Modifier = Modifier
+) {
+    ColormapDropdown(
+        selectedColormap = visualizeModel.selectedColormap,
+        onColormapChange = { visualizeModel.selectedColormap = it },
+        modifier = modifier
+    )
 }
 
 @Composable
@@ -284,8 +260,8 @@ fun ColormapSineWaveLine(
             brush = Brush.horizontalGradient(colormap.colorlist.map { Color(it) }),
             style = Stroke(
                 width = strokeWidth,
-                cap = StrokeCap.Round,   // makes the ends rounded
-                join = StrokeJoin.Round  // makes corners/spline joins rounded
+                cap = StrokeCap.Round,
+                join = StrokeJoin.Round
             )
         )
     }
@@ -308,8 +284,7 @@ fun SeedButton(visualizeModel: VisualizeModel) {
                 visualizeModel.userSeed = false
             }
         },
-        modifier = Modifier
-            .padding(horizontal = 95.dp),
+        modifier = Modifier.padding(horizontal = 95.dp),
         textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -330,4 +305,3 @@ fun SeedButton(visualizeModel: VisualizeModel) {
         }
     )
 }
-
