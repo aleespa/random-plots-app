@@ -20,3 +20,4 @@ Banner*
 /app/src/main/python/benchmark_results.csv
 /app/src/main/python/outputs
 /app/src/main/python/.python-version
+*.pyc

@@ -28,8 +28,7 @@ import com.aleespa.randomsquare.pages.visualize.Visualize
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen(
-    visualizeModel: VisualizeModel,
-    showAd: () -> Unit
+    visualizeModel: VisualizeModel
 ) {
     val navController = rememberNavController()
     Scaffold(
@@ -37,8 +36,7 @@ fun MainScreen(
     ) {
         BottomNavGraph(
             visualizeModel = remember { visualizeModel },
-            navController = navController,
-            showAd = showAd
+            navController = navController
         )
     }
 }
@@ -81,8 +79,7 @@ fun BottomBar(navController: NavHostController) {
 @Composable
 fun BottomNavGraph(
     visualizeModel: VisualizeModel = viewModel(),
-    navController: NavHostController,
-    showAd: () -> Unit
+    navController: NavHostController
 ) {
     NavHost(
         navController = navController,
@@ -92,7 +89,7 @@ fun BottomNavGraph(
             Browse(visualizeModel, navController)
         }
         composable(route = BottomBarScreen.Visualize.route) {
-            Visualize(visualizeModel, navController, showAd)
+            Visualize(visualizeModel, navController)
         }
         composable(route = BottomBarScreen.Gallery.route) {
             Gallery(visualizeModel, navController)

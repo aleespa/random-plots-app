@@ -27,8 +27,7 @@ import com.aleespa.randomsquare.tools.loadBitmapFromFile
 @Composable
 fun Visualize(
     visualizeModel: VisualizeModel,
-    navController: NavHostController,
-    showAd: () -> Unit
+    navController: NavHostController
 ) {
     val context = LocalContext.current
     BackHandler {
@@ -63,7 +62,7 @@ fun Visualize(
         if (visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS) {
             item { Spacer(Modifier.height(35.dp)) }
         }
-        item { GeneratePlotButton(visualizeModel, context, showAd) }
+        item { GeneratePlotButton(visualizeModel, context) }
         if (visualizeModel.selectedFigure.figureType != FigureType.COMPOSITIONS) {
             item { Spacer(Modifier.height(30.dp)) }
             item {

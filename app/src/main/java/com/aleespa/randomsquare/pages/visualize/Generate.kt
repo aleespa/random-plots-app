@@ -1,5 +1,6 @@
 package com.aleespa.randomsquare.pages.visualize
 
+import android.app.Activity
 import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.aleespa.randomsquare.AD_FREQUENCY
 import com.aleespa.randomsquare.R
+import com.aleespa.randomsquare.ads.AdManager
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.tools.generate32BitSeed
 import com.aleespa.randomsquare.tools.generateNewPlot
@@ -38,12 +40,11 @@ import com.aleespa.randomsquare.tools.generateNewPlot
 @ExperimentalMaterial3ExpressiveApi
 fun GeneratePlotButton(
     visualizeModel: VisualizeModel,
-    context: Context,
-    showAd: () -> Unit
+    context: Context
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly, // Distributes items evenly
+        horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Spacer(Modifier.width(16.dp))
@@ -61,10 +62,17 @@ fun GeneratePlotButton(
             elevation = FloatingActionButtonDefaults.elevation(10.dp),
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             onClick = {
-                if ((generate32BitSeed().toLong() % AD_FREQUENCY).toInt() == 0) {
-                    showAd()
+                val shouldShowAd = (generate32BitSeed().toLong() % AD_FREQUENCY).toInt() == 0
+                val activity = context as? Activity
+
+                if (shouldShowAd && activity != null) {
+                    // Show ad; generate the plot only after the ad is dismissed (or fails).
+                    AdManager.showIfReady(activity) {
+                        generateNewPlot(visualizeModel, context)
+                    }
+                } else {
+                    generateNewPlot(visualizeModel, context)
                 }
-                generateNewPlot(visualizeModel, context)
             },
             icon = {
                 Icon(
@@ -75,7 +83,7 @@ fun GeneratePlotButton(
             },
             text = {
                 Text(
-                    text = stringResource(id = R.string.generate),
+                    text = context.getString(R.string.generate),
                     textAlign = TextAlign.Center,
                 )
             }
