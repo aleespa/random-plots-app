@@ -46,15 +46,13 @@ fun generateRandomPlot(
     }
     val py = Python.getInstance()
     val mainModule = py.getModule("main")
-    val listFunction = py.builtins.get("list")
-    val pythonList = listFunction?.call(colormapColors.toTypedArray())
 
     val imageBytes = mainModule.callAttr(
         "generate",
         seed,
         colorToHexWithoutAlpha(Color(bgColor)),
         figure.key,
-        pythonList
+        colormapColors.toTypedArray()
     ).toJava(ByteArray::class.java)
 
     return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)?.asImageBitmap()
@@ -68,16 +66,12 @@ fun generateRandomPlot(visualizeModel: VisualizeModel): ImageBitmap? {
     val py = Python.getInstance()
     val mainModule = py.getModule("main")
 
-    // Correct way to get the list function and call it
-    val listFunction = py.builtins.get("list")
-    val pythonList = listFunction?.call(colormapColors.toTypedArray())
-
     val imageBytes = mainModule.callAttr(
         "generate",
         visualizeModel.randomSeed,
         colorToHexWithoutAlpha(Color(visualizeModel.bgColor)),
         visualizeModel.selectedFigure.key,
-        pythonList
+        colormapColors.toTypedArray()
     ).toJava(ByteArray::class.java)
 
     return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)?.asImageBitmap()
