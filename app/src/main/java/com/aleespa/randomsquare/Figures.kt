@@ -1,6 +1,7 @@
 package com.aleespa.randomsquare
 
 enum class FigureType(val stringId: Int) {
+    FRACTAL(R.string.fractal),
     COMPOSITIONS(R.string.compositions),
     CIRCULAR(R.string.circular),
     POLYGON(R.string.polygon),
@@ -16,6 +17,20 @@ enum class Figures(
     val sampleLightImage: Int
 ) {
 
+    MANDELBROT(
+        "super",
+        FigureType.FRACTAL,
+        R.string.mandelbrot,
+        R.drawable.mandelbrot,
+        R.drawable.mandelbrot,
+    ),
+    JULIA(
+        "super",
+        FigureType.FRACTAL,
+        R.string.julia,
+        R.drawable.julia,
+        R.drawable.julia,
+    ),
     SUPER_RANDOM(
         "super",
         FigureType.COMPOSITIONS,

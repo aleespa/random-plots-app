@@ -56,5 +56,7 @@
     <string name="blackwhite"><![CDATA[Black & White]]></string>
     <string name="noise">Noise</string>
     <string name="glance_widget_description">Widget test</string>
+    <string name="mandelbrot">Mandelbrot</string>
+    <string name="julia">Julia set</string>
 
 </resources>
