@@ -53,7 +53,7 @@ class VisualizeModel(
     var fractalZoom by mutableStateOf(1.0)
     var fractalXCenter by mutableStateOf(0.0)
     var fractalYCenter by mutableStateOf(0.0)
-    var fractalIterations by mutableIntStateOf(100)
+    var fractalIterations by mutableIntStateOf(150)
     var juliaCX by mutableStateOf(-0.7)
     var juliaCY by mutableStateOf(0.27015)
 

@@ -164,7 +164,7 @@ fun SeedText(visualizeModel: VisualizeModel) {
             Text(
                 text = "x: ${String.format("%.4f", visualizeModel.fractalXCenter)}  " +
                         "y: ${String.format("%.4f", visualizeModel.fractalYCenter)}  " +
-                        "zoom: ${String.format("%.2e", 1.0 / visualizeModel.fractalZoom)}",
+                        "zoom: ${String.format("%.2e", 1.0 / visualizeModel.fractalZoom)}" + "x",
                 fontSize = 10.sp,
                 color = Color.Gray,
                 modifier = Modifier.align(Alignment.Center)

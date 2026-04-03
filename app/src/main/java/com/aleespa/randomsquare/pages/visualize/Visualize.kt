@@ -68,8 +68,8 @@ fun Visualize(
             item { FractalActions(visualizeModel, context) }
         }
         if (visualizeModel.selectedFigure.figureType == FigureType.FRACTAL) {
-            item { FractalSettings(visualizeModel) }
-            item { Spacer(Modifier.height(16.dp)) }
+
+            item { Spacer(Modifier.height(12.dp)) }
             item {
                 Box(
                     modifier = Modifier.fillMaxWidth(),
@@ -80,6 +80,10 @@ fun Visualize(
                     )
                 }
             }
+            item { Spacer(Modifier.height(8.dp)) }
+            item { FractalSettings(visualizeModel) }
+            item { Spacer(Modifier.height(16.dp)) }
+
         } else if (visualizeModel.selectedFigure.figureType != FigureType.COMPOSITIONS) {
             item { Spacer(Modifier.height(30.dp)) }
             item {

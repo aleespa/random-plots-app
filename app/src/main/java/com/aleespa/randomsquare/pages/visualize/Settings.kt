@@ -20,6 +20,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.aleespa.randomsquare.Colormaps
+import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.tools.generateNewPlot
 import com.aleespa.randomsquare.tools.hslToColor
@@ -263,33 +264,43 @@ fun FractalSettings(visualizeModel: VisualizeModel) {
                 visualizeModel.fractalIterations = it.toInt()
                 generateNewPlot(visualizeModel, context, randomizeSeed = false, showAds = false)
             },
-            valueRange = 10f..1000f,
-            modifier = Modifier.fillMaxWidth()
+            valueRange = 50f..2000f,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp).height(35.dp)
         )
 
-        if (visualizeModel.selectedFigure == com.aleespa.randomsquare.Figures.JULIA) {
+        if (visualizeModel.selectedFigure == Figures.JULIA) {
             Spacer(Modifier.height(8.dp))
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("cx: ${String.format("%.3f", visualizeModel.juliaCX)}")
+                    Text(
+                        "cx: ${String.format("%.3f", visualizeModel.juliaCX)}",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
                     Slider(
                         value = visualizeModel.juliaCX.toFloat(),
                         onValueChange = { 
                             visualizeModel.juliaCX = it.toDouble()
                             generateNewPlot(visualizeModel, context, randomizeSeed = false, showAds = false)
                         },
-                        valueRange = -2f..2f
+                        valueRange = -2f..2f,
+                        modifier = Modifier.height(30.dp)
                     )
                 }
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("cy: ${String.format("%.3f", visualizeModel.juliaCY)}")
+                    Text(
+                        "cy: ${String.format("%.3f", visualizeModel.juliaCY)}",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
                     Slider(
                         value = visualizeModel.juliaCY.toFloat(),
                         onValueChange = { 
                             visualizeModel.juliaCY = it.toDouble()
                             generateNewPlot(visualizeModel, context, randomizeSeed = false, showAds = false)
                         },
-                        valueRange = -2f..2f
+                        valueRange = -2f..2f,
+                        modifier = Modifier.height(30.dp)
                     )
                 }
             }

@@ -127,12 +127,30 @@ enum class Colormaps(
         ),
         isFractalSpecific = true
     ),
-    BLACK_BLACK(
-        "Black",
+    WHITE_WHITE(
+        "White",
         listOf(
             0xFFFFFFFF.toInt(),
             0xFF000000.toInt(),
             0xFFFFFFFF.toInt()
+        ),
+        isFractalSpecific = true
+    ),
+    BLACK_BLACK(
+        "Black",
+        listOf(
+            0xFF000000.toInt(),
+            0xFFFFFFFF.toInt(),
+            0xFF000000.toInt()
+        ),
+        isFractalSpecific = true
+    ),
+    RED_BLACK(
+        "Black",
+        listOf(
+            0xFF000000.toInt(),
+            0xFFFF0000.toInt(),
+            0xFF000000.toInt()
         ),
         isFractalSpecific = true
     ),
