@@ -21,6 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.aleespa.randomsquare.Colormaps
 import com.aleespa.randomsquare.data.VisualizeModel
+import com.aleespa.randomsquare.tools.generateNewPlot
 import com.aleespa.randomsquare.tools.hslToColor
 import com.aleespa.randomsquare.tools.toHsl
 import kotlin.math.roundToInt
@@ -162,6 +163,7 @@ fun GradientSlider(
 @Composable
 fun ColormapDropdown(
     selectedColormap: Colormaps,
+    isFractal: Boolean,
     onColormapChange: (Colormaps) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -197,7 +199,13 @@ fun ColormapDropdown(
             onDismissRequest = { expanded = false },
             modifier = Modifier.widthIn(max = 280.dp)
         ) {
-            Colormaps.entries.forEach { colormap ->
+            val filteredColormaps = if (isFractal) {
+                Colormaps.entries.filter { it.isFractalSpecific || it == Colormaps.RAINBOW || it == Colormaps.GRAYSCALE }
+            } else {
+                Colormaps.entries.filter { !it.isFractalSpecific }
+            }
+
+            filteredColormaps.forEach { colormap ->
                 DropdownMenuItem(
                     text = {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -224,11 +232,69 @@ fun ColormapDropdown(
     visualizeModel: VisualizeModel,
     modifier: Modifier = Modifier
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val isFractal = visualizeModel.selectedFigure.figureType == com.aleespa.randomsquare.FigureType.FRACTAL
     ColormapDropdown(
         selectedColormap = visualizeModel.selectedColormap,
-        onColormapChange = { visualizeModel.selectedColormap = it },
+        isFractal = isFractal,
+        onColormapChange = { 
+            visualizeModel.selectedColormap = it
+            if (isFractal) {
+                generateNewPlot(visualizeModel, context, randomizeSeed = false, showAds = false)
+            }
+        },
         modifier = modifier
     )
+}
+
+@Composable
+fun FractalSettings(visualizeModel: VisualizeModel) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Iterations: ${visualizeModel.fractalIterations}")
+        Slider(
+            value = visualizeModel.fractalIterations.toFloat(),
+            onValueChange = { 
+                visualizeModel.fractalIterations = it.toInt()
+                generateNewPlot(visualizeModel, context, randomizeSeed = false, showAds = false)
+            },
+            valueRange = 10f..1000f,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        if (visualizeModel.selectedFigure == com.aleespa.randomsquare.Figures.JULIA) {
+            Spacer(Modifier.height(8.dp))
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("cx: ${String.format("%.3f", visualizeModel.juliaCX)}")
+                    Slider(
+                        value = visualizeModel.juliaCX.toFloat(),
+                        onValueChange = { 
+                            visualizeModel.juliaCX = it.toDouble()
+                            generateNewPlot(visualizeModel, context, randomizeSeed = false, showAds = false)
+                        },
+                        valueRange = -2f..2f
+                    )
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("cy: ${String.format("%.3f", visualizeModel.juliaCY)}")
+                    Slider(
+                        value = visualizeModel.juliaCY.toFloat(),
+                        onValueChange = { 
+                            visualizeModel.juliaCY = it.toDouble()
+                            generateNewPlot(visualizeModel, context, randomizeSeed = false, showAds = false)
+                        },
+                        valueRange = -2f..2f
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Composable

@@ -30,6 +30,8 @@ import androidx.compose.ui.unit.dp
 import com.aleespa.randomsquare.AD_FREQUENCY
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.ads.AdManager
+import androidx.compose.material.icons.filled.Refresh
+import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.tools.generate32BitSeed
 import com.aleespa.randomsquare.tools.generateNewPlot
@@ -112,5 +114,63 @@ fun GeneratePlotButton(
             )
         }
         Spacer(Modifier.width(16.dp))
+    }
+}
+
+@Composable
+fun FractalActions(
+    visualizeModel: VisualizeModel,
+    context: Context
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = Icons.Default.Refresh,
+            contentDescription = "Reset",
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .size(32.dp)
+                .clickable {
+                    visualizeModel.resetFractalSettings()
+                    generateNewPlot(visualizeModel, context, randomizeSeed = false, showAds = false)
+                }
+        )
+        Spacer(Modifier.width(32.dp))
+        Icon(
+            imageVector = Icons.Default.AddPhotoAlternate,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .size(32.dp)
+                .clickable {
+                    visualizeModel.showAspectRatioDialog = true
+                }
+        )
+        Spacer(Modifier.width(32.dp))
+        if (visualizeModel.isSavingLoading) {
+            CircularProgressIndicator(
+                color = MaterialTheme.colorScheme.secondary,
+                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                modifier = Modifier.size(32.dp),
+            )
+        } else {
+            Icon(
+                imageVector = if (visualizeModel.isFromGallery.not()) Icons.Default.StarBorder else Icons.Default.Star,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .size(32.dp)
+                    .clickable {
+                        if (visualizeModel.isFromGallery.not()) {
+                            saveToGallery(visualizeModel, context)
+                        } else {
+                            deleteFromGallery(visualizeModel, context)
+                        }
+                    }
+            )
+        }
     }
 }

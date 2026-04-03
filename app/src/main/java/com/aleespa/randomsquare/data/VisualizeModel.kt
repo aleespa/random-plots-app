@@ -50,11 +50,12 @@ class VisualizeModel(
     var showFilterDialog by mutableStateOf(false)
     var showAspectRatioDialog by mutableStateOf(false)
 
-    var fractalZoom by mutableStateOf(0.1)
-    var fractalXCenter by mutableStateOf(-1.4002)
+    var fractalZoom by mutableStateOf(1.0)
+    var fractalXCenter by mutableStateOf(0.0)
     var fractalYCenter by mutableStateOf(0.0)
-    var juliaCX by mutableStateOf(-0.4)
-    var juliaCY by mutableStateOf(0.6)
+    var fractalIterations by mutableIntStateOf(100)
+    var juliaCX by mutableStateOf(-0.7)
+    var juliaCY by mutableStateOf(0.27015)
 
     var selectedColormap by mutableStateOf(Colormaps.RAINBOW)
     private var _settingDarkMode by mutableStateOf(SettingDarkMode.Auto)
@@ -137,6 +138,15 @@ class VisualizeModel(
                 _bgColor = color
             }
         }
+    }
+
+    fun resetFractalSettings() {
+        fractalZoom = 1.0
+        fractalXCenter = 0.0
+        fractalYCenter = 0.0
+        fractalIterations = 100
+        juliaCX = -0.7
+        juliaCY = 0.27015
     }
 
     suspend fun deleteImageById(imageId: Int) {

@@ -18,14 +18,14 @@ enum class Figures(
 ) {
 
     MANDELBROT(
-        "super",
+        "mandelbrot",
         FigureType.FRACTAL,
         R.string.mandelbrot,
         R.drawable.mandelbrot,
         R.drawable.mandelbrot,
     ),
     JULIA(
-        "super",
+        "julia",
         FigureType.FRACTAL,
         R.string.julia,
         R.drawable.julia,

@@ -72,7 +72,7 @@ fun generateRandomPlot(visualizeModel: VisualizeModel): ImageBitmap? {
 
         val width = 1200
         val height = 1200
-        val maxIter = 400
+        val maxIter = visualizeModel.fractalIterations
 
         val imageBytes = if (visualizeModel.selectedFigure == Figures.MANDELBROT) {
             FractalRenderer.renderMandelbrot(
@@ -247,7 +247,12 @@ fun loadBitmapFromFile(context: Context, filename: String): Bitmap? {
     }
 }
 
-fun generateNewPlot(visualizeModel: VisualizeModel, context: Context, randomizeSeed: Boolean = true) {
+fun generateNewPlot(
+    visualizeModel: VisualizeModel,
+    context: Context,
+    randomizeSeed: Boolean = true,
+    showAds: Boolean = true
+) {
     visualizeModel.loadingPlotGenerator = true
     visualizeModel.showInfo = false
     if (randomizeSeed && (visualizeModel.userSeed.not()

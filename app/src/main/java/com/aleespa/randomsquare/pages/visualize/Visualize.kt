@@ -62,8 +62,25 @@ fun Visualize(
         if (visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS) {
             item { Spacer(Modifier.height(35.dp)) }
         }
-        item { GeneratePlotButton(visualizeModel, context) }
-        if (visualizeModel.selectedFigure.figureType != FigureType.COMPOSITIONS) {
+        if (visualizeModel.selectedFigure.figureType != FigureType.FRACTAL) {
+            item { GeneratePlotButton(visualizeModel, context) }
+        } else {
+            item { FractalActions(visualizeModel, context) }
+        }
+        if (visualizeModel.selectedFigure.figureType == FigureType.FRACTAL) {
+            item { FractalSettings(visualizeModel) }
+            item { Spacer(Modifier.height(16.dp)) }
+            item {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    ColormapDropdown(
+                        visualizeModel = visualizeModel
+                    )
+                }
+            }
+        } else if (visualizeModel.selectedFigure.figureType != FigureType.COMPOSITIONS) {
             item { Spacer(Modifier.height(30.dp)) }
             item {
                 Box(
@@ -77,11 +94,9 @@ fun Visualize(
             }
             item { Spacer(Modifier.height(8.dp)) }
             item { BackgroundColorSelector(visualizeModel) }
-
-        }
-        else{
+        } else {
             item { Spacer(Modifier.height(25.dp)) }
-            item { SeedButton(visualizeModel)}
+            item { SeedButton(visualizeModel) }
         }
         item { Spacer(Modifier.height(80.dp)) }
     }

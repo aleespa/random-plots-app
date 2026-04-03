@@ -202,6 +202,7 @@ fun ConfigurationWizard(onConfigFinished: (List<Figures>, Int, Colormaps) -> Uni
                     ) {
                         ColormapDropdown(
                             selectedColormap = selectedColormap,
+                            isFractal = false,
                             onColormapChange = { selectedColormap = it }
                         )
                     }

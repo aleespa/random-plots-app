@@ -73,18 +73,21 @@ fun VisualizeBox(visualizeModel: VisualizeModel) {
                                         val finalOffset = offset
                                         val finalScale = scale
 
+                                        // Delta in normalized device coordinates (-1 to 1)
                                         val deltaX = (finalOffset.x / size.width.toDouble()) * 2.0 * currentZoom
                                         val deltaY = (finalOffset.y / size.height.toDouble()) * 2.0 * currentZoom
 
-                                        visualizeModel.fractalXCenter -= deltaX
-                                        visualizeModel.fractalYCenter += deltaY
+                                        // Apply translation first (relative to current zoom)
+                                        visualizeModel.fractalXCenter -= deltaX / finalScale
+                                        visualizeModel.fractalYCenter += deltaY / finalScale
 
+                                        // Then update zoom
                                         visualizeModel.fractalZoom /= finalScale
 
                                         offset = Offset.Zero
                                         scale = 1f
 
-                                        generateNewPlot(visualizeModel, context, randomizeSeed = false)
+                                        generateNewPlot(visualizeModel, context, randomizeSeed = false, showAds = false)
                                     }
                                 }
                             }
@@ -157,11 +160,22 @@ fun SeedText(visualizeModel: VisualizeModel) {
             .padding(horizontal = 16.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = "Seed: ${visualizeModel.randomSeed}",
-            fontSize = 10.sp,
-            color = Color.Gray,
-            modifier = Modifier.align(Alignment.Center)
-        )
+        if (visualizeModel.selectedFigure.figureType == FigureType.FRACTAL) {
+            Text(
+                text = "x: ${String.format("%.4f", visualizeModel.fractalXCenter)}  " +
+                        "y: ${String.format("%.4f", visualizeModel.fractalYCenter)}  " +
+                        "zoom: ${String.format("%.2e", 1.0 / visualizeModel.fractalZoom)}",
+                fontSize = 10.sp,
+                color = Color.Gray,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        } else {
+            Text(
+                text = "Seed: ${visualizeModel.randomSeed}",
+                fontSize = 10.sp,
+                color = Color.Gray,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
     }
 }

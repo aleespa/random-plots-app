@@ -73,6 +73,7 @@ fun saveToGallery(visualizeModel: VisualizeModel, context: Context) {
         }
 
         val imageEntity = visualizeModel.temporalImageEntity
+            .setImageType(visualizeModel.selectedFigure.key) // Ensure correct type
             .setUri(uri?.toString() ?: "")
             .build()
         visualizeModel.addImage(imageEntity)

@@ -3,6 +3,7 @@ package com.aleespa.randomsquare
 enum class Colormaps(
     val key: String,
     val colorlist: List<Int>,
+    val isFractalSpecific: Boolean = false
 ) {
     SOLID_WHITE(
         "Solid White",
@@ -107,7 +108,8 @@ enum class Colormaps(
             0xFF6DCE58.toInt(), // RGBA(109, 206, 88, 255)
             0xFFB5DD2B.toInt(), // RGBA(181, 221, 43, 255)
             0xFFFDE724.toInt(), // RGBA(253, 231, 36, 255)
-        )
+        ),
+        isFractalSpecific = true
     ),
     PLASMA(
         "Plasma",
@@ -122,7 +124,17 @@ enum class Colormaps(
             0xFFFA9F3A.toInt(), // RGBA(250, 159, 58, 255)
             0xFFFCC926.toInt(), // RGBA(252, 201, 38, 255)
             0xFFEFF821.toInt(), // RGBA(239, 248, 33, 255)
-        )
+        ),
+        isFractalSpecific = true
+    ),
+    BLACK_BLACK(
+        "Black",
+        listOf(
+            0xFFFFFFFF.toInt(),
+            0xFF000000.toInt(),
+            0xFFFFFFFF.toInt()
+        ),
+        isFractalSpecific = true
     ),
     ;
 }
