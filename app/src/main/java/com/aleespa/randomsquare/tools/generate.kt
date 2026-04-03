@@ -24,6 +24,7 @@ import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.ImageEntity
 import com.aleespa.randomsquare.data.VisualizeModel
+import com.aleespa.randomsquare.tools.FractalRenderer
 import com.chaquo.python.Python
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -59,6 +60,40 @@ fun generateRandomPlot(
 }
 
 fun generateRandomPlot(visualizeModel: VisualizeModel): ImageBitmap? {
+    if (visualizeModel.selectedFigure.figureType == FigureType.FRACTAL) {
+        val palSize = visualizeModel.selectedColormap.colorlist.size
+        val palT = FloatArray(palSize) { i -> i.toFloat() / (palSize - 1) }
+        val palRGB = FloatArray(palSize * 3)
+        visualizeModel.selectedColormap.colorlist.forEachIndexed { i, color ->
+            palRGB[i * 3 + 0] = ((color shr 16) and 0xFF) / 255.0f
+            palRGB[i * 3 + 1] = ((color shr 8) and 0xFF) / 255.0f
+            palRGB[i * 3 + 2] = (color and 0xFF) / 255.0f
+        }
+
+        val width = 1200
+        val height = 1200
+        val maxIter = 400
+
+        val imageBytes = if (visualizeModel.selectedFigure == Figures.MANDELBROT) {
+            FractalRenderer.renderMandelbrot(
+                width, height, maxIter,
+                visualizeModel.fractalXCenter, visualizeModel.fractalYCenter, visualizeModel.fractalZoom,
+                palT, palRGB
+            )
+        } else {
+            FractalRenderer.renderJulia(
+                width, height, maxIter,
+                visualizeModel.fractalXCenter, visualizeModel.fractalYCenter, visualizeModel.fractalZoom,
+                visualizeModel.juliaCX, visualizeModel.juliaCY,
+                palT, palRGB
+            )
+        }
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val buffer = java.nio.ByteBuffer.wrap(imageBytes)
+        bitmap.copyPixelsFromBuffer(buffer)
+        return bitmap.asImageBitmap()
+    }
+
     val colormapColors = visualizeModel.selectedColormap.colorlist.toTypedArray().map { color ->
         intColorToHexWithoutAlpha(color)
     }
@@ -212,11 +247,11 @@ fun loadBitmapFromFile(context: Context, filename: String): Bitmap? {
     }
 }
 
-fun generateNewPlot(visualizeModel: VisualizeModel, context: Context) {
+fun generateNewPlot(visualizeModel: VisualizeModel, context: Context, randomizeSeed: Boolean = true) {
     visualizeModel.loadingPlotGenerator = true
     visualizeModel.showInfo = false
-    if (visualizeModel.userSeed.not()
-        or (visualizeModel.selectedFigure.figureType != FigureType.COMPOSITIONS)
+    if (randomizeSeed && (visualizeModel.userSeed.not()
+        || (visualizeModel.selectedFigure.figureType != FigureType.COMPOSITIONS))
     ) {
         visualizeModel.randomSeed = generate32BitSeed()
         visualizeModel.userSeed = false

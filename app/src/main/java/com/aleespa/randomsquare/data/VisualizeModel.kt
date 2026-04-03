@@ -50,6 +50,12 @@ class VisualizeModel(
     var showFilterDialog by mutableStateOf(false)
     var showAspectRatioDialog by mutableStateOf(false)
 
+    var fractalZoom by mutableStateOf(0.1)
+    var fractalXCenter by mutableStateOf(-1.4002)
+    var fractalYCenter by mutableStateOf(0.0)
+    var juliaCX by mutableStateOf(-0.4)
+    var juliaCY by mutableStateOf(0.6)
+
     var selectedColormap by mutableStateOf(Colormaps.RAINBOW)
     private var _settingDarkMode by mutableStateOf(SettingDarkMode.Auto)
     var settingDarkMode: SettingDarkMode
