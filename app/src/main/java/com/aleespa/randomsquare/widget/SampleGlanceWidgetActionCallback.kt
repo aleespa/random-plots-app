@@ -22,11 +22,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class SampleGlanceWidgetActionCallback : ActionCallback {
-    override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
-        val prefs = getAppWidgetState(context, androidx.glance.state.PreferencesGlanceStateDefinition, glanceId)
-        
+    override suspend fun onAction(
+        context: Context,
+        glanceId: GlanceId,
+        parameters: ActionParameters
+    ) {
+        val prefs = getAppWidgetState(
+            context,
+            androidx.glance.state.PreferencesGlanceStateDefinition,
+            glanceId
+        )
+
         // 1. Get selected figures and pick one at random
-        val figureKeysString = prefs[WidgetConfigurationActivity.SELECTED_FIGURES_KEY] ?: Figures.SUPER_RANDOM.key
+        val figureKeysString =
+            prefs[WidgetConfigurationActivity.SELECTED_FIGURES_KEY] ?: Figures.SUPER_RANDOM.key
         val figureKeys = figureKeysString.split(",")
         val randomFigureKey = figureKeys.random()
         val figure = Figures.fromKey(randomFigureKey)
@@ -49,7 +58,7 @@ class SampleGlanceWidgetActionCallback : ActionCallback {
 
             if (androidBitmap != null) {
                 val wallpaperManager = WallpaperManager.getInstance(context)
-                
+
                 val finalBitmap = if (figure.figureType != FigureType.COMPOSITIONS) {
                     val resolution = getScreenResolution(context)
                     convertToAspectRatio(

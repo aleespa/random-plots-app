@@ -75,11 +75,13 @@ class AppSettingsRepository(private val dataStore: DataStore<Preferences>) {
             preferences[COLORMAP_COLORS] = stringValue
         }
     }
+
     val selectedColormapColors: Flow<List<Int>> = dataStore.data
         .map { preferences ->
             preferences[COLORMAP_COLORS]?.split(",")
                 ?.mapNotNull { it.toIntOrNull() } ?: emptyList()
         }
+
     /**
      * Loads the background color as a Flow of Int.
      * This logic is now migration-aware. It first tries to read the new Int format.

@@ -1,0 +1,112 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 3,
+    "identityHash": "3541b38379966245e7896db3dc9e140f",
+    "entities": [
+      {
+        "tableName": "images",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `uri` TEXT NOT NULL, `imageType` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `isDarkMode` INTEGER NOT NULL, `randomSeed` INTEGER, `backgroundColor` INTEGER NOT NULL, `fractalXCenter` REAL, `fractalYCenter` REAL, `fractalZoom` REAL, `juliaCX` REAL, `juliaCY` REAL, `colormap` TEXT, `fractalIterations` INTEGER)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "uri",
+            "columnName": "uri",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "imageType",
+            "columnName": "imageType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isDarkMode",
+            "columnName": "isDarkMode",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "randomSeed",
+            "columnName": "randomSeed",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "backgroundColor",
+            "columnName": "backgroundColor",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fractalXCenter",
+            "columnName": "fractalXCenter",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "fractalYCenter",
+            "columnName": "fractalYCenter",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "fractalZoom",
+            "columnName": "fractalZoom",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "juliaCX",
+            "columnName": "juliaCX",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "juliaCY",
+            "columnName": "juliaCY",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "colormap",
+            "columnName": "colormap",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "fractalIterations",
+            "columnName": "fractalIterations",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3541b38379966245e7896db3dc9e140f')"
+    ]
+  }
+}

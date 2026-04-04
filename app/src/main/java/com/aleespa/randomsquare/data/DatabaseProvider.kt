@@ -13,6 +13,7 @@ object DatabaseProvider {
                 AppDatabase::class.java,
                 "images_database"
             )
+                .addMigrations(AppDatabase.MIGRATION_2_3)
                 .build()
         }
         return instance!!

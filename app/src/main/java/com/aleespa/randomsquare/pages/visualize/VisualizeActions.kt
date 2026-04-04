@@ -10,7 +10,6 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewModelScope
-import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.tools.loadSavedImage
 import com.aleespa.randomsquare.tools.saveBitmapToGallery

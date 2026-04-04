@@ -6,6 +6,8 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import com.aleespa.randomsquare.AD_UNIT_ID
+import com.aleespa.randomsquare.ads.AdManager.init
+import com.aleespa.randomsquare.ads.AdManager.showIfReady
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
@@ -112,7 +114,7 @@ object AdManager {
                         Log.d(
                             TAG,
                             "Ad failed to load — domain: ${adError.domain}, " +
-                                "code: ${adError.code}, message: ${adError.message}"
+                                    "code: ${adError.code}, message: ${adError.message}"
                         )
                         interstitialAd = null
                         isLoading = false

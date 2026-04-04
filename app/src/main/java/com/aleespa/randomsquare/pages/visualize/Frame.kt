@@ -74,15 +74,20 @@ fun VisualizeBox(visualizeModel: VisualizeModel) {
                                         val finalScale = scale
 
                                         // Delta in normalized device coordinates (-1 to 1)
-                                        val deltaX = (finalOffset.x / size.width.toDouble()) * 2.0 * currentZoom
-                                        val deltaY = (finalOffset.y / size.height.toDouble()) * 2.0 * currentZoom
+                                        val deltaX =
+                                            (finalOffset.x / size.width.toDouble()) * 2.0 * currentZoom
+                                        val deltaY =
+                                            (finalOffset.y / size.height.toDouble()) * 2.0 * currentZoom
 
                                         // Apply translation first (relative to current zoom)
                                         visualizeModel.fractalXCenter -= deltaX / finalScale
                                         visualizeModel.fractalYCenter += deltaY / finalScale
 
-                                        // Then update zoom
-                                        visualizeModel.fractalZoom /= finalScale
+                                        // Then update zoom (limited to 1e5x zoom = 1e-5 viewport size)
+                                        visualizeModel.fractalZoom =
+                                            (visualizeModel.fractalZoom / finalScale).coerceAtLeast(
+                                                1e-5
+                                            )
 
                                         generateNewPlot(
                                             visualizeModel,

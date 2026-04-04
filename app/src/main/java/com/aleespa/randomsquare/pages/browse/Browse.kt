@@ -83,7 +83,7 @@ fun Browse(
         BrowserScrollable(
             visualizeModel,
             innerPadding,
-            navController, 
+            navController,
             context
         )
     }

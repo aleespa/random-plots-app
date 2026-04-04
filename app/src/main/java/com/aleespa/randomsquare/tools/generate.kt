@@ -24,7 +24,6 @@ import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.ImageEntity
 import com.aleespa.randomsquare.data.VisualizeModel
-import com.aleespa.randomsquare.tools.FractalRenderer
 import com.chaquo.python.Python
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -76,15 +75,23 @@ fun generateRandomPlot(visualizeModel: VisualizeModel): ImageBitmap? {
 
         // Op Definitions matching composition_shader.h
         // 0:X, 1:Y, 2:Const, 3:Sum, 4:Prod, 5:Mod, 6:Well, 7:Tent, 8:Sin, 9:Level, 10:Mix
-        
+
         val ops0 = when (visualizeModel.selectedFigure) {
             Figures.BLACKWHITE -> listOf(0, 1) // X, Y
             else -> listOf(0, 1, 2) // X, Y, Constant
         }
-        
+
         val ops1 = when (visualizeModel.selectedFigure) {
             Figures.SOFT -> listOf(3, 4, 9, 10) // Sum, Prod, Level, Mix
-            Figures.BLACKWHITE -> listOf(3, 4, 5, 6, 7, 8, 10) // Sum, Prod, Mod, Well, Tent, Sin, Mix
+            Figures.BLACKWHITE -> listOf(
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                10
+            ) // Sum, Prod, Mod, Well, Tent, Sin, Mix
             Figures.NOISE -> listOf(3, 8) // Sum, Sin
             else -> listOf(3, 4, 5, 6, 7, 8, 9, 10) // All (Super)
         }
@@ -108,7 +115,7 @@ fun generateRandomPlot(visualizeModel: VisualizeModel): ImageBitmap? {
                     9, 10 -> 3
                     else -> 1
                 }
-                
+
                 // For a stack-based VM, we need postfix order
                 if (arity == 1) {
                     generateBytecode(depth - 1)
@@ -124,7 +131,7 @@ fun generateRandomPlot(visualizeModel: VisualizeModel): ImageBitmap? {
                     generateBytecode(sortedSplits[1] - sortedSplits[0])
                     generateBytecode(depth - 1 - sortedSplits[1])
                 }
-                
+
                 opcodes.add(op)
                 if (op == 8) { // Sin needs phase and freq
                     params.add(rng.nextFloat() * Math.PI.toFloat())
@@ -172,16 +179,27 @@ fun generateRandomPlot(visualizeModel: VisualizeModel): ImageBitmap? {
 
         val imageBytes = if (visualizeModel.selectedFigure == Figures.MANDELBROT) {
             FractalRenderer.renderMandelbrot(
-                width, height, maxIter,
-                visualizeModel.fractalXCenter, visualizeModel.fractalYCenter, visualizeModel.fractalZoom,
-                palT, palRGB
+                width,
+                height,
+                maxIter,
+                visualizeModel.fractalXCenter,
+                visualizeModel.fractalYCenter,
+                visualizeModel.fractalZoom,
+                palT,
+                palRGB
             )
         } else {
             FractalRenderer.renderJulia(
-                width, height, maxIter,
-                visualizeModel.fractalXCenter, visualizeModel.fractalYCenter, visualizeModel.fractalZoom,
-                visualizeModel.juliaCX, visualizeModel.juliaCY,
-                palT, palRGB
+                width,
+                height,
+                maxIter,
+                visualizeModel.fractalXCenter,
+                visualizeModel.fractalYCenter,
+                visualizeModel.fractalZoom,
+                visualizeModel.juliaCX,
+                visualizeModel.juliaCY,
+                palT,
+                palRGB
             )
         }
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
@@ -353,17 +371,32 @@ fun generateNewPlot(
     visualizeModel.loadingPlotGenerator = true
     visualizeModel.showInfo = false
     if (randomizeSeed && (visualizeModel.userSeed.not()
-        || (visualizeModel.selectedFigure.figureType != FigureType.COMPOSITIONS))
+                || (visualizeModel.selectedFigure.figureType != FigureType.COMPOSITIONS))
     ) {
         visualizeModel.randomSeed = generate32BitSeed()
         visualizeModel.userSeed = false
     }
     CoroutineScope(Dispatchers.Main).launch {
-        visualizeModel.temporalImageEntity =
-            ImageEntity.Builder().setImageType(visualizeModel.selectedFigure.key)
-                .setIsDarkMode(isColorDark(visualizeModel.bgColor))
-                .setTimestamp(System.currentTimeMillis()).setRandomSeed(visualizeModel.randomSeed)
-                .setBackgroundColor(fromColor(Color(visualizeModel.bgColor)))
+        val builder = ImageEntity.Builder()
+            .setImageType(visualizeModel.selectedFigure.key)
+            .setIsDarkMode(isColorDark(visualizeModel.bgColor))
+            .setTimestamp(System.currentTimeMillis())
+            .setBackgroundColor(fromColor(Color(visualizeModel.bgColor)))
+            .setColormap(visualizeModel.selectedColormap.key)
+
+        if (visualizeModel.selectedFigure.figureType == FigureType.FRACTAL) {
+            builder.setRandomSeed(null)
+            builder.setFractalXCenter(visualizeModel.fractalXCenter)
+            builder.setFractalYCenter(visualizeModel.fractalYCenter)
+            builder.setFractalZoom(visualizeModel.fractalZoom)
+            if (visualizeModel.selectedFigure == Figures.JULIA) {
+                builder.setJuliaCX(visualizeModel.juliaCX)
+                builder.setJuliaCY(visualizeModel.juliaCY)
+            }
+        } else {
+            builder.setRandomSeed(visualizeModel.randomSeed)
+        }
+        visualizeModel.temporalImageEntity = builder
         try {
             val result = withContext(Dispatchers.Default) {
                 generateRandomPlot(visualizeModel)
@@ -391,7 +424,20 @@ fun loadSavedImage(
     visualizeModel.galleryURI = image.uri
     visualizeModel.galleryId = image.id
     visualizeModel.bgColor = image.backgroundColor
-    visualizeModel.randomSeed = image.randomSeed
+    visualizeModel.randomSeed = image.randomSeed ?: 0L
+
+    if (image.fractalXCenter != null) visualizeModel.fractalXCenter = image.fractalXCenter
+    if (image.fractalYCenter != null) visualizeModel.fractalYCenter = image.fractalYCenter
+    if (image.fractalZoom != null) visualizeModel.fractalZoom = image.fractalZoom
+    if (image.juliaCX != null) visualizeModel.juliaCX = image.juliaCX
+    if (image.juliaCY != null) visualizeModel.juliaCY = image.juliaCY
+
+    if (image.colormap != null) {
+        val foundColormap = Colormaps.values().find { it.key == image.colormap }
+        if (foundColormap != null) {
+            visualizeModel.selectedColormap = foundColormap
+        }
+    }
 
     val figureKey = image.imageType
     visualizeModel.selectedFigure = Figures.fromKey(figureKey)

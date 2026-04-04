@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.aleespa.randomsquare.Colormaps
+import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.data.ImageEntity.Builder
 import kotlinx.coroutines.Dispatchers
@@ -57,6 +58,19 @@ class VisualizeModel(
     var juliaCX by mutableStateOf(-0.7)
     var juliaCY by mutableStateOf(0.27015)
 
+    var juliaR by mutableStateOf(kotlin.math.sqrt(juliaCX * juliaCX + juliaCY * juliaCY))
+    var juliaTheta by mutableStateOf(kotlin.math.atan2(juliaCY, juliaCX))
+
+    fun updateJuliaFromPolar() {
+        juliaCX = juliaR * kotlin.math.cos(juliaTheta)
+        juliaCY = juliaR * kotlin.math.sin(juliaTheta)
+    }
+
+    fun updatePolarFromJulia() {
+        juliaR = kotlin.math.sqrt(juliaCX * juliaCX + juliaCY * juliaCY)
+        juliaTheta = kotlin.math.atan2(juliaCY, juliaCX)
+    }
+
     var selectedColormap by mutableStateOf(Colormaps.RAINBOW)
     private var _settingDarkMode by mutableStateOf(SettingDarkMode.Auto)
     var settingDarkMode: SettingDarkMode
@@ -81,7 +95,23 @@ class VisualizeModel(
     var selectedFigure: Figures
         get() = _selectedFigure
         set(value) {
+            val wasFractal = _selectedFigure.figureType == FigureType.FRACTAL
+            val isNowFractal = value.figureType == FigureType.FRACTAL
+            val figureChanged = _selectedFigure != value
             _selectedFigure = value
+
+            // Reset position and settings if switching to a fractal or between fractals
+            if (isNowFractal && figureChanged) {
+                resetFractalSettings()
+            }
+
+            // Update colormap if switching between fractal and non-fractal types
+            if (isNowFractal && !wasFractal && !selectedColormap.isFractalSpecific) {
+                selectedColormap = Colormaps.PLASMA_FRACTAL
+            } else if (!isNowFractal && wasFractal && selectedColormap.isFractalSpecific) {
+                selectedColormap = Colormaps.RAINBOW
+            }
+
             viewModelScope.launch {
                 settingsRepository.saveSelectedFigure(value) // Persist to DataStore
             }
@@ -92,6 +122,18 @@ class VisualizeModel(
         viewModelScope.launch {
             settingsRepository.selectedFigure.collect { figure ->
                 _selectedFigure = figure
+
+                // Initialize fractal settings if starting with a fractal
+                if (figure.figureType == FigureType.FRACTAL) {
+                    resetFractalSettings()
+                }
+
+                // Ensure initial colormap matches the figure type
+                if (figure.figureType == FigureType.FRACTAL && !selectedColormap.isFractalSpecific) {
+                    selectedColormap = Colormaps.PLASMA_FRACTAL
+                } else if (figure.figureType != FigureType.FRACTAL && selectedColormap.isFractalSpecific) {
+                    selectedColormap = Colormaps.RAINBOW
+                }
             }
         }
     }
@@ -113,6 +155,7 @@ class VisualizeModel(
                 settingsRepository.saveSelectedColormapColors(value) // Persist to DataStore
             }
         }
+
     init {
         // Load selectedColormapColors from DataStore
         viewModelScope.launch {
@@ -142,11 +185,12 @@ class VisualizeModel(
 
     fun resetFractalSettings() {
         fractalZoom = 1.0
-        fractalXCenter = 0.0
+        fractalXCenter = if (selectedFigure == Figures.MANDELBROT) -1.0 else 0.0
         fractalYCenter = 0.0
-        fractalIterations = 100
+        fractalIterations = 150
         juliaCX = -0.7
         juliaCY = 0.27015
+        updatePolarFromJulia()
     }
 
     suspend fun deleteImageById(imageId: Int) {

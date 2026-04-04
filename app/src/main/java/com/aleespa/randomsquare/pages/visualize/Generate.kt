@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddPhotoAlternate
 import androidx.compose.material.icons.filled.Casino
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.CircularProgressIndicator
@@ -24,14 +25,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.aleespa.randomsquare.AD_FREQUENCY
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.ads.AdManager
-import androidx.compose.material.icons.filled.Refresh
-import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.tools.generate32BitSeed
 import com.aleespa.randomsquare.tools.generateNewPlot

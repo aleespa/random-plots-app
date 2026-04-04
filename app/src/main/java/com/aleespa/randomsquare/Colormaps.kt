@@ -157,7 +157,7 @@ enum class Colormaps(
         "Plasma",
         listOf(
             0xFF000000.toInt(), // Start with black
-            0xFF45039E.toInt(), 
+            0xFF45039E.toInt(),
             0xFF7200A8.toInt(),
             0xFF9B179E.toInt(),
             0xFFBC3685.toInt(),
@@ -190,6 +190,18 @@ enum class Colormaps(
             0xFF0080FF.toInt(),
             0xFF000080.toInt(),
             0xFF000000.toInt()
+        ),
+        isFractalSpecific = true
+    ),
+
+    BLUE_FRACTAL(
+        "Blue",
+        listOf(
+            0xFF000000.toInt(),
+            0xFF000080.toInt(),
+            0xFF0080FF.toInt(),
+            0xFF00FFFF.toInt(),
+            0xFFFFFFFF.toInt(),
         ),
         isFractalSpecific = true
     ),
