@@ -17,4 +17,8 @@ object FractalRenderer {
         cx: Double, cy: Double,
         palT: FloatArray, palRGB: FloatArray
     ): ByteArray
+
+    external fun renderComposition(
+        width: Int, height: Int, opcodes: IntArray, params: FloatArray
+    ): ByteArray
 }

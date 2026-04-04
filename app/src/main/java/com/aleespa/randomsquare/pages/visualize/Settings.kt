@@ -201,7 +201,7 @@ fun ColormapDropdown(
             modifier = Modifier.widthIn(max = 280.dp)
         ) {
             val filteredColormaps = if (isFractal) {
-                Colormaps.entries.filter { it.isFractalSpecific || it == Colormaps.RAINBOW || it == Colormaps.GRAYSCALE }
+                Colormaps.entries.filter { it.isFractalSpecific }
             } else {
                 Colormaps.entries.filter { !it.isFractalSpecific }
             }

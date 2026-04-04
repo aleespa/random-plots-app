@@ -6,80 +6,68 @@
 #include <vector>
 #include <string>
 #include <cmath>
+#include <cstdlib>
+#include <cstring>
+#include "fractal_shader.h"
+#include "composition_shader.h"
 
 #define LOG_TAG "FractalRenderer"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
-const char* COMPUTE_SHADER_SOURCE = R"(#version 310 es
-layout(local_size_x = 16, local_size_y = 16) in;
-layout(rgba8, binding = 0) writeonly uniform highp image2D u_image;
+// Forward declarations or define before use
+struct EGLContextManager {
+    EGLDisplay display = EGL_NO_DISPLAY;
+    EGLContext context = EGL_NO_CONTEXT;
+    EGLSurface surface = EGL_NO_SURFACE;
 
-uniform int u_type; // 0: Mandelbrot, 1: Julia
-uniform int u_width;
-uniform int u_height;
-uniform int u_maxIterations;
-uniform vec2 u_center;
-uniform float u_zoom;
-uniform vec2 u_juliaC;
-uniform float u_palT[16];
-uniform vec3 u_palRGB[16];
-uniform int u_palSize;
+    bool init() {
+        display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+        if (display == EGL_NO_DISPLAY) return false;
 
-vec3 paletteColor(float t) {
-    t = clamp(t, 0.0, 1.0);
-    int i = 0;
-    for (int k = 0; k < u_palSize - 1; ++k) {
-        if (u_palT[k] <= t) i = k;
-    }
-    int j = min(i + 1, u_palSize - 1);
-    float span = u_palT[j] - u_palT[i];
-    float frac = (span > 0.0) ? (t - u_palT[i]) / span : 0.0;
-    return mix(u_palRGB[i], u_palRGB[j], frac);
-}
+        if (!eglInitialize(display, nullptr, nullptr)) return false;
 
-void main() {
-    ivec2 pos = ivec2(gl_GlobalInvocationID.xy);
-    if (pos.x >= u_width || pos.y >= u_height) return;
+        EGLint configAttribs[] = {
+            EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT_KHR,
+            EGL_BLUE_SIZE, 8,
+            EGL_GREEN_SIZE, 8,
+            EGL_RED_SIZE, 8,
+            EGL_NONE
+        };
+        EGLConfig config;
+        EGLint numConfigs;
+        if (!eglChooseConfig(display, configAttribs, &config, 1, &numConfigs) || numConfigs == 0) return false;
 
-    float aspectRatio = float(u_width) / float(u_height);
-    float xMin = u_center.x - u_zoom;
-    float xMax = u_center.x + u_zoom;
-    float yMin = u_center.y - u_zoom / aspectRatio;
-    float yMax = u_center.y + u_zoom / aspectRatio;
+        EGLint contextAttribs[] = {
+            EGL_CONTEXT_CLIENT_VERSION, 3,
+            EGL_NONE
+        };
+        context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttribs);
+        if (context == EGL_NO_CONTEXT) return false;
 
-    float x0, y0, x, y;
-    if (u_type == 0) { // Mandelbrot
-        x0 = xMin + (xMax - xMin) * float(pos.x) / float(u_width);
-        y0 = yMax - (yMax - yMin) * float(pos.y) / float(u_height);
-        x = 0.0;
-        y = 0.0;
-    } else { // Julia
-        x = xMin + (xMax - xMin) * float(pos.x) / float(u_width);
-        y = yMax - (yMax - yMin) * float(pos.y) / float(u_height);
-        x0 = u_juliaC.x;
-        y0 = u_juliaC.y;
+        EGLint pbufferAttribs[] = {
+            EGL_WIDTH, 1,
+            EGL_HEIGHT, 1,
+            EGL_NONE
+        };
+        surface = eglCreatePbufferSurface(display, config, pbufferAttribs);
+        if (surface == EGL_NO_SURFACE) return false;
+
+        return eglMakeCurrent(display, surface, surface, context);
     }
 
-    int iter = 0;
-    while (x*x + y*y <= 4.0 && iter < u_maxIterations) {
-        float xtemp = x*x - y*y + x0;
-        y = 2.0*x*y + y0;
-        x = xtemp;
-        iter++;
+    void destroy() {
+        if (display != EGL_NO_DISPLAY) {
+            eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+            if (context != EGL_NO_CONTEXT) eglDestroyContext(display, context);
+            if (surface != EGL_NO_SURFACE) eglDestroySurface(display, surface);
+            eglTerminate(display);
+        }
+        display = EGL_NO_DISPLAY;
+        context = EGL_NO_CONTEXT;
+        surface = EGL_NO_SURFACE;
     }
-
-    float nu = float(iter);
-    if (iter < u_maxIterations) {
-        float mag = sqrt(x*x + y*y);
-        nu = float(iter) + 1.0 - log(log(mag)) / log(2.0);
-    }
-
-    float t = (nu < float(u_maxIterations)) ? nu / float(u_maxIterations) : 0.0;
-    vec3 color = paletteColor(t);
-    imageStore(u_image, pos, vec4(color, 1.0));
-}
-)";
+};
 
 GLuint compileShader(GLenum type, const char* source) {
     GLuint shader = glCreateShader(type);
@@ -102,39 +90,92 @@ GLuint compileShader(GLenum type, const char* source) {
     return shader;
 }
 
-struct EGLContextManager {
-    EGLDisplay display = EGL_NO_DISPLAY;
-    EGLContext context = EGL_NO_CONTEXT;
-    EGLSurface surface = EGL_NO_SURFACE;
-
-    bool init() {
-        display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
-        eglInitialize(display, nullptr, nullptr);
-        EGLint configAttribs[] = {
-            EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
-            EGL_NONE
-        };
-        EGLConfig config;
-        EGLint numConfigs;
-        eglChooseConfig(display, configAttribs, &config, 1, &numConfigs);
-        EGLint contextAttribs[] = {
-            EGL_CONTEXT_CLIENT_VERSION, 3,
-            EGL_NONE
-        };
-        context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttribs);
-        surface = eglCreatePbufferSurface(display, config, nullptr);
-        return eglMakeCurrent(display, surface, surface, context);
-    }
-
-    void destroy() {
-        if (display != EGL_NO_DISPLAY) {
-            eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
-            eglDestroyContext(display, context);
-            eglDestroySurface(display, surface);
-            eglTerminate(display);
-        }
-    }
+struct Instruction {
+    int32_t op;
+    float v1;
+    float v2;
+    float v3;
 };
+
+extern "C" JNIEXPORT jbyteArray JNICALL
+Java_com_aleespa_randomsquare_tools_FractalRenderer_renderComposition(
+    JNIEnv* env, jobject thiz, jint width, jint height, jintArray opcodes, jfloatArray params) {
+
+    EGLContextManager egl;
+    if (!egl.init()) {
+        LOGE("Failed to init EGL for Composition");
+        return nullptr;
+    }
+
+    GLuint computeShader = compileShader(GL_COMPUTE_SHADER, COMPOSITION_SHADER_SOURCE);
+    if (!computeShader) {
+        egl.destroy();
+        return nullptr;
+    }
+
+    GLuint program = glCreateProgram();
+    glAttachShader(program, computeShader);
+    glLinkProgram(program);
+    glUseProgram(program);
+
+    jsize count = env->GetArrayLength(opcodes);
+    std::vector<Instruction> instructions(256, {0, 0, 0, 0});
+    jint* pOp = env->GetIntArrayElements(opcodes, nullptr);
+    jfloat* pParam = env->GetFloatArrayElements(params, nullptr);
+
+    int realCount = count > 256 ? 256 : count;
+    for (int i = 0; i < realCount; ++i) {
+        instructions[i].op = pOp[i];
+        instructions[i].v1 = pParam[i * 3 + 0];
+        instructions[i].v2 = pParam[i * 3 + 1];
+        instructions[i].v3 = pParam[i * 3 + 2];
+    }
+
+    GLuint ubo;
+    glGenBuffers(1, &ubo);
+    glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+
+    size_t uboSize = sizeof(Instruction) * 256 + 16;
+    std::vector<uint8_t> uboData(uboSize, 0);
+    memcpy(uboData.data(), instructions.data(), sizeof(Instruction) * 256);
+    memcpy(uboData.data() + sizeof(Instruction) * 256, &realCount, sizeof(int));
+
+    glBufferData(GL_UNIFORM_BUFFER, (GLsizeiptr)uboSize, uboData.data(), GL_STATIC_DRAW);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 0, ubo);
+
+    GLuint texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, width, height);
+    glBindImageTexture(0, texture, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA8);
+
+    glUniform1i(glGetUniformLocation(program, "u_width"), width);
+    glUniform1i(glGetUniformLocation(program, "u_height"), height);
+
+    glDispatchCompute((width + 15) / 16, (height + 15) / 16, 1);
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+    std::vector<uint8_t> pixels(width * height * 4);
+    GLuint fbo;
+    glGenFramebuffers(1, &fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+    glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+
+    jbyteArray result = env->NewByteArray(pixels.size());
+    env->SetByteArrayRegion(result, 0, pixels.size(), (const jbyte*)pixels.data());
+
+    env->ReleaseIntArrayElements(opcodes, pOp, JNI_ABORT);
+    env->ReleaseFloatArrayElements(params, pParam, JNI_ABORT);
+    glDeleteBuffers(1, &ubo);
+    glDeleteTextures(1, &texture);
+    glDeleteFramebuffers(1, &fbo);
+    glDeleteProgram(program);
+    glDeleteShader(computeShader);
+    egl.destroy();
+
+    return result;
+}
 
 extern "C" JNIEXPORT jbyteArray JNICALL
 Java_com_aleespa_randomsquare_tools_FractalRenderer_renderInternal(
@@ -144,11 +185,16 @@ Java_com_aleespa_randomsquare_tools_FractalRenderer_renderInternal(
 
     EGLContextManager egl;
     if (!egl.init()) {
-        LOGE("Failed to init EGL");
+        LOGE("Failed to init EGL for Fractal");
         return nullptr;
     }
 
     GLuint computeShader = compileShader(GL_COMPUTE_SHADER, COMPUTE_SHADER_SOURCE);
+    if (!computeShader) {
+        egl.destroy();
+        return nullptr;
+    }
+
     GLuint program = glCreateProgram();
     glAttachShader(program, computeShader);
     glLinkProgram(program);

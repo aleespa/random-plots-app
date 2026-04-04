@@ -124,8 +124,7 @@ enum class Colormaps(
             0xFFFA9F3A.toInt(), // RGBA(250, 159, 58, 255)
             0xFFFCC926.toInt(), // RGBA(252, 201, 38, 255)
             0xFFEFF821.toInt(), // RGBA(239, 248, 33, 255)
-        ),
-        isFractalSpecific = true
+        )
     ),
     WHITE_WHITE(
         "White",
@@ -146,11 +145,27 @@ enum class Colormaps(
         isFractalSpecific = true
     ),
     RED_BLACK(
-        "Black",
+        "Red",
         listOf(
             0xFF000000.toInt(),
             0xFFFF0000.toInt(),
             0xFF000000.toInt()
+        ),
+        isFractalSpecific = true
+    ),
+    PLASMA_FRACTAL(
+        "Plasma",
+        listOf(
+            0xFF000000.toInt(), // RGBA(12, 7, 134, 255)
+            0xFF45039E.toInt(), // RGBA(69, 3, 158, 255)
+            0xFF7200A8.toInt(), // RGBA(114, 0, 168, 255)
+            0xFF9B179E.toInt(), // RGBA(155, 23, 158, 255)
+            0xFFBC3685.toInt(), // RGBA(188, 54, 133, 255)
+            0xFFD7576B.toInt(), // RGBA(215, 87, 107, 255)
+            0xFFEC7853.toInt(), // RGBA(236, 120, 83, 255)
+            0xFFFA9F3A.toInt(), // RGBA(250, 159, 58, 255)
+            0xFFFCC926.toInt(), // RGBA(252, 201, 38, 255)
+            0xFF000000.toInt(), // RGBA(239, 248, 33, 255)
         ),
         isFractalSpecific = true
     ),

@@ -60,6 +60,102 @@ fun generateRandomPlot(
 }
 
 fun generateRandomPlot(visualizeModel: VisualizeModel): ImageBitmap? {
+    if (visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS) {
+        val seed = visualizeModel.randomSeed
+        val rng = java.util.Random(seed)
+        val k = when (visualizeModel.selectedFigure) {
+            Figures.SUPER_RANDOM -> rng.nextInt(25) + 15
+            Figures.SOFT -> rng.nextInt(7) + 8
+            Figures.BLACKWHITE -> 8
+            Figures.NOISE -> 25
+            else -> 15
+        }
+
+        val opcodes = mutableListOf<Int>()
+        val params = mutableListOf<Float>()
+
+        // Op Definitions matching composition_shader.h
+        // 0:X, 1:Y, 2:Const, 3:Sum, 4:Prod, 5:Mod, 6:Well, 7:Tent, 8:Sin, 9:Level, 10:Mix
+        
+        val ops0 = when (visualizeModel.selectedFigure) {
+            Figures.BLACKWHITE -> listOf(0, 1) // X, Y
+            else -> listOf(0, 1, 2) // X, Y, Constant
+        }
+        
+        val ops1 = when (visualizeModel.selectedFigure) {
+            Figures.SOFT -> listOf(3, 4, 9, 10) // Sum, Prod, Level, Mix
+            Figures.BLACKWHITE -> listOf(3, 4, 5, 6, 7, 8, 10) // Sum, Prod, Mod, Well, Tent, Sin, Mix
+            Figures.NOISE -> listOf(3, 8) // Sum, Sin
+            else -> listOf(3, 4, 5, 6, 7, 8, 9, 10) // All (Super)
+        }
+
+        fun generateBytecode(depth: Int) {
+            if (depth <= 0) {
+                val op = ops0[rng.nextInt(ops0.size)]
+                opcodes.add(op)
+                if (op == 2) {
+                    params.add(rng.nextFloat() * 2 - 1)
+                    params.add(rng.nextFloat() * 2 - 1)
+                    params.add(rng.nextFloat() * 2 - 1)
+                } else {
+                    params.add(0f); params.add(0f); params.add(0f)
+                }
+            } else {
+                val op = ops1[rng.nextInt(ops1.size)]
+                val arity = when (op) {
+                    6, 7, 8 -> 1
+                    3, 4, 5 -> 2
+                    9, 10 -> 3
+                    else -> 1
+                }
+                
+                // For a stack-based VM, we need postfix order
+                if (arity == 1) {
+                    generateBytecode(depth - 1)
+                } else if (arity == 2) {
+                    val split = if (depth > 0) rng.nextInt(depth) else 0
+                    generateBytecode(split)
+                    generateBytecode(depth - 1 - split)
+                } else if (arity == 3) {
+                    val s1 = if (depth > 0) rng.nextInt(depth) else 0
+                    val s2 = if (depth > 0) rng.nextInt(depth) else 0
+                    val sortedSplits = listOf(s1, s2).sorted()
+                    generateBytecode(sortedSplits[0])
+                    generateBytecode(sortedSplits[1] - sortedSplits[0])
+                    generateBytecode(depth - 1 - sortedSplits[1])
+                }
+                
+                opcodes.add(op)
+                if (op == 8) { // Sin needs phase and freq
+                    params.add(rng.nextFloat() * Math.PI.toFloat())
+                    val freq = when (visualizeModel.selectedFigure) {
+                        Figures.NOISE -> 2.0f + rng.nextFloat() * 19.0f
+                        Figures.SOFT -> 1.0f + rng.nextFloat() * 11.0f
+                        else -> 1.0f + rng.nextFloat() * 5.0f
+                    }
+                    params.add(freq)
+                    params.add(0f)
+                } else if (op == 9) { // Level needs threshold
+                    params.add(rng.nextFloat() * 2 - 1)
+                    params.add(0f); params.add(0f)
+                } else {
+                    params.add(0f); params.add(0f); params.add(0f)
+                }
+            }
+        }
+
+        generateBytecode(k)
+
+        val width = 1440
+        val height = 1440
+        val imageBytes = FractalRenderer.renderComposition(
+            width, height, opcodes.toIntArray(), params.toFloatArray()
+        )
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        bitmap.copyPixelsFromBuffer(java.nio.ByteBuffer.wrap(imageBytes))
+        return bitmap.asImageBitmap()
+    }
+
     if (visualizeModel.selectedFigure.figureType == FigureType.FRACTAL) {
         val palSize = visualizeModel.selectedColormap.colorlist.size
         val palT = FloatArray(palSize) { i -> i.toFloat() / (palSize - 1) }
