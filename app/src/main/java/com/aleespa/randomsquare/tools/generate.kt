@@ -64,9 +64,9 @@ fun generateRandomPlot(visualizeModel: VisualizeModel): ImageBitmap? {
         val seed = visualizeModel.randomSeed
         val rng = java.util.Random(seed)
         val k = when (visualizeModel.selectedFigure) {
-            Figures.SUPER_RANDOM -> rng.nextInt(25) + 15
+            Figures.SUPER_RANDOM -> rng.nextInt(35) + 15
             Figures.SOFT -> rng.nextInt(7) + 8
-            Figures.BLACKWHITE -> 8
+            Figures.BLACKWHITE -> 10
             Figures.NOISE -> 25
             else -> 15
         }
@@ -347,7 +347,8 @@ fun generateNewPlot(
     visualizeModel: VisualizeModel,
     context: Context,
     randomizeSeed: Boolean = true,
-    showAds: Boolean = true
+    showAds: Boolean = true,
+    onComplete: () -> Unit = {}
 ) {
     visualizeModel.loadingPlotGenerator = true
     visualizeModel.showInfo = false
@@ -376,6 +377,7 @@ fun generateNewPlot(
             visualizeModel.imageBitmapState = result
             visualizeModel.latexString = readTexAssets(context, visualizeModel.selectedFigure.key)
             visualizeModel.isFromGallery = false
+            onComplete()
         } finally {
             visualizeModel.loadingPlotGenerator = false
         }

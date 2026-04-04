@@ -28,7 +28,7 @@ enum class Colormaps(
             0xFF00FFFF.toInt(), // Cyan
             0xFF0000FF.toInt(), // Blue
             0xFFFF00FF.toInt()  // Magenta
-        )
+        ),
     ),
 
     HEAT(
@@ -156,16 +156,75 @@ enum class Colormaps(
     PLASMA_FRACTAL(
         "Plasma",
         listOf(
-            0xFF000000.toInt(), // RGBA(12, 7, 134, 255)
-            0xFF45039E.toInt(), // RGBA(69, 3, 158, 255)
-            0xFF7200A8.toInt(), // RGBA(114, 0, 168, 255)
-            0xFF9B179E.toInt(), // RGBA(155, 23, 158, 255)
-            0xFFBC3685.toInt(), // RGBA(188, 54, 133, 255)
-            0xFFD7576B.toInt(), // RGBA(215, 87, 107, 255)
-            0xFFEC7853.toInt(), // RGBA(236, 120, 83, 255)
-            0xFFFA9F3A.toInt(), // RGBA(250, 159, 58, 255)
-            0xFFFCC926.toInt(), // RGBA(252, 201, 38, 255)
-            0xFF000000.toInt(), // RGBA(239, 248, 33, 255)
+            0xFF000000.toInt(), // Start with black
+            0xFF45039E.toInt(), 
+            0xFF7200A8.toInt(),
+            0xFF9B179E.toInt(),
+            0xFFBC3685.toInt(),
+            0xFFD7576B.toInt(),
+            0xFFEC7853.toInt(),
+            0xFFFA9F3A.toInt(),
+            0xFFFCC926.toInt(),
+            0xFF000000.toInt(), // End with black
+        ),
+        isFractalSpecific = true
+    ),
+    MAGMA_FRACTAL(
+        "Magma",
+        listOf(
+            0xFF000000.toInt(),
+            0xFF3B0F70.toInt(),
+            0xFF8C2981.toInt(),
+            0xFFDE4968.toInt(),
+            0xFFFE9F6D.toInt(),
+            0xFFFCFDBF.toInt(),
+            0xFF000000.toInt()
+        ),
+        isFractalSpecific = true
+    ),
+    ICE_FRACTAL(
+        "Ice",
+        listOf(
+            0xFFFFFFFF.toInt(),
+            0xFF00FFFF.toInt(),
+            0xFF0080FF.toInt(),
+            0xFF000080.toInt(),
+            0xFF000000.toInt()
+        ),
+        isFractalSpecific = true
+    ),
+    EMERALD_FRACTAL(
+        "Emerald",
+        listOf(
+            0xFF000000.toInt(),
+            0xFF004D00.toInt(),
+            0xFF00FF00.toInt(),
+            0xFF99FF99.toInt(),
+            0xFFFFFFFF.toInt()
+        ),
+        isFractalSpecific = true
+    ),
+    FIRE_FRACTAL(
+        "Fire",
+        listOf(
+            0xFF000000.toInt(),
+            0xFF800000.toInt(),
+            0xFFFF0000.toInt(),
+            0xFFFFA500.toInt(),
+            0xFFFFFF00.toInt(),
+            0xFFFFFFFF.toInt()
+        ),
+        isFractalSpecific = true
+    ),
+    ELECTRIC_FRACTAL(
+        "Electric",
+        listOf(
+            0xFF000000.toInt(),
+            0xFF4B0082.toInt(),
+            0xFF8A2BE2.toInt(),
+            0xFFDDA0DD.toInt(),
+            0xFFFFFFFF.toInt(),
+            0xFF000000.toInt()
         ),
         isFractalSpecific = true
     ),

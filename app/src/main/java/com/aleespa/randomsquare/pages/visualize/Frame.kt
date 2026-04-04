@@ -84,10 +84,15 @@ fun VisualizeBox(visualizeModel: VisualizeModel) {
                                         // Then update zoom
                                         visualizeModel.fractalZoom /= finalScale
 
-                                        offset = Offset.Zero
-                                        scale = 1f
-
-                                        generateNewPlot(visualizeModel, context, randomizeSeed = false, showAds = false)
+                                        generateNewPlot(
+                                            visualizeModel,
+                                            context,
+                                            randomizeSeed = false,
+                                            showAds = false
+                                        ) {
+                                            offset = Offset.Zero
+                                            scale = 1f
+                                        }
                                     }
                                 }
                             }
@@ -98,7 +103,8 @@ fun VisualizeBox(visualizeModel: VisualizeModel) {
             ),
     ) {
         if (!visualizeModel.showInfo) {
-            if (visualizeModel.loadingPlotGenerator) {
+            val isFractal = visualizeModel.selectedFigure.figureType == FigureType.FRACTAL
+            if (visualizeModel.loadingPlotGenerator && !isFractal) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize(),
