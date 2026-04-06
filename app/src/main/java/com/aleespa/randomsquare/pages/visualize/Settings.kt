@@ -54,6 +54,7 @@ import com.aleespa.randomsquare.Colormaps
 import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.data.VisualizeModel
+import com.aleespa.randomsquare.tools.LatexMathView
 import com.aleespa.randomsquare.tools.generateNewPlot
 import com.aleespa.randomsquare.tools.hslToColor
 import com.aleespa.randomsquare.tools.toHsl
@@ -291,11 +292,11 @@ fun FractalSettings(visualizeModel: VisualizeModel) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val iterationRange = when (visualizeModel.selectedFigure) {
-            Figures.MANDELBROT-> 50f..1500f
+            Figures.MANDELBROT -> 50f..1500f
             Figures.TRICORN -> 30f..300f
             Figures.JULIA -> 50f..1000f
             Figures.MULTIBROT -> 20f..500f
-            Figures.NEWTON -> 10f..100f
+            Figures.NEWTON -> 20f..500f
             else -> 50f..2000f
         }
 
@@ -380,45 +381,6 @@ fun FractalSettings(visualizeModel: VisualizeModel) {
             )
         }
 
-        if (visualizeModel.selectedFigure == Figures.NEWTON) {
-            Spacer(Modifier.height(8.dp))
-            var expanded by remember { mutableStateOf(false) }
-            val functions = listOf(
-                context.getString(com.aleespa.randomsquare.R.string.newton_func_0),
-                context.getString(com.aleespa.randomsquare.R.string.newton_func_1),
-                context.getString(com.aleespa.randomsquare.R.string.newton_func_2),
-                context.getString(com.aleespa.randomsquare.R.string.newton_func_3)
-            )
-
-            Box {
-                Text(
-                    text = "Function: ${functions[visualizeModel.newtonFunc]}",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { expanded = true }
-                        .padding(8.dp),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                    functions.forEachIndexed { index, func ->
-                        DropdownMenuItem(
-                            text = { Text(func) },
-                            onClick = {
-                                visualizeModel.newtonFunc = index
-                                generateNewPlot(
-                                    visualizeModel,
-                                    context,
-                                    randomizeSeed = false,
-                                    showAds = false
-                                )
-                                expanded = false
-                            }
-                        )
-                    }
-                }
-            }
-        }
     }
 }
 

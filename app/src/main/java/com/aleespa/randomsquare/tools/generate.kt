@@ -187,7 +187,9 @@ fun generateRandomPlot(visualizeModel: VisualizeModel): ImageBitmap? {
                 3
             }
             Figures.NEWTON -> {
-                params[0] = visualizeModel.newtonFunc.toFloat()
+                visualizeModel.newtonCoeffs.forEachIndexed { i, d ->
+                    params[i] = d.toFloat()
+                }
                 4
             }
             else -> 0
@@ -405,7 +407,24 @@ fun generateNewPlot(
                     builder.setParam1(visualizeModel.multibrotD)
                 }
                 Figures.NEWTON -> {
-                    builder.setParam1(visualizeModel.newtonFunc.toDouble())
+                    if (randomizeSeed) {
+                        val rng = java.util.Random(generate32BitSeed())
+                        visualizeModel.newtonCoeffs =
+                            DoubleArray(9) { (rng.nextInt(19) - 9).toDouble() }
+                        // Ensure it's actually degree 8
+                        if (visualizeModel.newtonCoeffs[8] == 0.0) visualizeModel.newtonCoeffs[8] =
+                            1.0
+                    }
+
+                    builder.setParam1(visualizeModel.newtonCoeffs[0])
+                    builder.setParam2(visualizeModel.newtonCoeffs[1])
+                    builder.setParam3(visualizeModel.newtonCoeffs[2])
+                    builder.setParam4(visualizeModel.newtonCoeffs[3])
+                    builder.setParam5(visualizeModel.newtonCoeffs[4])
+                    builder.setParam6(visualizeModel.newtonCoeffs[5])
+                    builder.setParam7(visualizeModel.newtonCoeffs[6])
+                    builder.setParam8(visualizeModel.newtonCoeffs[7])
+                    builder.setParam9(visualizeModel.newtonCoeffs[8])
                 }
                 else -> {}
             }
@@ -424,6 +443,9 @@ fun generateNewPlot(
                 }
             }
             visualizeModel.imageBitmapState = result
+            if (visualizeModel.selectedFigure == Figures.NEWTON) {
+                visualizeModel.newtonLatexString = generateNewtonLatex(visualizeModel.newtonCoeffs)
+            }
             visualizeModel.latexString = readTexAssets(context, visualizeModel.selectedFigure.key)
             visualizeModel.isFromGallery = false
             onComplete()
@@ -459,9 +481,23 @@ fun loadSavedImage(
             visualizeModel.multibrotD = image.param1 ?: 3.0
         }
         Figures.NEWTON -> {
-            visualizeModel.newtonFunc = image.param1?.toInt() ?: 0
+            visualizeModel.newtonCoeffs = doubleArrayOf(
+                image.param1 ?: -1.0,
+                image.param2 ?: 0.0,
+                image.param3 ?: 0.0,
+                image.param4 ?: 1.0,
+                image.param5 ?: 0.0,
+                image.param6 ?: 0.0,
+                image.param7 ?: 0.0,
+                image.param8 ?: 0.0,
+                image.param9 ?: 0.0
+            )
+            visualizeModel.newtonLatexString = generateNewtonLatex(visualizeModel.newtonCoeffs)
+            visualizeModel.latexString = readTexAssets(context, figure.key)
         }
-        else -> {}
+        else -> {
+            visualizeModel.latexString = readTexAssets(context, figure.key)
+        }
     }
 
     if (image.colormap != null) {
@@ -471,11 +507,7 @@ fun loadSavedImage(
         }
     }
 
-    val figureKey = image.imageType
-    visualizeModel.selectedFigure = Figures.fromKey(figureKey)
-    visualizeModel.latexString = readTexAssets(
-        context, visualizeModel.selectedFigure.key
-    )
+    visualizeModel.selectedFigure = figure
     visualizeModel.imageBitmapState = loadImage(context, Uri.parse(image.uri))
     visualizeModel.showInfo = false
 }

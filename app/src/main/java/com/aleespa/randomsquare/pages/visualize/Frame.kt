@@ -32,6 +32,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aleespa.randomsquare.FigureType
+import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.tools.LatexMathView
@@ -142,7 +143,7 @@ fun VisualizeBox(visualizeModel: VisualizeModel) {
                     .background(Color(visualizeModel.bgColor)),
                 contentAlignment = Alignment.Center
             ) {
-                LatexMathView(visualizeModel)
+                LatexMathView(latex = visualizeModel.latexString, bgColor = visualizeModel.bgColor)
             }
         }
     }

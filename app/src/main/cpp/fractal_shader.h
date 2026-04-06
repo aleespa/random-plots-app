@@ -82,33 +82,28 @@ void main() {
 
     int iter = 0;
     float exponent = (u_type == 3) ? u_params[0] : 2.0;
+    vec2 z;
     if (u_type == 4) { // Newton
-        vec2 z = vec2(x, y);
-        int funcType = int(u_params[0]);
+        z = vec2(x, y);
+        float epsilon = 0.0001;
         for (iter = 0; iter < u_maxIterations; iter++) {
-            vec2 p, dp;
-            if (funcType == 0) { // z^3 - 1
-                vec2 z2 = complexMul(z, z);
-                p = complexMul(z2, z) - vec2(1.0, 0.0);
-                dp = 3.0 * z2;
-            } else if (funcType == 1) { // z^5 - 1
-                vec2 z2 = complexMul(z, z);
-                vec2 z4 = complexMul(z2, z2);
-                p = complexMul(z4, z) - vec2(1.0, 0.0);
-                dp = 5.0 * z4;
-            } else if (funcType == 2) { // sin(z) - 1
-                p = complexSin(z) - vec2(1.0, 0.0);
-                dp = complexCos(z);
-            } else { // z^6 + z^3 - 1
-                vec2 z2 = complexMul(z, z);
-                vec2 z3 = complexMul(z2, z);
-                vec2 z6 = complexMul(z3, z3);
-                p = z6 + z3 - vec2(1.0, 0.0);
-                dp = 6.0 * complexMul(z3, z2) + 3.0 * z2;
+            vec2 p = vec2(0.0);
+            vec2 dp = vec2(0.0);
+            vec2 z_pow = vec2(1.0, 0.0); // z^0
+
+            for (int i = 0; i <= 8; i++) {
+                float a = u_params[i + 1]; // Coefficients are param1-param9
+                p += a * z_pow;
+                if (i < 8) {
+                    dp += float(i + 1) * u_params[i + 2] * z_pow;
+                }
+                z_pow = complexMul(z_pow, z);
             }
+
+            if (length(p) < epsilon) break;
+
             vec2 diff = complexDiv(p, dp);
             z -= diff;
-            if (length(diff) < 0.0001) break;
         }
     } else {
         while (x*x + y*y <= 4.0 && iter < u_maxIterations) {
@@ -129,17 +124,12 @@ void main() {
         }
     }
 
-    float t;
-    if (u_type == 4) {
-        t = float(iter) / float(u_maxIterations);
-    } else {
-        float nu = float(iter);
-        if (iter < u_maxIterations) {
-            float mag = sqrt(x*x + y*y);
-            nu = float(iter) + 1.0 - log(log(mag)) / log(exponent);
-        }
-        t = (nu < float(u_maxIterations)) ? nu / float(u_maxIterations) : 0.0;
+    float nu = float(iter);
+    if (u_type != 4 && iter < u_maxIterations) {
+        float mag = sqrt(x*x + y*y);
+        nu = float(iter) + 1.0 - log(log(mag)) / log(exponent);
     }
+    float t = (iter < u_maxIterations) ? nu / float(u_maxIterations) : 0.0;
     vec3 color = paletteColor(t);
     imageStore(u_image, pos, vec4(color, 1.0));
 }

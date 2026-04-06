@@ -1,44 +1,43 @@
 package com.aleespa.randomsquare.tools
 
 import android.content.Context
-import android.graphics.Color
+import android.graphics.Color as AndroidColor
+import androidx.compose.ui.graphics.Color as ComposeColor
+import androidx.compose.ui.graphics.toArgb
 import android.util.Log
 import android.view.View
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.aleespa.randomsquare.data.VisualizeModel
 import ru.noties.jlatexmath.JLatexMathDrawable
 import ru.noties.jlatexmath.JLatexMathView
 import java.io.IOException
 
-
 @Composable
-fun LatexMathView(visualizeModel: VisualizeModel) {
-    var textColor = if (isColorDark(visualizeModel.bgColor)) Color.WHITE else Color.BLACK
+fun LatexMathView(latex: String, bgColor: Int) {
+    val textColor = if (isColorDark(bgColor)) AndroidColor.WHITE else AndroidColor.BLACK
+    val latexDisplay = latex.ifEmpty { " " }
     AndroidView(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentWidth(Alignment.CenterHorizontally)
             .padding(10.dp),
         factory = { context ->
-            JLatexMathView(context).apply {
-                visibility = View.VISIBLE
-            }
+            JLatexMathView(context)
         },
         update = { view ->
-            val drawable = JLatexMathDrawable.builder(visualizeModel.latexString)
-                .align(JLatexMathDrawable.ALIGN_CENTER)
-                .textSize(70F)
-                .padding(8)
-                .color(textColor)
-                .build()
-            view.setLatexDrawable(drawable)
+            try {
+                val drawable = JLatexMathDrawable.builder(latexDisplay)
+                    .textSize(70F)
+                    .padding(8)
+                    .color(textColor)
+                    .build()
+                view.setLatexDrawable(drawable)
+            } catch (e: Exception) {
+                Log.e("LatexMathView", "Error rendering LaTeX: ${e.message}")
+            }
         }
     )
 }
@@ -54,4 +53,38 @@ fun readTexAssets(context: Context, fileName: String): String {
         Log.e("Asset Reading", "Error reading text file: ${e.message}")
         ""
     }
+}
+
+fun generateNewtonLatex(coeffs: DoubleArray): String {
+    val sb = StringBuilder("p(z) = ")
+    var first = true
+    for (i in coeffs.indices.reversed()) {
+        val c = coeffs[i].toInt()
+        if (c == 0) continue
+
+        val absC = kotlin.math.abs(c)
+
+        if (first) {
+            if (c < 0) sb.append("-")
+        } else {
+            sb.append(if (c > 0) " + " else " - ")
+        }
+
+        val coeffStr = if (absC == 1 && i > 0) "" else absC.toString()
+        val zPart = when (i) {
+            0 -> "" // Handled by appending absC below
+            1 -> "z"
+            else -> "z^{$i}"
+        }
+
+        if (i == 0) {
+            sb.append(absC)
+        } else {
+            sb.append(coeffStr).append(zPart)
+        }
+
+        first = false
+    }
+    if (first) return "p(z) = 0"
+    return sb.toString()
 }

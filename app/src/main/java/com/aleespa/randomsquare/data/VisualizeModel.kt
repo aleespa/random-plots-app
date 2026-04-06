@@ -37,6 +37,7 @@ class VisualizeModel(
     var showInfo by mutableStateOf(false)
     var imageBitmapState by mutableStateOf<ImageBitmap?>(null)
     var latexString by mutableStateOf("")
+    var newtonLatexString by mutableStateOf("")
     var isFromGallery by mutableStateOf(false)
     var galleryURI by mutableStateOf("")
     var galleryId by mutableIntStateOf(0)
@@ -62,7 +63,7 @@ class VisualizeModel(
     var juliaTheta by mutableStateOf(kotlin.math.atan2(juliaCY, juliaCX))
 
     var multibrotD by mutableStateOf(3.0)
-    var newtonFunc by mutableIntStateOf(0) // 0: z^3-1, 1: z^5-1, 2: sin(z)-1, 3: z^6+z^3-1
+    var newtonCoeffs by mutableStateOf(DoubleArray(9) { 0.0 })
 
     fun updateJuliaFromPolar() {
         juliaCX = juliaR * kotlin.math.cos(juliaTheta)
@@ -195,8 +196,11 @@ class VisualizeModel(
             Figures.JULIA -> 80
             Figures.TRICORN -> 80
             Figures.MULTIBROT -> 100
-            Figures.NEWTON -> 40
+            Figures.NEWTON -> 100
             else -> 150
+        }
+        if (selectedFigure == Figures.NEWTON) {
+            newtonCoeffs = doubleArrayOf(-1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0) // z^3 - 1
         }
         juliaCX = -0.7
         juliaCY = 0.27015
