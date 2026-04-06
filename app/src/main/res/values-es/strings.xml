@@ -56,4 +56,13 @@
     <string name="soft">Suave</string>
     <string name="blackwhite">Blanco y Negro</string>
     <string name="noise">Ruido</string>
+    <string name="mandelbrot">Mandelbrot</string>
+    <string name="julia">Conjunto de Julia</string>
+    <string name="tricorn">Tricornio</string>
+    <string name="multibrot">Multibrot</string>
+    <string name="newton">Fractal de Newton</string>
+    <string name="newton_func_0">z³ - 1</string>
+    <string name="newton_func_1">z⁵ - 1</string>
+    <string name="newton_func_2">sin(z) - 1</string>
+    <string name="newton_func_3">z⁶ + z³ - 1</string>
 </resources>

@@ -31,6 +31,27 @@ enum class Figures(
         R.drawable.julia,
         R.drawable.julia,
     ),
+    MULTIBROT(
+        "multibrot",
+        FigureType.FRACTAL,
+        R.string.multibrot,
+        R.drawable.multibrot,
+        R.drawable.multibrot,
+    ),
+    NEWTON(
+        "newton",
+        FigureType.FRACTAL,
+        R.string.newton,
+        R.drawable.newton,
+        R.drawable.newton,
+    ),
+    TRICORN(
+        "tricorn",
+        FigureType.FRACTAL,
+        R.string.tricorn,
+        R.drawable.tricorn,
+        R.drawable.tricorn,
+    ),
     SUPER_RANDOM(
         "super",
         FigureType.COMPOSITIONS,

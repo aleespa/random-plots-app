@@ -181,7 +181,7 @@ extern "C" JNIEXPORT jbyteArray JNICALL
 Java_com_aleespa_randomsquare_tools_FractalRenderer_renderInternal(
     JNIEnv* env, jobject thiz, jint type, jint width, jint height, jint maxIter,
     jdouble xCenter, jdouble yCenter, jdouble zoom, jdouble cx, jdouble cy,
-    jfloatArray palT, jfloatArray palRGB) {
+    jfloatArray params, jfloatArray palT, jfloatArray palRGB) {
 
     EGLContextManager egl;
     if (!egl.init()) {
@@ -214,6 +214,10 @@ Java_com_aleespa_randomsquare_tools_FractalRenderer_renderInternal(
     glUniform1f(glGetUniformLocation(program, "u_zoom"), (float)zoom);
     glUniform2f(glGetUniformLocation(program, "u_juliaC"), (float)cx, (float)cy);
 
+    jsize paramSize = env->GetArrayLength(params);
+    float* pParams = env->GetFloatArrayElements(params, nullptr);
+    glUniform1fv(glGetUniformLocation(program, "u_params"), paramSize, pParams);
+
     jsize palSize = env->GetArrayLength(palT);
     float* pT = env->GetFloatArrayElements(palT, nullptr);
     float* pRGB = env->GetFloatArrayElements(palRGB, nullptr);
@@ -234,6 +238,7 @@ Java_com_aleespa_randomsquare_tools_FractalRenderer_renderInternal(
     jbyteArray result = env->NewByteArray(pixels.size());
     env->SetByteArrayRegion(result, 0, pixels.size(), (const jbyte*)pixels.data());
 
+    env->ReleaseFloatArrayElements(params, pParams, JNI_ABORT);
     env->ReleaseFloatArrayElements(palT, pT, JNI_ABORT);
     env->ReleaseFloatArrayElements(palRGB, pRGB, JNI_ABORT);
     glDeleteTextures(1, &texture);
@@ -243,22 +248,4 @@ Java_com_aleespa_randomsquare_tools_FractalRenderer_renderInternal(
     egl.destroy();
 
     return result;
-}
-
-extern "C" JNIEXPORT jbyteArray JNICALL
-Java_com_aleespa_randomsquare_tools_FractalRenderer_renderMandelbrot(
-    JNIEnv* env, jobject thiz, jint width, jint height, jint maxIter,
-    jdouble xCenter, jdouble yCenter, jdouble zoom,
-    jfloatArray palT, jfloatArray palRGB) {
-    return Java_com_aleespa_randomsquare_tools_FractalRenderer_renderInternal(
-        env, thiz, 0, width, height, maxIter, xCenter, yCenter, zoom, 0.0, 0.0, palT, palRGB);
-}
-
-extern "C" JNIEXPORT jbyteArray JNICALL
-Java_com_aleespa_randomsquare_tools_FractalRenderer_renderJulia(
-    JNIEnv* env, jobject thiz, jint width, jint height, jint maxIter,
-    jdouble xCenter, jdouble yCenter, jdouble zoom, jdouble cx, jdouble cy,
-    jfloatArray palT, jfloatArray palRGB) {
-    return Java_com_aleespa_randomsquare_tools_FractalRenderer_renderInternal(
-        env, thiz, 1, width, height, maxIter, xCenter, yCenter, zoom, cx, cy, palT, palRGB);
 }

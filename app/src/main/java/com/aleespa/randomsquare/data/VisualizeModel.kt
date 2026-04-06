@@ -61,6 +61,9 @@ class VisualizeModel(
     var juliaR by mutableStateOf(kotlin.math.sqrt(juliaCX * juliaCX + juliaCY * juliaCY))
     var juliaTheta by mutableStateOf(kotlin.math.atan2(juliaCY, juliaCX))
 
+    var multibrotD by mutableStateOf(3.0)
+    var newtonFunc by mutableIntStateOf(0) // 0: z^3-1, 1: z^5-1, 2: sin(z)-1, 3: z^6+z^3-1
+
     fun updateJuliaFromPolar() {
         juliaCX = juliaR * kotlin.math.cos(juliaTheta)
         juliaCY = juliaR * kotlin.math.sin(juliaTheta)
@@ -187,7 +190,14 @@ class VisualizeModel(
         fractalZoom = 1.0
         fractalXCenter = if (selectedFigure == Figures.MANDELBROT) -1.0 else 0.0
         fractalYCenter = 0.0
-        fractalIterations = 150
+        fractalIterations = when (selectedFigure) {
+            Figures.MANDELBROT -> 100
+            Figures.JULIA -> 80
+            Figures.TRICORN -> 80
+            Figures.MULTIBROT -> 100
+            Figures.NEWTON -> 40
+            else -> 150
+        }
         juliaCX = -0.7
         juliaCY = 0.27015
         updatePolarFromJulia()

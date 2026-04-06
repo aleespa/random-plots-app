@@ -290,14 +290,23 @@ fun FractalSettings(visualizeModel: VisualizeModel) {
             .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        val iterationRange = when (visualizeModel.selectedFigure) {
+            Figures.MANDELBROT-> 50f..1500f
+            Figures.TRICORN -> 30f..300f
+            Figures.JULIA -> 50f..1000f
+            Figures.MULTIBROT -> 20f..500f
+            Figures.NEWTON -> 10f..100f
+            else -> 50f..2000f
+        }
+
         Text("Iterations: ${visualizeModel.fractalIterations}")
         Slider(
-            value = visualizeModel.fractalIterations.toFloat(),
+            value = visualizeModel.fractalIterations.toFloat().coerceIn(iterationRange),
             onValueChange = {
                 visualizeModel.fractalIterations = it.toInt()
                 generateNewPlot(visualizeModel, context, randomizeSeed = false, showAds = false)
             },
-            valueRange = 50f..2000f,
+            valueRange = iterationRange,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp)
@@ -353,6 +362,60 @@ fun FractalSettings(visualizeModel: VisualizeModel) {
                         valueRange = 0f..(2 * Math.PI).toFloat(),
                         modifier = Modifier.height(30.dp)
                     )
+                }
+            }
+        }
+
+        if (visualizeModel.selectedFigure == Figures.MULTIBROT) {
+            Spacer(Modifier.height(8.dp))
+            Text("Power (d): ${String.format("%.2f", visualizeModel.multibrotD)}")
+            Slider(
+                value = visualizeModel.multibrotD.toFloat(),
+                onValueChange = {
+                    visualizeModel.multibrotD = it.toDouble()
+                    generateNewPlot(visualizeModel, context, randomizeSeed = false, showAds = false)
+                },
+                valueRange = 2f..10f,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        if (visualizeModel.selectedFigure == Figures.NEWTON) {
+            Spacer(Modifier.height(8.dp))
+            var expanded by remember { mutableStateOf(false) }
+            val functions = listOf(
+                context.getString(com.aleespa.randomsquare.R.string.newton_func_0),
+                context.getString(com.aleespa.randomsquare.R.string.newton_func_1),
+                context.getString(com.aleespa.randomsquare.R.string.newton_func_2),
+                context.getString(com.aleespa.randomsquare.R.string.newton_func_3)
+            )
+
+            Box {
+                Text(
+                    text = "Function: ${functions[visualizeModel.newtonFunc]}",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { expanded = true }
+                        .padding(8.dp),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                    functions.forEachIndexed { index, func ->
+                        DropdownMenuItem(
+                            text = { Text(func) },
+                            onClick = {
+                                visualizeModel.newtonFunc = index
+                                generateNewPlot(
+                                    visualizeModel,
+                                    context,
+                                    randomizeSeed = false,
+                                    showAds = false
+                                )
+                                expanded = false
+                            }
+                        )
+                    }
                 }
             }
         }

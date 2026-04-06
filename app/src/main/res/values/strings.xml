@@ -58,5 +58,12 @@
     <string name="glance_widget_description">Widget test</string>
     <string name="mandelbrot">Mandelbrot</string>
     <string name="julia">Julia set</string>
+    <string name="tricorn">Tricorn</string>
+    <string name="multibrot">Multibrot</string>
+    <string name="newton">Newton\'s Fractal</string>
+    <string name="newton_func_0">z³ - 1</string>
+    <string name="newton_func_1">z⁵ - 1</string>
+    <string name="newton_func_2">sin(z) - 1</string>
+    <string name="newton_func_3">z⁶ + z³ - 1</string>
 
 </resources>

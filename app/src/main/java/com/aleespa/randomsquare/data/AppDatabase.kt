@@ -29,15 +29,24 @@ abstract class AppDatabase : RoomDatabase() {
                         fractalXCenter REAL,
                         fractalYCenter REAL,
                         fractalZoom REAL,
-                        juliaCX REAL,
-                        juliaCY REAL,
+                        param1 REAL,
+                        param2 REAL,
+                        param3 REAL,
+                        param4 REAL,
+                        param5 REAL,
+                        param6 REAL,
+                        param7 REAL,
+                        param8 REAL,
+                        param9 REAL,
+                        param10 REAL,
                         colormap TEXT,
-                        fractalIterations INTEGER
+                        iterations INTEGER
                     )
                 """.trimIndent())
 
                 // 2. Copy data from the v2 table
                 // v2 columns: id, uri, imageType, timestamp, isDarkMode, randomSeed, backgroundColor
+                // Plus, map the old juliaCX/juliaCY to param1/param2 if they existed (though they are new in v3)
                 db.execSQL("""
                     INSERT INTO images_new (id, uri, imageType, timestamp, isDarkMode, randomSeed, backgroundColor)
                     SELECT id, uri, imageType, timestamp, isDarkMode, randomSeed, backgroundColor 

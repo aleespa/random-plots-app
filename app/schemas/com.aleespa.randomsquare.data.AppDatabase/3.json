@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "3541b38379966245e7896db3dc9e140f",
+    "identityHash": "324c20a06cf3756690a535ac846a6960",
     "entities": [
       {
         "tableName": "images",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `uri` TEXT NOT NULL, `imageType` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `isDarkMode` INTEGER NOT NULL, `randomSeed` INTEGER, `backgroundColor` INTEGER NOT NULL, `fractalXCenter` REAL, `fractalYCenter` REAL, `fractalZoom` REAL, `juliaCX` REAL, `juliaCY` REAL, `colormap` TEXT, `fractalIterations` INTEGER)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `uri` TEXT NOT NULL, `imageType` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `isDarkMode` INTEGER NOT NULL, `randomSeed` INTEGER, `backgroundColor` INTEGER NOT NULL, `fractalXCenter` REAL, `fractalYCenter` REAL, `fractalZoom` REAL, `param1` REAL, `param2` REAL, `param3` REAL, `param4` REAL, `param5` REAL, `param6` REAL, `param7` REAL, `param8` REAL, `param9` REAL, `param10` REAL, `colormap` TEXT, `iterations` INTEGER)",
         "fields": [
           {
             "fieldPath": "id",
@@ -69,14 +69,62 @@
             "notNull": false
           },
           {
-            "fieldPath": "juliaCX",
-            "columnName": "juliaCX",
+            "fieldPath": "param1",
+            "columnName": "param1",
             "affinity": "REAL",
             "notNull": false
           },
           {
-            "fieldPath": "juliaCY",
-            "columnName": "juliaCY",
+            "fieldPath": "param2",
+            "columnName": "param2",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "param3",
+            "columnName": "param3",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "param4",
+            "columnName": "param4",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "param5",
+            "columnName": "param5",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "param6",
+            "columnName": "param6",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "param7",
+            "columnName": "param7",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "param8",
+            "columnName": "param8",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "param9",
+            "columnName": "param9",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "param10",
+            "columnName": "param10",
             "affinity": "REAL",
             "notNull": false
           },
@@ -87,8 +135,8 @@
             "notNull": false
           },
           {
-            "fieldPath": "fractalIterations",
-            "columnName": "fractalIterations",
+            "fieldPath": "iterations",
+            "columnName": "iterations",
             "affinity": "INTEGER",
             "notNull": false
           }
@@ -106,7 +154,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3541b38379966245e7896db3dc9e140f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '324c20a06cf3756690a535ac846a6960')"
     ]
   }
 }

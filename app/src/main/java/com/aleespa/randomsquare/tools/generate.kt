@@ -177,31 +177,36 @@ fun generateRandomPlot(visualizeModel: VisualizeModel): ImageBitmap? {
         val height = 1200
         val maxIter = visualizeModel.fractalIterations
 
-        val imageBytes = if (visualizeModel.selectedFigure == Figures.MANDELBROT) {
-            FractalRenderer.renderMandelbrot(
-                width,
-                height,
-                maxIter,
-                visualizeModel.fractalXCenter,
-                visualizeModel.fractalYCenter,
-                visualizeModel.fractalZoom,
-                palT,
-                palRGB
-            )
-        } else {
-            FractalRenderer.renderJulia(
-                width,
-                height,
-                maxIter,
-                visualizeModel.fractalXCenter,
-                visualizeModel.fractalYCenter,
-                visualizeModel.fractalZoom,
-                visualizeModel.juliaCX,
-                visualizeModel.juliaCY,
-                palT,
-                palRGB
-            )
+        val params = FloatArray(10)
+        val type = when (visualizeModel.selectedFigure) {
+            Figures.MANDELBROT -> 0
+            Figures.JULIA -> 1
+            Figures.TRICORN -> 2
+            Figures.MULTIBROT -> {
+                params[0] = visualizeModel.multibrotD.toFloat()
+                3
+            }
+            Figures.NEWTON -> {
+                params[0] = visualizeModel.newtonFunc.toFloat()
+                4
+            }
+            else -> 0
         }
+
+        val imageBytes = FractalRenderer.renderInternal(
+            type,
+            width,
+            height,
+            maxIter,
+            visualizeModel.fractalXCenter,
+            visualizeModel.fractalYCenter,
+            visualizeModel.fractalZoom,
+            visualizeModel.juliaCX,
+            visualizeModel.juliaCY,
+            params,
+            palT,
+            palRGB
+        )
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val buffer = java.nio.ByteBuffer.wrap(imageBytes)
         bitmap.copyPixelsFromBuffer(buffer)
@@ -389,9 +394,20 @@ fun generateNewPlot(
             builder.setFractalXCenter(visualizeModel.fractalXCenter)
             builder.setFractalYCenter(visualizeModel.fractalYCenter)
             builder.setFractalZoom(visualizeModel.fractalZoom)
-            if (visualizeModel.selectedFigure == Figures.JULIA) {
-                builder.setJuliaCX(visualizeModel.juliaCX)
-                builder.setJuliaCY(visualizeModel.juliaCY)
+            builder.setIterations(visualizeModel.fractalIterations)
+
+            when (visualizeModel.selectedFigure) {
+                Figures.JULIA -> {
+                    builder.setParam1(visualizeModel.juliaCX)
+                    builder.setParam2(visualizeModel.juliaCY)
+                }
+                Figures.MULTIBROT -> {
+                    builder.setParam1(visualizeModel.multibrotD)
+                }
+                Figures.NEWTON -> {
+                    builder.setParam1(visualizeModel.newtonFunc.toDouble())
+                }
+                else -> {}
             }
         } else {
             builder.setRandomSeed(visualizeModel.randomSeed)
@@ -429,8 +445,24 @@ fun loadSavedImage(
     if (image.fractalXCenter != null) visualizeModel.fractalXCenter = image.fractalXCenter
     if (image.fractalYCenter != null) visualizeModel.fractalYCenter = image.fractalYCenter
     if (image.fractalZoom != null) visualizeModel.fractalZoom = image.fractalZoom
-    if (image.juliaCX != null) visualizeModel.juliaCX = image.juliaCX
-    if (image.juliaCY != null) visualizeModel.juliaCY = image.juliaCY
+    if (image.iterations != null) visualizeModel.fractalIterations = image.iterations
+
+    // Map params back to model
+    val figure = Figures.fromKey(image.imageType)
+    when (figure) {
+        Figures.JULIA -> {
+            visualizeModel.juliaCX = image.param1 ?: -0.7
+            visualizeModel.juliaCY = image.param2 ?: 0.27015
+            visualizeModel.updatePolarFromJulia()
+        }
+        Figures.MULTIBROT -> {
+            visualizeModel.multibrotD = image.param1 ?: 3.0
+        }
+        Figures.NEWTON -> {
+            visualizeModel.newtonFunc = image.param1?.toInt() ?: 0
+        }
+        else -> {}
+    }
 
     if (image.colormap != null) {
         val foundColormap = Colormaps.values().find { it.key == image.colormap }
