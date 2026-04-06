@@ -94,28 +94,6 @@ fun Visualize(
                 }
             }
             item { Spacer(Modifier.height(8.dp)) }
-            if (visualizeModel.selectedFigure == Figures.NEWTON) {
-                item { Spacer(Modifier.height(10.dp)) }
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp)
-                            .background(
-                                color = Color(visualizeModel.bgColor),
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                            .padding(8.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        LatexMathView(
-                            latex = visualizeModel.newtonLatexString,
-                            bgColor = visualizeModel.bgColor
-                        )
-                    }
-                }
-                item { Spacer(Modifier.height(16.dp)) }
-            }
             item { FractalSettings(visualizeModel) }
             item { Spacer(Modifier.height(16.dp)) }
 
