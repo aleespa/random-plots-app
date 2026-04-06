@@ -292,11 +292,11 @@ fun FractalSettings(visualizeModel: VisualizeModel) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val iterationRange = when (visualizeModel.selectedFigure) {
-            Figures.MANDELBROT -> 50f..1500f
+            Figures.MANDELBROT -> 50f..1000f
             Figures.TRICORN -> 30f..300f
             Figures.JULIA -> 50f..1000f
             Figures.MULTIBROT -> 20f..500f
-            Figures.NEWTON -> 20f..500f
+            Figures.NEWTON -> 10f..100f
             else -> 50f..2000f
         }
 
