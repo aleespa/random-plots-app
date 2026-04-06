@@ -119,7 +119,24 @@ fun ThreeDotsDropDownMenu(
             text = { Text(stringResource(id = R.string.set_wallpaper)) },
             leadingIcon = { DropDownMenuIcon(Icons.Default.AddPhotoAlternate) },
             onClick = {
-                visualizeModel.showAspectRatioDialog = true
+                val figureType = visualizeModel.selectedFigure.figureType
+                if (figureType == com.aleespa.randomsquare.FigureType.FRACTAL ||
+                    figureType == com.aleespa.randomsquare.FigureType.COMPOSITIONS
+                ) {
+                    visualizeModel.toFitAspectRatio = false
+                    com.aleespa.randomsquare.tools.generateNewPlot(
+                        visualizeModel,
+                        context,
+                        randomizeSeed = false,
+                        showAds = true,
+                        width = 1500,
+                        height = 1500
+                    ) {
+                        setWallpaperAfterAd(visualizeModel, context)
+                    }
+                } else {
+                    visualizeModel.showAspectRatioDialog = true
+                }
                 onDismiss()
             }
         )

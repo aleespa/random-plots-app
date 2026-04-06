@@ -58,7 +58,11 @@ fun generateRandomPlot(
     return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)?.asImageBitmap()
 }
 
-fun generateRandomPlot(visualizeModel: VisualizeModel): ImageBitmap? {
+fun generateRandomPlot(
+    visualizeModel: VisualizeModel,
+    width: Int = 1200,
+    height: Int = 1200
+): ImageBitmap? {
     if (visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS) {
         val seed = visualizeModel.randomSeed
         val rng = java.util.Random(seed)
@@ -153,8 +157,6 @@ fun generateRandomPlot(visualizeModel: VisualizeModel): ImageBitmap? {
 
         generateBytecode(k)
 
-        val width = 1440
-        val height = 1440
         val imageBytes = FractalRenderer.renderComposition(
             width, height, opcodes.toIntArray(), params.toFloatArray()
         )
@@ -173,8 +175,6 @@ fun generateRandomPlot(visualizeModel: VisualizeModel): ImageBitmap? {
             palRGB[i * 3 + 2] = (color and 0xFF) / 255.0f
         }
 
-        val width = 1200
-        val height = 1200
         val maxIter = visualizeModel.fractalIterations
 
         val params = FloatArray(10)
@@ -373,6 +373,8 @@ fun generateNewPlot(
     context: Context,
     randomizeSeed: Boolean = true,
     showAds: Boolean = true,
+    width: Int = 1200,
+    height: Int = 1200,
     onComplete: () -> Unit = {}
 ) {
     visualizeModel.loadingPlotGenerator = true
@@ -434,7 +436,7 @@ fun generateNewPlot(
         visualizeModel.temporalImageEntity = builder
         try {
             val result = withContext(Dispatchers.Default) {
-                generateRandomPlot(visualizeModel)
+                generateRandomPlot(visualizeModel, width, height)
             }
             val androidBitmap = result?.asAndroidBitmap()
             if (androidBitmap != null) {

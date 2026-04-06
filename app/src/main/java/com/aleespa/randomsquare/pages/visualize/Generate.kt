@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.aleespa.randomsquare.AD_FREQUENCY
+import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.ads.AdManager
 import com.aleespa.randomsquare.data.VisualizeModel
@@ -55,7 +56,24 @@ fun GeneratePlotButton(
             modifier = Modifier
                 .size(26.dp)
                 .clickable {
-                    visualizeModel.showAspectRatioDialog = true
+                    val figureType = visualizeModel.selectedFigure.figureType
+                    if (figureType == FigureType.FRACTAL ||
+                        figureType == FigureType.COMPOSITIONS
+                    ) {
+                        visualizeModel.toFitAspectRatio = false
+                        generateNewPlot(
+                            visualizeModel,
+                            context,
+                            randomizeSeed = false,
+                            showAds = true,
+                            width = 2000,
+                            height = 2000
+                        ) {
+                            setWallpaperAfterAd(visualizeModel, context)
+                        }
+                    } else {
+                        visualizeModel.showAspectRatioDialog = true
+                    }
                 }
         )
         ExtendedFloatingActionButton(
@@ -144,7 +162,24 @@ fun FractalActions(
             modifier = Modifier
                 .size(32.dp)
                 .clickable {
-                    visualizeModel.showAspectRatioDialog = true
+                    val figureType = visualizeModel.selectedFigure.figureType
+                    if (figureType == FigureType.FRACTAL ||
+                        figureType == FigureType.COMPOSITIONS
+                    ) {
+                        visualizeModel.toFitAspectRatio = false
+                        generateNewPlot(
+                            visualizeModel,
+                            context,
+                            randomizeSeed = false,
+                            showAds = true,
+                            width = 1500,
+                            height = 1500
+                        ) {
+                            setWallpaperAfterAd(visualizeModel, context)
+                        }
+                    } else {
+                        visualizeModel.showAspectRatioDialog = true
+                    }
                 }
         )
         Spacer(Modifier.width(32.dp))
