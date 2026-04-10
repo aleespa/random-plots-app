@@ -2,7 +2,22 @@ package com.aleespa.randomsquare.tools
 
 object FractalRenderer {
     init {
-        System.loadLibrary("fractalrenderer")
+        loadNativeLibrary()
+    }
+
+    private fun loadNativeLibrary() {
+        val isTesting = try {
+            System.getProperty("is_testing") == "true"
+        } catch (e: Exception) {
+            false
+        }
+        if (!isTesting) {
+            try {
+                System.loadLibrary("fractalrenderer")
+            } catch (e: UnsatisfiedLinkError) {
+                // Log or handle the error if not in a test environment
+            }
+        }
     }
 
     external fun renderInternal(

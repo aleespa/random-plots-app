@@ -64,6 +64,13 @@ android {
         compose true
     }
 
+    testOptions {
+        unitTests.all {
+            systemProperty "is_testing", "true"
+            maxHeapSize = "2g"
+        }
+    }
+
     composeCompiler {
         reportsDestination = layout.buildDirectory.dir("compose_compiler")
         stabilityConfigurationFile = rootProject.layout.projectDirectory.file("stability_config.conf")
@@ -124,6 +131,9 @@ dependencies {
     implementation libs.androidx.appcompat
     implementation libs.androidx.cardview
     testImplementation libs.junit
+    testImplementation libs.robolectric
+    testImplementation libs.mockk
+    testImplementation libs.kotlinx.coroutines.test
     androidTestImplementation libs.androidx.test.ext.junit
     androidTestImplementation libs.androidx.test.espresso.core
 
