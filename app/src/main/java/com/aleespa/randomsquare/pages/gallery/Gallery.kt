@@ -65,9 +65,15 @@ fun Gallery(
 ) {
     val context = LocalContext.current
 
-    BackHandler {
-        navController.navigate(BottomBarScreen.Visualize.route)
+    LaunchedEffect(Unit) {
+        visualizeModel.isFromGallery = false
+        visualizeModel.updateFilteredImages()
     }
+
+    BackHandler {
+        navController.navigate(BottomBarScreen.Browse.route)
+    }
+
     Column(modifier = Modifier.safeDrawingPadding()) {
         RandomGalleryTopBar(navController, context, visualizeModel)
     }
@@ -116,7 +122,7 @@ fun RandomGalleryTopBar(
                             contentAlignment = Alignment.Center
                         ) {
                             IconButton(onClick = {
-                                navController.navigate(BottomBarScreen.Visualize.route)
+                                navController.navigate(BottomBarScreen.Browse.route)
                             }) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,

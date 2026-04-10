@@ -446,9 +446,13 @@ fun generateNewPlot(
             }
             visualizeModel.imageBitmapState = result
             if (visualizeModel.selectedFigure == Figures.NEWTON) {
-                visualizeModel.newtonLatexString = generateNewtonLatex(visualizeModel.newtonCoeffs)
+                visualizeModel.newtonLatexString = withContext(Dispatchers.Default) {
+                    generateNewtonLatex(visualizeModel.newtonCoeffs)
+                }
             }
-            visualizeModel.latexString = readTexAssets(context, visualizeModel.selectedFigure.key)
+            visualizeModel.latexString = withContext(Dispatchers.IO) {
+                readTexAssets(context, visualizeModel.selectedFigure.key)
+            }
             visualizeModel.isFromGallery = false
             onComplete()
         } finally {

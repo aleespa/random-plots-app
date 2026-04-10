@@ -76,10 +76,11 @@ fun Carousel(
 
     for (figureType in FigureType.entries) {
         val figures = getFiguresByType(figureType)
+        val carouselState = rememberCarouselState { figures.count() }
 
         PlotTypeDescription(stringResource(figureType.stringId))
         HorizontalMultiBrowseCarousel(
-            state = rememberCarouselState { figures.count() },
+            state = carouselState,
             modifier = Modifier
                 .width(412.dp)
                 .height(221.dp),
@@ -87,8 +88,11 @@ fun Carousel(
             itemSpacing = 8.dp,
             contentPadding = PaddingValues(horizontal = 16.dp),
             flingBehavior = CarouselDefaults.singleAdvanceFlingBehavior(
-                state = rememberCarouselState { figures.count() },
-                snapAnimationSpec = spring(stiffness = Spring.StiffnessHigh)
+                state = carouselState,
+                snapAnimationSpec = spring(
+                    stiffness = 5000f,
+                    dampingRatio = Spring.DampingRatioNoBouncy
+                )
             )
         ) { i ->
             val item = figures[i]

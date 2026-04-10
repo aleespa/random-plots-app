@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,18 +39,21 @@ fun Visualize(
     navController: NavHostController
 ) {
     val context = LocalContext.current
-    BackHandler {
-        navController.navigate(BottomBarScreen.Browse.route)
-    }
 
-    val savedBitmap = loadBitmapFromFile(context, "cache_front.png")
-    if ((savedBitmap != null).and(visualizeModel.isFromGallery.not())) {
-        visualizeModel.imageBitmapState = savedBitmap?.asImageBitmap()
-        if (visualizeModel.latexString.isEmpty()) {
-            visualizeModel.latexString = readTexAssets(context, visualizeModel.selectedFigure.key)
-        }
-        if (visualizeModel.selectedFigure == Figures.NEWTON && visualizeModel.newtonLatexString.isEmpty()) {
-            visualizeModel.newtonLatexString = generateNewtonLatex(visualizeModel.newtonCoeffs)
+    // Use LaunchedEffect to load cache only once when needed,
+    // and only if we are NOT viewing an image from the gallery.
+    LaunchedEffect(visualizeModel.isFromGallery, visualizeModel.selectedFigure) {
+        if (!visualizeModel.isFromGallery && visualizeModel.imageBitmapState == null) {
+            val savedBitmap = loadBitmapFromFile(context, "cache_front.png")
+            if (savedBitmap != null) {
+                visualizeModel.imageBitmapState = savedBitmap.asImageBitmap()
+                if (visualizeModel.latexString.isEmpty()) {
+                    visualizeModel.latexString = readTexAssets(context, visualizeModel.selectedFigure.key)
+                }
+                if (visualizeModel.selectedFigure == Figures.NEWTON && visualizeModel.newtonLatexString.isEmpty()) {
+                    visualizeModel.newtonLatexString = generateNewtonLatex(visualizeModel.newtonCoeffs)
+                }
+            }
         }
     }
     if (visualizeModel.showAspectRatioDialog) {

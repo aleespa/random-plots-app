@@ -1,6 +1,9 @@
 package com.aleespa.randomsquare.pages
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.tween
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
@@ -32,7 +35,7 @@ fun MainScreen(
 ) {
     val navController = rememberNavController()
     Scaffold(
-        bottomBar = { BottomBar(navController) }
+        bottomBar = { BottomBar(navController, visualizeModel) }
     ) {
         BottomNavGraph(
             visualizeModel = remember { visualizeModel },
@@ -42,7 +45,7 @@ fun MainScreen(
 }
 
 @Composable
-fun BottomBar(navController: NavHostController) {
+fun BottomBar(navController: NavHostController, visualizeModel: VisualizeModel) {
 
     val screens = listOf(
         BottomBarScreen.Browse,
@@ -65,8 +68,11 @@ fun BottomBar(navController: NavHostController) {
                 } == true,
                 onClick = {
                     navController.navigate(screen.route) {
-                        popUpTo(navController.graph.findStartDestination().id)
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = false
+                        }
                         launchSingleTop = true
+                        restoreState = false
                     }
                 }
             )
@@ -83,7 +89,9 @@ fun BottomNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = BottomBarScreen.Browse.route
+        startDestination = BottomBarScreen.Browse.route,
+        enterTransition = { fadeIn(animationSpec = tween(200)) },
+        exitTransition = { fadeOut(animationSpec = tween(200)) }
     ) {
         composable(route = BottomBarScreen.Browse.route) {
             Browse(visualizeModel, navController)
