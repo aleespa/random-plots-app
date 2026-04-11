@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -219,7 +220,7 @@ fun ScrollContent(
                     bottom = innerPadding.calculateBottomPadding() + 80.dp
                 )
             ) {
-                items(images) { image ->
+                items(images, key = { it.id }) { image ->
                     AsyncImage(
                         model = ImageRequest.Builder(context)
                             .data(image.uri)
@@ -228,6 +229,7 @@ fun ScrollContent(
                         contentDescription = null,
                         modifier = Modifier
                             .padding(2.dp)
+                            .aspectRatio(1f)
                             .clickable {
                                 loadSavedImage(visualizeModel, image, context)
                                 navController.navigate(BottomBarScreen.Visualize.route)

@@ -24,6 +24,9 @@ interface ImageDao {
     @Delete
     suspend fun deleteImages(images: List<ImageEntity>)
 
+    @Query("SELECT * FROM images ORDER BY timestamp DESC")
+    suspend fun getAllImagesList(): List<ImageEntity>
+
     @Query(
         """
         SELECT * FROM images 

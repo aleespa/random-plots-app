@@ -25,12 +25,7 @@ class ImageRepository(
     }
 
     suspend fun getFilteredImages(isDarkMode: Boolean?, imageType: String?): List<ImageEntity> {
-        val images = imageDao.getFilteredImages(isDarkMode, imageType)
-        val (validImages, invalidImages) = images.partition { isUriValid(it.uri) }
-        if (invalidImages.isNotEmpty()) {
-            imageDao.deleteImages(invalidImages)
-        }
-        return validImages
+        return imageDao.getFilteredImages(isDarkMode, imageType)
     }
 
     suspend fun insertImage(imageEntity: ImageEntity): Long {
