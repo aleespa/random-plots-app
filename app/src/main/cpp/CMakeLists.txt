@@ -1,15 +1,21 @@
+cmake_minimum_required(VERSION 3.22)
+project(randomsquare)
 
-cmake_minimum_required(VERSION 3.22.1)
-project("fractalrenderer")
+set(SKIA_ROOT ${CMAKE_SOURCE_DIR}/../../../libs/skia)
 
-add_library(${CMAKE_PROJECT_NAME} SHARED
-    fractalrenderer.cpp)
+add_library(randomsquare SHARED
+    render_context.cpp
+    jni_bridge.cpp
+)
 
+target_include_directories(randomsquare PRIVATE
+    ${SKIA_ROOT}
+)
 
-target_link_libraries(${CMAKE_PROJECT_NAME}
-    GLESv3
-    EGL
+target_link_libraries(randomsquare
+    ${SKIA_ROOT}/${ANDROID_ABI}/libskia.a
     android
-    log)
+    log
+)
 
-target_link_options(${CMAKE_PROJECT_NAME} PRIVATE "-Wl,-z,max-page-size=16384")
+target_compile_options(randomsquare PRIVATE -std=c++17 -O2)

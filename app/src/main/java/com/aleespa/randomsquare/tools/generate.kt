@@ -41,21 +41,34 @@ fun generateRandomPlot(
     figure: Figures,
     colormap: Colormaps
 ): ImageBitmap? {
-    val colormapColors = colormap.colorlist.toTypedArray().map { color ->
-        intColorToHexWithoutAlpha(color)
+    val sketchId = when (figure) {
+        Figures.NOISY_CIRCLES -> 0
+        Figures.BUBBLES -> 1
+        Figures.WAVES -> 2
+        Figures.CONSTELLATIONS -> 3
+        Figures.POLYGON_GRID -> 4
+        Figures.SPIRAL -> 5
+        Figures.CUBISM -> 6
+        Figures.EXPONENTIAL_SUM -> 7
+        Figures.POLYGON_FEEDBACK -> 8
+        Figures.POLYGON_TUNNEL -> 9
+        Figures.ROTATIONS -> 10
+        Figures.ORBITS -> 11
+        Figures.SPIROGRAPH -> 12
+        Figures.CONTINUOUS_SPIROGRAPH -> 13
+        Figures.RANDOM_EIGENVALUES -> 14
+        else -> return null
     }
-    val py = Python.getInstance()
-    val mainModule = py.getModule("main")
 
-    val imageBytes = mainModule.callAttr(
-        "generate",
-        seed,
-        colorToHexWithoutAlpha(Color(bgColor)),
-        figure.key,
-        colormapColors.toTypedArray()
-    ).toJava(ByteArray::class.java)
-
-    return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)?.asImageBitmap()
+    val bitmap = SketchRenderer.renderBitmap(
+        sketchId = sketchId,
+        seed = seed,
+        width = 1200,
+        height = 1200,
+        bgColor = bgColor,
+        colormap = colormap
+    )
+    return bitmap?.asImageBitmap()
 }
 
 fun generateRandomPlot(
@@ -215,22 +228,38 @@ fun generateRandomPlot(
         return bitmap.asImageBitmap()
     }
 
-    val colormapColors = visualizeModel.selectedColormap.colorlist.toTypedArray().map { color ->
-        intColorToHexWithoutAlpha(color)
+    val sketchId = when (visualizeModel.selectedFigure) {
+        Figures.NOISY_CIRCLES -> 0
+        Figures.BUBBLES -> 1
+        Figures.WAVES -> 2
+        Figures.CONSTELLATIONS -> 3
+        Figures.POLYGON_GRID -> 4
+        Figures.SPIRAL -> 5
+        Figures.CUBISM -> 6
+        Figures.EXPONENTIAL_SUM -> 7
+        Figures.POLYGON_FEEDBACK -> 8
+        Figures.POLYGON_TUNNEL -> 9
+        Figures.ROTATIONS -> 10
+        Figures.ORBITS -> 11
+        Figures.SPIROGRAPH -> 12
+        Figures.CONTINUOUS_SPIROGRAPH -> 13
+        Figures.RANDOM_EIGENVALUES -> 14
+        else -> -1
     }
 
-    val py = Python.getInstance()
-    val mainModule = py.getModule("main")
+    if (sketchId != -1) {
+        val result = SketchRenderer.renderBitmap(
+            sketchId = sketchId,
+            seed = visualizeModel.randomSeed,
+            width = width,
+            height = height,
+            bgColor = visualizeModel.bgColor,
+            colormap = visualizeModel.selectedColormap
+        )
+        return result?.asImageBitmap()
+    }
 
-    val imageBytes = mainModule.callAttr(
-        "generate",
-        visualizeModel.randomSeed,
-        colorToHexWithoutAlpha(Color(visualizeModel.bgColor)),
-        visualizeModel.selectedFigure.key,
-        colormapColors.toTypedArray()
-    ).toJava(ByteArray::class.java)
-
-    return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)?.asImageBitmap()
+    return null
 }
 
 
