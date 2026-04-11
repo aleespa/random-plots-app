@@ -16,8 +16,6 @@ import com.aleespa.randomsquare.tools.convertToAspectRatio
 import com.aleespa.randomsquare.tools.generate32BitSeed
 import com.aleespa.randomsquare.tools.generateRandomPlot
 import com.aleespa.randomsquare.tools.getScreenResolution
-import com.chaquo.python.Python
-import com.chaquo.python.android.AndroidPlatform
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -46,10 +44,6 @@ class SampleGlanceWidgetActionCallback : ActionCallback {
         // 3. Get colormap
         val colormapKey = prefs[WidgetConfigurationActivity.COLORMAP_KEY] ?: Colormaps.VIRIDIS.key
         val colormap = Colormaps.entries.find { it.key == colormapKey } ?: Colormaps.VIRIDIS
-
-        if (!Python.isStarted()) {
-            Python.start(AndroidPlatform(context))
-        }
 
         withContext(Dispatchers.Default) {
             val seed = generate32BitSeed()

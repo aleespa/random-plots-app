@@ -15,17 +15,11 @@ import com.aleespa.randomsquare.data.VisualizeModelFactory
 import com.aleespa.randomsquare.data.dataStore
 import com.aleespa.randomsquare.pages.MainScreen
 import com.aleespa.randomsquare.ui.theme.MyApplicationTheme
-import com.chaquo.python.Python
-import com.chaquo.python.android.AndroidPlatform
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        if (!Python.isStarted()) {
-            Python.start(AndroidPlatform(this))
-        }
 
         // Initialise AdMob SDK and preload the first interstitial ad early.
         AdManager.init(applicationContext)

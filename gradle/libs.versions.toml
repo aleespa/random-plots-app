@@ -1,11 +1,9 @@
 [versions]
 agp = "8.13.2"
 foundationLayout = "1.7.5"
-gradle = "16.0.0"
 gradleVersion = "8.7.3"
 kotlin = "2.1.0"
 ksp = "2.1.0-1.0.29"
-chaquopy = "17.0.0"
 composeBom = "2024.12.01"
 activityCompose = "1.9.3"
 material3Version = "1.5.0-alpha15"
@@ -82,7 +80,6 @@ build-gradle = { module = "com.android.tools.build:gradle", version.ref = "gradl
 google-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 google-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
-gradle = { module = "com.chaquo.python:gradle", version.ref = "gradle" }
 jlatexmath-android = { group = "ru.noties", name = "jlatexmath-android", version.ref = "jlatexmath" }
 jlatexmath-font-cyrillic = { group = "ru.noties", name = "jlatexmath-android-font-cyrillic", version.ref = "jlatexmath" }
 jlatexmath-font-greek = { group = "ru.noties", name = "jlatexmath-android-font-greek", version.ref = "jlatexmath" }
@@ -95,5 +92,4 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-chaquopy = { id = "com.chaquo.python", version.ref = "chaquopy" }
 room = { id = "androidx.room", version.ref = "room" }
