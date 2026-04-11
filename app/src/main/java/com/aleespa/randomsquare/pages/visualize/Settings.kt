@@ -143,9 +143,13 @@ fun BackgroundColorSelector(
 
 @Composable
 fun BackgroundColorSelector(visualizeModel: VisualizeModel) {
+    val context = androidx.compose.ui.platform.LocalContext.current
     BackgroundColorSelector(
         bgColor = visualizeModel.bgColor,
-        onColorChange = { visualizeModel.bgColor = it }
+        onColorChange = {
+            visualizeModel.bgColor = it
+            generateNewPlot(visualizeModel, context, randomizeSeed = false, showAds = false)
+        }
     )
 }
 
@@ -274,9 +278,7 @@ fun ColormapDropdown(
         isFractal = isFractal,
         onColormapChange = {
             visualizeModel.selectedColormap = it
-            if (isFractal) {
-                generateNewPlot(visualizeModel, context, randomizeSeed = false, showAds = false)
-            }
+            generateNewPlot(visualizeModel, context, randomizeSeed = false, showAds = false)
         },
         modifier = modifier
     )
