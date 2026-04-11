@@ -10,12 +10,14 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -64,10 +66,12 @@ fun BrowserScrollable(
         contentPadding = PaddingValues(
             start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
             end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
-            top = innerPadding.calculateTopPadding(),
             bottom = innerPadding.calculateBottomPadding() + 80.dp
         )
     ) {
+        item {
+            Spacer(modifier = Modifier.height(innerPadding.calculateTopPadding() - 10.dp))
+        }
         item { Carousel(visualizeModel, navController, context) }
     }
 }
