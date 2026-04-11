@@ -7,7 +7,7 @@
     android:updatePeriodMillis="0"
     android:initialLayout="@layout/glance_default_layout"
     android:description="@string/glance_widget_description"
-    android:previewImage="@drawable/super_random_light"
+    android:previewImage="@drawable/super_random"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen"
     android:configure="com.aleespa.randomsquare.widget.WidgetConfigurationActivity" />

@@ -136,8 +136,6 @@ fun ConfigurationWizard(onConfigFinished: (List<Figures>, Int, Colormaps) -> Uni
     var selectedBgColor by remember { mutableIntStateOf(Color.Black.toArgb()) }
     var selectedColormap by remember { mutableStateOf(Colormaps.VIRIDIS) }
 
-    val isDark = isSystemInDarkTheme()
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -152,7 +150,7 @@ fun ConfigurationWizard(onConfigFinished: (List<Figures>, Int, Colormaps) -> Uni
                     .padding(vertical = 8.dp),
                 contentAlignment = Alignment.Center
             ) {
-                WidgetPreview(figure = selectedFigures.first(), isDark = isDark)
+                WidgetPreview(figure = selectedFigures.first())
             }
         }
 
@@ -265,8 +263,8 @@ fun ConfigurationWizard(onConfigFinished: (List<Figures>, Int, Colormaps) -> Uni
 }
 
 @Composable
-fun WidgetPreview(figure: Figures, isDark: Boolean) {
-    val imageRes = if (isDark) figure.sampleDarkImage else figure.sampleLightImage
+fun WidgetPreview(figure: Figures) {
+    val imageRes = figure.sampleImage
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             "Widget Preview",

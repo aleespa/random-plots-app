@@ -1,5 +1,8 @@
 package com.aleespa.randomsquare
 
+import androidx.compose.foundation.lazy.LazyListScope
+import com.aleespa.randomsquare.data.VisualizeModel
+
 enum class FigureType(val stringId: Int) {
     FRACTAL(R.string.fractal),
     COMPOSITIONS(R.string.compositions),
@@ -13,8 +16,8 @@ enum class Figures(
     val key: String,
     val figureType: FigureType,
     val resourceStringId: Int,
-    val sampleDarkImage: Int,
-    val sampleLightImage: Int
+    val sampleImage: Int,
+    val menuType: LazyListScope.(VisualizeModel) -> Unit
 ) {
 
     MANDELBROT(
@@ -22,168 +25,168 @@ enum class Figures(
         FigureType.FRACTAL,
         R.string.mandelbrot,
         R.drawable.mandelbrot,
-        R.drawable.mandelbrot,
+        { fractalMenu(it) }
     ),
     JULIA(
         "julia",
         FigureType.FRACTAL,
         R.string.julia,
         R.drawable.julia,
-        R.drawable.julia,
+        { fractalMenu(it) }
     ),
     MULTIBROT(
         "multibrot",
         FigureType.FRACTAL,
         R.string.multibrot,
         R.drawable.multibrot,
-        R.drawable.multibrot,
+        { fractalMenu(it) }
     ),
     NEWTON(
         "newton",
         FigureType.FRACTAL,
         R.string.newton,
         R.drawable.newton,
-        R.drawable.newton,
+        { newtonMenu(it) }
     ),
     TRICORN(
         "tricorn",
         FigureType.FRACTAL,
         R.string.tricorn,
         R.drawable.tricorn,
-        R.drawable.tricorn,
+        { fractalMenu(it) }
     ),
     SUPER_RANDOM(
         "super",
         FigureType.COMPOSITIONS,
         R.string.super_random,
-        R.drawable.super_random_dark,
-        R.drawable.super_random_light
-    ),
-    BLACKWHITE(
-        "bw",
-        FigureType.COMPOSITIONS,
-        R.string.blackwhite,
-        R.drawable.bw,
-        R.drawable.bw
-    ),
-    SOFT(
-        "soft",
-        FigureType.COMPOSITIONS,
-        R.string.soft,
-        R.drawable.soft_dark,
-        R.drawable.soft_light
+        R.drawable.super_random,
+        { compositionMenu(it) }
     ),
     NOISE(
         "noise",
         FigureType.COMPOSITIONS,
         R.string.noise,
         R.drawable.noise,
-        R.drawable.noise
+        { compositionMenu(it) }
+    ),
+    BLACKWHITE(
+        "bw",
+        FigureType.COMPOSITIONS,
+        R.string.blackwhite,
+        R.drawable.bw,
+        { compositionMenu(it) }
+    ),
+    SOFT(
+        "soft",
+        FigureType.COMPOSITIONS,
+        R.string.soft,
+        R.drawable.soft,
+        { compositionMenu(it) }
     ),
     CONTINUOUS_SPIROGRAPH(
         "irrational_spirograph",
         FigureType.CIRCULAR,
         R.string.irrational_spirograph,
-        R.drawable.irrational_spirograph_dark,
-        R.drawable.irrational_spiropgrah_light
+        R.drawable.irrational_spirograph,
+        { standardMenu(it) }
     ),
     ORBITS(
         "orbits",
         FigureType.CHAOS,
         R.string.orbits,
-        R.drawable.orbits_dark,
-        R.drawable.orbits_light
+        R.drawable.orbits,
+        { standardMenu(it) }
     ),
     SPIRAL(
         "spiral",
         FigureType.CHAOS,
         R.string.spiral,
-        R.drawable.spiral_dark,
-        R.drawable.spiral_light
+        R.drawable.spiral,
+        { standardMenu(it) }
     ),
     POLYGON_GRID(
         "polygon_grid",
         FigureType.POLYGON,
         R.string.polygon_grid,
-        R.drawable.polygon_grid_dark,
-        R.drawable.polygon_grid_light
+        R.drawable.polygon_grid,
+        { standardMenu(it) }
     ),
     POLYGON_FEEDBACK(
         "polygon_feedback",
         FigureType.POLYGON,
         R.string.polygon_feedback,
-        R.drawable.polygon_feedback_dark,
-        R.drawable.polygon_feedback_light
+        R.drawable.polygon_feedback,
+        { standardMenu(it) }
     ),
     SPIROGRAPH(
         "spirograph",
         FigureType.CIRCULAR,
         R.string.spirograph,
-        R.drawable.spirograph_dark,
-        R.drawable.spirograph_light
+        R.drawable.spirograph,
+        { standardMenu(it) }
     ),
     EXPONENTIAL_SUM(
         "exponential_sum",
         FigureType.CIRCULAR,
         R.string.exponential_sum,
-        R.drawable.exponential_sum_dark,
-        R.drawable.exponential_sum_light
+        R.drawable.exponential_sum,
+        { standardMenu(it) }
     ),
     POLYGON_TUNNEL(
         "polygon_tunnel",
         FigureType.POLYGON,
         R.string.polygon_tunnel,
-        R.drawable.polygon_tunnel_dark,
-        R.drawable.polygon_tunnel_light
+        R.drawable.polygon_tunnel,
+        { standardMenu(it) }
     ),
     NOISY_CIRCLES(
         "noisy_circles",
         FigureType.CIRCULAR,
         R.string.noisy_cicles,
-        R.drawable.noisy_circles_dark,
-        R.drawable.noisy_circles_light
+        R.drawable.noisy_circles,
+        { standardMenu(it) }
     ),
     WAVES(
         "waves",
         FigureType.MISC,
         R.string.waves,
-        R.drawable.waves_dark,
-        R.drawable.waves_light
+        R.drawable.waves,
+        { standardMenu(it) }
     ),
     CONSTELLATIONS(
         "constellations",
         FigureType.MISC,
         R.string.constellations,
-        R.drawable.constellations_dark,
-        R.drawable.constellations_light
+        R.drawable.constellations,
+        { standardMenu(it) }
     ),
     ROTATIONS(
         "rotations",
         FigureType.POLYGON,
         R.string.rotations,
-        R.drawable.rotations_dark,
-        R.drawable.rotations_light
+        R.drawable.rotations,
+        { standardMenu(it) }
     ),
     BUBBLES(
         "bubbles",
         FigureType.MISC,
         R.string.bubbles,
-        R.drawable.bubbles_dark,
-        R.drawable.bubbles_light
+        R.drawable.bubbles,
+        { standardMenu(it) }
     ),
     RANDOM_EIGENVALUES(
         "random_eigen",
         FigureType.MISC,
         R.string.random_eigen,
-        R.drawable.random_eigen_dark,
-        R.drawable.random_eigen_light
+        R.drawable.random_eigen,
+        { standardMenu(it) }
     ),
     CUBISM(
         "cubism",
         FigureType.CHAOS,
         R.string.cubism,
-        R.drawable.cubism_dark,
-        R.drawable.cubism_light
+        R.drawable.cubism,
+        { standardMenu(it) }
     ),
     ;
 

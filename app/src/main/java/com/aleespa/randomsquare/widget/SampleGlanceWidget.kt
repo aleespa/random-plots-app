@@ -1,13 +1,11 @@
 package com.aleespa.randomsquare.widget
 
 import android.content.Context
-import android.content.res.Configuration
 import androidx.datastore.preferences.core.Preferences
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.Image
 import androidx.glance.ImageProvider
-import androidx.glance.LocalContext
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.action.actionRunCallback
@@ -28,17 +26,12 @@ class SampleGlanceWidget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
-            val context = LocalContext.current
-            val isDark =
-                (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
-
             val prefs = currentState<Preferences>()
             // Use SELECTED_FIGURES_KEY and pick the first one for the preview
             val figureKeysString = prefs[SELECTED_FIGURES_KEY] ?: Figures.SUPER_RANDOM.key
             val firstFigureKey = figureKeysString.split(",").first()
             val figure = Figures.fromKey(firstFigureKey)
-
-            val imageRes = if (isDark) figure.sampleDarkImage else figure.sampleLightImage
+            val imageRes = figure.sampleImage
 
             Box(
                 modifier = GlanceModifier.fillMaxSize(),

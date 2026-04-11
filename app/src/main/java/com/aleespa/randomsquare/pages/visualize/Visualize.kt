@@ -77,48 +77,11 @@ fun Visualize(
         item { VisualizeBox(visualizeModel) }
         item { SeedText(visualizeModel) }
         item { Spacer(Modifier.height(2.dp)) }
-        if (visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS) {
-            item { Spacer(Modifier.height(35.dp)) }
-        }
-        if (visualizeModel.selectedFigure.figureType != FigureType.FRACTAL || visualizeModel.selectedFigure == Figures.NEWTON) {
-            item { GeneratePlotButton(visualizeModel, context) }
-        } else {
-            item { FractalActions(visualizeModel, context) }
-        }
-        if (visualizeModel.selectedFigure.figureType == FigureType.FRACTAL) {
-            item { Spacer(Modifier.height(30.dp)) }
-            item {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    ColormapDropdown(
-                        visualizeModel = visualizeModel
-                    )
-                }
-            }
-            item { Spacer(Modifier.height(8.dp)) }
-            item { FractalSettings(visualizeModel) }
-            item { Spacer(Modifier.height(16.dp)) }
 
-        } else if (visualizeModel.selectedFigure.figureType != FigureType.COMPOSITIONS) {
-            item { Spacer(Modifier.height(30.dp)) }
-            item {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    ColormapDropdown(
-                        visualizeModel = visualizeModel
-                    )
-                }
-            }
-            item { Spacer(Modifier.height(8.dp)) }
-            item { BackgroundColorSelector(visualizeModel) }
-        } else {
-            item { Spacer(Modifier.height(25.dp)) }
-            item { SeedButton(visualizeModel) }
+        with(visualizeModel.selectedFigure) {
+            menuType(visualizeModel)
         }
+
         item { Spacer(Modifier.height(80.dp)) }
     }
 }
