@@ -1,0 +1,34 @@
+#ifndef SkEncodedOrigin_DEFINED
+#define SkEncodedOrigin_DEFINED
+
+#include "include/core/SkMatrix.h"
+
+enum SkEncodedOrigin {
+    kDefault_SkEncodedOrigin = 1, // Start of 1-based EXIF orientation range.
+    kTopLeft_SkEncodedOrigin = 1,
+    kTopRight_SkEncodedOrigin = 2,
+    kBottomRight_SkEncodedOrigin = 3,
+    kBottomLeft_SkEncodedOrigin = 4,
+    kLeftTop_SkEncodedOrigin = 5,
+    kRightTop_SkEncodedOrigin = 6,
+    kRightBottom_SkEncodedOrigin = 7,
+    kLeftBottom_SkEncodedOrigin = 8,
+    kLast_SkEncodedOrigin = kLeftBottom_SkEncodedOrigin,
+    kHeading_SkEncodedOrigin = 9,
+};
+
+static inline SkMatrix SkEncodedOriginToMatrix(SkEncodedOrigin origin, int w, int h) {
+    switch (origin) {
+        case kTopLeft_SkEncodedOrigin:     return SkMatrix::I();
+        case kTopRight_SkEncodedOrigin:    return SkMatrix::MakeAll(-1,  0, w,  0,  1, 0, 0, 0, 1);
+        case kBottomRight_SkEncodedOrigin: return SkMatrix::MakeAll(-1,  0, w,  0, -1, h, 0, 0, 1);
+        case kBottomLeft_SkEncodedOrigin:  return SkMatrix::MakeAll( 1,  0, 0,  0, -1, h, 0, 0, 1);
+        case kLeftTop_SkEncodedOrigin:     return SkMatrix::MakeAll( 0,  1, 0,  1,  0, 0, 0, 0, 1);
+        case kRightTop_SkEncodedOrigin:    return SkMatrix::MakeAll( 0, -1, w,  1,  0, 0, 0, 0, 1);
+        case kRightBottom_SkEncodedOrigin: return SkMatrix::MakeAll( 0, -1, w, -1,  0, h, 0, 0, 1);
+        case kLeftBottom_SkEncodedOrigin:  return SkMatrix::MakeAll( 0,  1, 0, -1,  0, h, 0, 0, 1);
+        default:                           return SkMatrix::I();
+    }
+}
+
+#endif

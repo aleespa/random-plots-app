@@ -19,8 +19,12 @@ void RenderContext::setWorldBounds(float x_min, float x_max, float y_min, float 
 }
 
 Point2f RenderContext::worldToPixel(Point2f p) const {
-    float px = (p.x - wx_min_) / (wx_max_ - wx_min_) * width_;
-    float py = (1.0f - (p.y - wy_min_) / (wy_max_ - wy_min_)) * height_;
+    float dx = wx_max_ - wx_min_;
+    float dy = wy_max_ - wy_min_;
+    if (std::abs(dx) < 1e-6f || std::abs(dy) < 1e-6f) return {0, 0};
+
+    float px = (p.x - wx_min_) / dx * (float)width_;
+    float py = (1.0f - (p.y - wy_min_) / dy) * (float)height_;
     return {px, py};
 }
 

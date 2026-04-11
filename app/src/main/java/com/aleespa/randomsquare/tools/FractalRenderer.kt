@@ -13,7 +13,7 @@ object FractalRenderer {
         }
         if (!isTesting) {
             try {
-                System.loadLibrary("fractalrenderer")
+                System.loadLibrary("randomsquare")
             } catch (e: UnsatisfiedLinkError) {
                 // Log or handle the error if not in a test environment
             }

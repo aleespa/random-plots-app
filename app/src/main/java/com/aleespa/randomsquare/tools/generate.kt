@@ -22,6 +22,7 @@ import com.aleespa.randomsquare.Colormaps
 import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
+import com.aleespa.randomsquare.SketchRenderer
 import com.aleespa.randomsquare.data.ImageEntity
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.chaquo.python.Python

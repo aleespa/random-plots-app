@@ -7,7 +7,22 @@ import android.graphics.Color
 object SketchRenderer {
 
     init {
-        System.loadLibrary("randomsquare")
+        loadNativeLibrary()
+    }
+
+    private fun loadNativeLibrary() {
+        val isTesting = try {
+            System.getProperty("is_testing") == "true"
+        } catch (e: Exception) {
+            false
+        }
+        if (!isTesting) {
+            try {
+                System.loadLibrary("randomsquare")
+            } catch (e: UnsatisfiedLinkError) {
+                // Log or handle the error
+            }
+        }
     }
 
     external fun renderSketch(

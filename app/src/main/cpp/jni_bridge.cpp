@@ -1,8 +1,13 @@
 #include <jni.h>
 #include <android/log.h>
 #include <memory>
+#include <vector>
 #include "render_context.h"
-#include "sketches/random_circles.cpp"
+#include "sketches/sketch_base.h"
+
+// Sketch headers are not needed if we use factory or include them correctly.
+// Since we used GLOB in CMake, we should include the headers here.
+#include "sketches/noisy_circles.cpp"
 #include "sketches/bubbles.cpp"
 #include "sketches/waves.cpp"
 #include "sketches/constellations.cpp"
@@ -53,7 +58,7 @@ Java_com_aleespa_randomsquare_SketchRenderer_renderSketch(
 
     std::unique_ptr<SketchBase> sketch;
     switch (sketch_id) {
-        case 0: sketch = std::make_unique<RandomCirclesSketch>(); break;
+        case 0: sketch = std::make_unique<NoisyCirclesSketch>(); break;
         case 1: sketch = std::make_unique<BubblesSketch>(); break;
         case 2: sketch = std::make_unique<WavesSketch>(); break;
         case 3: sketch = std::make_unique<ConstellationsSketch>(); break;

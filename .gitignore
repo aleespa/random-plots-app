@@ -21,3 +21,7 @@ Banner*
 /app/src/main/python/outputs
 /app/src/main/python/.python-version
 *.pyc
+*.a
+# Ignore built-in external libraries (headers and binaries)
+/app/src/main/cpp/libs/skia/
+/app/src/main/cpp/libs/eigen/

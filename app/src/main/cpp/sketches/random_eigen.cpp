@@ -48,11 +48,28 @@ public:
             }
         }
 
-        float mean_x = sum_x / all_eigvals.size();
-        float mean_y = sum_y / all_eigvals.size();
-        ctx.setWorldBounds(mean_x - 8, mean_x + 8, mean_y - 8, mean_y + 8);
+        // Tracks bounds for dynamic zoom-in (matching bbox_inches='tight')
+        float x_min = 1e9, x_max = -1e9, y_min = 1e9, y_max = -1e9;
+        for (const auto& p : all_eigvals) {
+            x_min = std::min(x_min, p.x);
+            x_max = std::max(x_max, p.x);
+            y_min = std::min(y_min, p.y);
+            y_max = std::max(y_max, p.y);
+        }
 
-        // Split into chunks to assign different colors if needed, or just one call
-        ctx.drawScatter(all_eigvals, ctx.getColor(std::uniform_real_distribution<float>(0, 1)(rng)), 2.0f, 0.9f);
+        float mid_x = (x_min + x_max) / 2.0f;
+        float mid_y = (y_min + y_max) / 2.0f;
+        float span_x = x_max - x_min;
+        float span_y = y_max - y_min;
+        float max_span = std::max(span_x, span_y) * 1.05f;
+
+        ctx.setWorldBounds(mid_x - max_span / 2.0f, mid_x + max_span / 2.0f,
+                           mid_y - max_span / 2.0f, mid_y + max_span / 2.0f);
+
+        // Match Python: every point has a random color from the colormap
+        std::uniform_real_distribution<float> dist_color(0.0f, 1.0f);
+        for (const auto& p : all_eigvals) {
+            ctx.drawScatter({p}, ctx.getColor(dist_color(rng)), 2.0f, 0.9f);
+        }
     }
 };

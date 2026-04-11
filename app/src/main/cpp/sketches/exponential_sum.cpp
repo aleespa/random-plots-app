@@ -30,7 +30,14 @@ public:
             y_max = std::max(y_max, current.imag());
         }
 
-        ctx.setWorldBounds(x_min - 1, x_max + 1, y_min - 1, y_max + 1);
+        float mid_x = (x_min + x_max) / 2.0f;
+        float mid_y = (y_min + y_max) / 2.0f;
+        float span_x = x_max - x_min;
+        float span_y = y_max - y_min;
+        float max_span = std::max(span_x, span_y) * 1.05f;
+
+        ctx.setWorldBounds(mid_x - max_span / 2.0f, mid_x + max_span / 2.0f,
+                           mid_y - max_span / 2.0f, mid_y + max_span / 2.0f);
 
         for (int z = 0; z < num_segments; ++z) {
             int start = step * z;

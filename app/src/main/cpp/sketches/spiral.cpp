@@ -1,37 +1,48 @@
 #include "sketch_base.h"
 #include <random>
 #include <cmath>
+#include <complex>
 #include <vector>
 
 class SpiralSketch : public SketchBase {
 public:
     void render(RenderContext& ctx, uint64_t seed) override {
         std::mt19937_64 rng(seed);
-        std::uniform_int_distribution<int> dist_sides(5, 12);
-        std::uniform_real_distribution<float> dist_01(0.0f, 1.0f);
+        std::uniform_real_distribution<float> dist_c(-0.02f, 0.03f);
+        float c_val = dist_c(rng);
+        float s = -0.99f;
 
-        int n_sides = dist_sides(rng);
-        if (rng() % 5 == 0) n_sides = 300; // approximation of circle
+        int n_loops = 80;
+        int n_points = 1000;
 
-        float sides_step = 2.0f * M_PI / n_sides;
-        std::vector<float> sides(n_sides);
-        for (int i = 0; i < n_sides; ++i) sides[i] = i * sides_step;
+        std::normal_distribution<float> dist_norm(0, 1);
+        std::complex<float> c(c_val, 0); // Simplified as real part
 
-        ctx.setWorldBounds(-32, 32, -32, 32);
+        // The Python script uses fixed bounds which implies a specific zoom.
+        // We add a bit of extra margin to "zoom out" as requested.
+        float margin = 0.4f;
+        ctx.setWorldBounds(-1.4f - margin, 2.4f + margin, -2.4f - margin, 1.4f + margin);
 
-        for (float k = 0; k <= 30.0f; k += 0.3f) {
+        for (int l = 0; l < n_loops; ++l) {
+            float r0 = dist_norm(rng);
+            float r1 = dist_norm(rng);
+
+            std::complex<float> cur_x = 1.0f + r1 - c * std::abs(r0);
+            std::complex<float> cur_y = s * r0;
+
+            SkColor color = ctx.getColor((float)l / n_loops);
+
             std::vector<Point2f> pts;
-            pts.reserve(n_sides + 1);
-            for (float s : sides) {
-                pts.push_back({
-                    k * std::cos(s) + std::cos(k + 1.0f),
-                    k * std::sin(s) + std::sin(k - 1.0f)
-                });
-            }
-            pts.push_back(pts[0]); // close loop
+            pts.push_back({cur_x.real(), cur_y.real()});
 
-            std::uniform_real_distribution<float> dist_lw(0.5f, 4.0f);
-            ctx.drawPolyline(pts, ctx.getColor((k + 15.0f) / 60.0f), dist_lw(rng), 0.7f);
+            for (int p = 1; p < n_points; ++p) {
+                std::complex<float> next_x = 1.0f + cur_y - c * std::abs(cur_x);
+                std::complex<float> next_y = s * cur_x;
+                cur_x = next_x;
+                cur_y = next_y;
+                pts.push_back({cur_x.real(), cur_y.real()});
+            }
+            ctx.drawScatter(pts, color, 2.5f, 0.9f);
         }
     }
 };

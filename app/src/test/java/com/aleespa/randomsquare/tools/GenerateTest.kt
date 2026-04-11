@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import com.aleespa.randomsquare.Colormaps
 import com.aleespa.randomsquare.Figures
+import com.aleespa.randomsquare.SketchRenderer
 import com.aleespa.randomsquare.data.AppSettingsRepository
 import com.aleespa.randomsquare.data.ImageRepository
 import com.aleespa.randomsquare.data.VisualizeModel
@@ -44,15 +45,22 @@ class GenerateTest {
 
     @Before
     fun setup() {
-        every { settingsRepository.darkModeSetting } returns kotlinx.coroutines.flow.flowOf(com.aleespa.randomsquare.data.SettingDarkMode.Auto)
-        every { settingsRepository.selectedFigure } returns kotlinx.coroutines.flow.flowOf(Figures.POLYGON_FEEDBACK)
-        every { settingsRepository.selectedColormapColors } returns kotlinx.coroutines.flow.flowOf(emptyList())
-        every { settingsRepository.bgColor } returns kotlinx.coroutines.flow.flowOf(0)
-
+        // Mock all native-loading objects BEFORE they are accessed
         mockkObject(FractalRenderer)
         every { FractalRenderer["loadNativeLibrary"]() } returns Unit
         every { FractalRenderer.renderInternal(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns ByteArray(100 * 100 * 4)
         every { FractalRenderer.renderComposition(any(), any(), any(), any()) } returns ByteArray(100 * 100 * 4)
+
+        mockkObject(SketchRenderer)
+        try {
+            every { SketchRenderer["loadNativeLibrary"]() } returns Unit
+        } catch (e: Exception) {}
+        every { SketchRenderer.renderBitmap(any(), any(), any(), any(), any(), any()) } returns mockk<Bitmap>(relaxed = true)
+
+        every { settingsRepository.darkModeSetting } returns kotlinx.coroutines.flow.flowOf(com.aleespa.randomsquare.data.SettingDarkMode.Auto)
+        every { settingsRepository.selectedFigure } returns kotlinx.coroutines.flow.flowOf(Figures.POLYGON_FEEDBACK)
+        every { settingsRepository.selectedColormapColors } returns kotlinx.coroutines.flow.flowOf(emptyList())
+        every { settingsRepository.bgColor } returns kotlinx.coroutines.flow.flowOf(0)
 
         mockkStatic(Python::class)
         every { Python.isStarted() } returns true
@@ -67,32 +75,65 @@ class GenerateTest {
     }
 
     @Test
-    fun testGenerateRandomPlot_PythonBackend() {
-        val python = mockk<Python>()
-        val mainModule = mockk<PyObject>()
-        val pyResult = mockk<PyObject>()
-        
-        every { Python.getInstance() } returns python
-        every { python.getModule("main") } returns mainModule
-        
-        // Create a fake small PNG byte array
-        val bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
-        val stream = java.io.ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-        val byteArray = stream.toByteArray()
-        
-        every { mainModule.callAttr("generate", any(), any(), any(), any()) } returns pyResult
-        every { pyResult.toJava(ByteArray::class.java) } returns byteArray
+    fun testGenerateRandomPlot_SkiaBackend_AllFigures() {
+        val skiaFigures = listOf(
+            Figures.NOISY_CIRCLES,
+            Figures.BUBBLES,
+            Figures.WAVES,
+            Figures.CONSTELLATIONS,
+            Figures.POLYGON_GRID,
+            Figures.SPIRAL,
+            Figures.CUBISM,
+            Figures.EXPONENTIAL_SUM,
+            Figures.POLYGON_FEEDBACK,
+            Figures.POLYGON_TUNNEL,
+            Figures.ROTATIONS,
+            Figures.ORBITS,
+            Figures.SPIROGRAPH,
+            Figures.CONTINUOUS_SPIROGRAPH,
+            Figures.RANDOM_EIGENVALUES
+        )
 
-        visualizeModel.selectedFigure = Figures.SPIROGRAPH // Non-fractal, uses Python
-        visualizeModel.randomSeed = 12345L
-        visualizeModel.bgColor = 0xFFFFFFFF.toInt()
-        visualizeModel.selectedColormap = Colormaps.RAINBOW
+        for (figure in skiaFigures) {
+            visualizeModel.selectedFigure = figure
+            visualizeModel.randomSeed = 12345L
+            visualizeModel.bgColor = 0xFF000000.toInt()
+            visualizeModel.selectedColormap = Colormaps.VIRIDIS
 
-        val result = generateRandomPlot(visualizeModel, 100, 100)
+            val result = generateRandomPlot(visualizeModel, 100, 100)
 
-        assertNotNull(result)
-        verify { mainModule.callAttr("generate", 12345L, any(), "spirograph", any()) }
+            assertNotNull("Failed for figure: ${figure.key}", result)
+            
+            val expectedSketchId = when (figure) {
+                Figures.NOISY_CIRCLES -> 0
+                Figures.BUBBLES -> 1
+                Figures.WAVES -> 2
+                Figures.CONSTELLATIONS -> 3
+                Figures.POLYGON_GRID -> 4
+                Figures.SPIRAL -> 5
+                Figures.CUBISM -> 6
+                Figures.EXPONENTIAL_SUM -> 7
+                Figures.POLYGON_FEEDBACK -> 8
+                Figures.POLYGON_TUNNEL -> 9
+                Figures.ROTATIONS -> 10
+                Figures.ORBITS -> 11
+                Figures.SPIROGRAPH -> 12
+                Figures.CONTINUOUS_SPIROGRAPH -> 13
+                Figures.RANDOM_EIGENVALUES -> 14
+                else -> -1
+            }
+
+            verify {
+                SketchRenderer.renderBitmap(
+                    sketchId = expectedSketchId,
+                    seed = 12345L,
+                    width = 100,
+                    height = 100,
+                    bgColor = 0xFF000000.toInt(),
+                    colormap = Colormaps.VIRIDIS
+                )
+            }
+        }
     }
 
     @Test

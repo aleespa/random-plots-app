@@ -6,34 +6,53 @@ class BubblesSketch : public SketchBase {
 public:
     void render(RenderContext& ctx, uint64_t seed) override {
         std::mt19937_64 rng(seed);
-        std::uniform_int_distribution<int> dist_n(20, 65);
         std::uniform_real_distribution<float> dist_01(0.0f, 1.0f);
-        std::uniform_real_distribution<float> dist_radius(0.15f, 0.3f);
+        std::uniform_real_distribution<float> dist_ab(0.5f, 1.0f);
+        std::uniform_real_distribution<float> dist_m11(-1.0f, 1.0f);
 
-        int n = dist_n(rng);
-        std::vector<Point2f> pts(n);
+        int l = 300;
+        int n = 28;
+
+        float a1 = dist_ab(rng) * (rng() % 2 == 0 ? 1.0f : -1.0f);
+        float b1 = dist_ab(rng) * (rng() % 2 == 0 ? 1.0f : -1.0f);
+        float a2 = dist_m11(rng);
+        float b2 = dist_m11(rng);
+
+        ctx.setWorldBounds(-10.0f, 10.0f, -10.0f, 10.0f); // Will be adjusted by max_r
+
+        std::vector<float> x_vals(l);
+        for (int i = 0; i < l; ++i) x_vals[i] = 2.0f * M_PI * i / (l - 1);
+
+        float max_val = 0.0f;
+        struct Line {
+            std::vector<Point2f> pts;
+            SkColor color;
+        };
+        std::vector<Line> lines;
+
         for (int i = 0; i < n; ++i) {
-            pts[i] = {dist_01(rng), dist_01(rng)};
-        }
+            float z = -2.0f * M_PI + 4.0f * M_PI * i / (n - 1);
+            for (int j = 0; j < n; ++j) {
+                float w = -2.0f * M_PI + 4.0f * M_PI * j / (n - 1);
 
-        ctx.setWorldBounds(-0.05f, 1.05f, -0.05f, 1.05f);
+                float sum_zw = a1 * z + b1 * w;
+                float radius = a2 * std::sin(sum_zw) + b2 * std::cos(sum_zw);
 
-        float radius_limit = dist_radius(rng);
-        for (int i = 0; i < n; ++i) {
-            for (int j = i + 1; j < n; ++j) {
-                float dx = pts[i].x - pts[j].x;
-                float dy = pts[i].y - pts[j].y;
-                float dist = std::sqrt(dx * dx + dy * dy);
-                if (dist < radius_limit) {
-                    ctx.drawPolyline({pts[i], pts[j]}, ctx.getColor(dist_01(rng)), 1.2f);
+                std::vector<Point2f> pts;
+                pts.reserve(l);
+                for (int k = 0; k < l; ++k) {
+                    float px = radius * std::cos(x_vals[k]) + z;
+                    float py = radius * std::sin(x_vals[k]) + w;
+                    pts.push_back({px, py});
+                    max_val = std::max({max_val, std::abs(px), std::abs(py)});
                 }
+                lines.push_back({pts, ctx.getColor(dist_01(rng))});
             }
         }
 
-        // Draw points on top
-        SkColor point_color = SK_ColorWHITE; // Simplified logic from python
-        for (const auto& p : pts) {
-            ctx.drawScatter({p}, point_color, 4.0f);
+        ctx.setWorldBounds(-max_val - 0.5f, max_val + 0.5f, -max_val - 0.5f, max_val + 0.5f);
+        for (const auto& line : lines) {
+            ctx.drawPolyline(line.pts, line.color, 2.2f, 0.9f);
         }
     }
 };
