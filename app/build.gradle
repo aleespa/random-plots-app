@@ -82,6 +82,11 @@ android {
             assets.srcDirs = ['src/main/assets']
         }
     }
+    packaging {
+        jniLibs {
+            useLegacyPackaging true
+        }
+    }
 }
 
 room {
