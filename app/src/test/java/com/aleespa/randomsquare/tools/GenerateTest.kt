@@ -2,20 +2,15 @@ package com.aleespa.randomsquare.tools
 
 import android.content.Context
 import android.graphics.Bitmap
-import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import com.aleespa.randomsquare.Colormaps
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.SketchRenderer
 import com.aleespa.randomsquare.data.AppSettingsRepository
 import com.aleespa.randomsquare.data.ImageRepository
 import com.aleespa.randomsquare.data.VisualizeModel
-import com.chaquo.python.PyObject
-import com.chaquo.python.Python
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
-import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import io.mockk.verify
 import org.junit.After
@@ -25,7 +20,6 @@ import org.junit.BeforeClass
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.nio.ByteBuffer
 
 @RunWith(RobolectricTestRunner::class)
 class GenerateTest {
@@ -48,7 +42,7 @@ class GenerateTest {
         // Mock all native-loading objects BEFORE they are accessed
         mockkObject(FractalRenderer)
         every { FractalRenderer["loadNativeLibrary"]() } returns Unit
-        every { FractalRenderer.renderInternal(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns ByteArray(100 * 100 * 4)
+        every { FractalRenderer.render(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns ByteArray(100 * 100 * 4)
         every { FractalRenderer.renderComposition(any(), any(), any(), any()) } returns ByteArray(100 * 100 * 4)
 
         mockkObject(SketchRenderer)
@@ -62,10 +56,9 @@ class GenerateTest {
         every { settingsRepository.selectedColormapColors } returns kotlinx.coroutines.flow.flowOf(emptyList())
         every { settingsRepository.bgColor } returns kotlinx.coroutines.flow.flowOf(0)
 
-        mockkStatic(Python::class)
-        every { Python.isStarted() } returns true
-
         visualizeModel = VisualizeModel(imageRepository, settingsRepository)
+        // Set a default colormap that isn't fractal-specific to avoid automatic changes during tests
+        visualizeModel.selectedColormap = Colormaps.RAINBOW
     }
 
     @After
@@ -98,6 +91,9 @@ class GenerateTest {
             visualizeModel.selectedFigure = figure
             visualizeModel.randomSeed = 12345L
             visualizeModel.bgColor = 0xFF000000.toInt()
+            
+            // Re-set colormap AFTER setting the figure, because changing the figure type 
+            // (e.g. from Fractal to Sketch) might trigger an automatic colormap change in the ViewModel.
             visualizeModel.selectedColormap = Colormaps.VIRIDIS
 
             val result = generateRandomPlot(visualizeModel, 100, 100)
@@ -143,7 +139,7 @@ class GenerateTest {
         val fakeImageBytes = ByteArray(width * height * 4)
         
         every { 
-            FractalRenderer.renderInternal(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) 
+            FractalRenderer.render(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) 
         } returns fakeImageBytes
 
         visualizeModel.selectedFigure = Figures.MANDELBROT
@@ -156,7 +152,7 @@ class GenerateTest {
 
         assertNotNull(result)
         verify { 
-            FractalRenderer.renderInternal(
+            FractalRenderer.render(
                 0, // Mandelbrot type
                 width,
                 height,

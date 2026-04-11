@@ -98,7 +98,7 @@ struct Instruction {
 };
 
 extern "C" JNIEXPORT jbyteArray JNICALL
-Java_com_aleespa_randomsquare_tools_FractalRenderer_renderComposition(
+Java_com_aleespa_randomsquare_tools_FractalRenderer_renderCompositionInternal(
     JNIEnv* env, jobject thiz, jint width, jint height, jintArray opcodes, jfloatArray params) {
 
     EGLContextManager egl;

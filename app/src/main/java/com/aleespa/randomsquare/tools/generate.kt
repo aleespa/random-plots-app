@@ -208,7 +208,7 @@ fun generateRandomPlot(
             else -> 0
         }
 
-        val imageBytes = FractalRenderer.renderInternal(
+        val imageBytes = FractalRenderer.render(
             type,
             width,
             height,
