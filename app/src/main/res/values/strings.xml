@@ -49,6 +49,10 @@
     <string name="dark">Dark</string>
     <string name="light">Light</string>
     <string name="auto">Auto</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="resolution">Resolution</string>
     <string name="no_images">Create and save your images from the \'Visualize\' section to see them here.</string>
     <string name="super_random" >Super</string>
     <string name="compositions">Compositions</string>

@@ -73,9 +73,12 @@ fun generateRandomPlot(
 
 fun generateRandomPlot(
     visualizeModel: VisualizeModel,
-    width: Int = 1200,
-    height: Int = 1200
+    width: Int = -1,
+    height: Int = -1
 ): ImageBitmap? {
+    val finalWidth = if (width == -1) visualizeModel.imageResolution else width
+    val finalHeight = if (height == -1) visualizeModel.imageResolution else height
+    
     if (visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS) {
         val seed = visualizeModel.randomSeed
         val rng = java.util.Random(seed)
@@ -171,9 +174,9 @@ fun generateRandomPlot(
         generateBytecode(k)
 
         val imageBytes = FractalRenderer.renderComposition(
-            width, height, opcodes.toIntArray(), params.toFloatArray()
+            finalWidth, finalHeight, opcodes.toIntArray(), params.toFloatArray()
         )
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val bitmap = Bitmap.createBitmap(finalWidth, finalHeight, Bitmap.Config.ARGB_8888)
         bitmap.copyPixelsFromBuffer(java.nio.ByteBuffer.wrap(imageBytes))
         return bitmap.asImageBitmap()
     }
@@ -210,8 +213,8 @@ fun generateRandomPlot(
 
         val imageBytes = FractalRenderer.render(
             type,
-            width,
-            height,
+            finalWidth,
+            finalHeight,
             maxIter,
             visualizeModel.fractalXCenter,
             visualizeModel.fractalYCenter,
@@ -222,7 +225,7 @@ fun generateRandomPlot(
             palT,
             palRGB
         )
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val bitmap = Bitmap.createBitmap(finalWidth, finalHeight, Bitmap.Config.ARGB_8888)
         val buffer = java.nio.ByteBuffer.wrap(imageBytes)
         bitmap.copyPixelsFromBuffer(buffer)
         return bitmap.asImageBitmap()
@@ -251,8 +254,8 @@ fun generateRandomPlot(
         val result = SketchRenderer.renderBitmap(
             sketchId = sketchId,
             seed = visualizeModel.randomSeed,
-            width = width,
-            height = height,
+            width = finalWidth,
+            height = finalHeight,
             bgColor = visualizeModel.bgColor,
             colormap = visualizeModel.selectedColormap
         )
@@ -402,8 +405,8 @@ fun generateNewPlot(
     context: Context,
     randomizeSeed: Boolean = true,
     showAds: Boolean = true,
-    width: Int = 1200,
-    height: Int = 1200,
+    width: Int = -1,
+    height: Int = -1,
     onComplete: () -> Unit = {}
 ) {
     visualizeModel.loadingPlotGenerator = true

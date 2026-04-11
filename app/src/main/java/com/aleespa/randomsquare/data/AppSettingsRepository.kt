@@ -24,6 +24,7 @@ class AppSettingsRepository(private val dataStore: DataStore<Preferences>) {
         val BG_COLOR_INT = intPreferencesKey("bg_color_int")
 
         val COLORMAP_COLORS = stringPreferencesKey("colormap_colors")
+        val IMAGE_RESOLUTION = intPreferencesKey("image_resolution")
     }
 
     // --- Dark Mode and Figure settings remain the same ---
@@ -75,6 +76,17 @@ class AppSettingsRepository(private val dataStore: DataStore<Preferences>) {
             preferences[COLORMAP_COLORS] = stringValue
         }
     }
+
+    suspend fun saveImageResolution(resolution: Int) {
+        dataStore.edit { preferences ->
+            preferences[IMAGE_RESOLUTION] = resolution
+        }
+    }
+
+    val imageResolution: Flow<Int> = dataStore.data
+        .map { preferences ->
+            preferences[IMAGE_RESOLUTION] ?: 1200
+        }
 
     val selectedColormapColors: Flow<List<Int>> = dataStore.data
         .map { preferences ->

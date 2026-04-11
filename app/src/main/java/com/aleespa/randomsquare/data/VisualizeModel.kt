@@ -52,6 +52,16 @@ class VisualizeModel(
     var showFilterDialog by mutableStateOf(false)
     var showAspectRatioDialog by mutableStateOf(false)
 
+    private var _imageResolution by mutableIntStateOf(1200)
+    var imageResolution: Int
+        get() = _imageResolution
+        set(value) {
+            _imageResolution = value
+            viewModelScope.launch {
+                settingsRepository.saveImageResolution(value)
+            }
+        }
+
     var fractalZoom by mutableStateOf(1.0)
     var fractalXCenter by mutableStateOf(0.0)
     var fractalYCenter by mutableStateOf(0.0)
@@ -91,6 +101,12 @@ class VisualizeModel(
         viewModelScope.launch {
             settingsRepository.darkModeSetting.collect { mode ->
                 _settingDarkMode = mode
+            }
+        }
+        // Load imageResolution from DataStore
+        viewModelScope.launch {
+            settingsRepository.imageResolution.collect { res ->
+                _imageResolution = res
             }
         }
     }

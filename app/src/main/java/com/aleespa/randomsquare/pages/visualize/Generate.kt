@@ -65,9 +65,7 @@ fun GeneratePlotButton(
                             visualizeModel,
                             context,
                             randomizeSeed = false,
-                            showAds = true,
-                            width = 2000,
-                            height = 2000
+                            showAds = true
                         ) {
                             setWallpaperAfterAd(visualizeModel, context)
                         }
@@ -171,9 +169,7 @@ fun FractalActions(
                             visualizeModel,
                             context,
                             randomizeSeed = false,
-                            showAds = true,
-                            width = 1500,
-                            height = 1500
+                            showAds = true
                         ) {
                             setWallpaperAfterAd(visualizeModel, context)
                         }

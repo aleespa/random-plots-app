@@ -25,6 +25,7 @@ import androidx.navigation.compose.rememberNavController
 import com.aleespa.randomsquare.BottomBarScreen
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.pages.browse.Browse
+import com.aleespa.randomsquare.pages.browse.SettingsPage
 import com.aleespa.randomsquare.pages.gallery.Gallery
 import com.aleespa.randomsquare.pages.visualize.Visualize
 
@@ -95,6 +96,9 @@ fun BottomNavGraph(
     ) {
         composable(route = BottomBarScreen.Browse.route) {
             Browse(visualizeModel, navController)
+        }
+        composable(route = "settings") {
+            SettingsPage(visualizeModel, navController)
         }
         composable(route = BottomBarScreen.Visualize.route) {
             Visualize(visualizeModel, navController)
