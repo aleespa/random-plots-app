@@ -15,6 +15,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -47,9 +48,18 @@ fun Browse(
                 ),
                 title = {},
                 actions = {
-                    IconButton(onClick = {
-                        navController.navigate("settings")
-                    }) {
+                    IconButton(
+                        onClick = {
+                            navController.navigate("settings")
+                        },
+                        modifier = Modifier.graphicsLayer {
+                            val fraction = scrollBehavior.state.collapsedFraction
+                            rotationZ = fraction * 120f
+                            scaleX = 1f - (fraction * 0.7f)
+                            scaleY = 1f - (fraction * 0.7f)
+                            alpha = 1f - (fraction * 0.7f)
+                        }
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Settings,
                             contentDescription = "Settings",
