@@ -1,26 +1,41 @@
 package com.aleespa.randomsquare.pages
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -122,58 +137,101 @@ fun DeleteAllConfirmationDialog(
 
 @Composable
 fun FilterTypesDialog(visualizeModel: VisualizeModel) {
+    val imageCounts by visualizeModel.imageCountsByType.collectAsState()
 
-    val options = Figures.entries.map { it }.sortedBy { it.key }
+    LaunchedEffect(Unit) {
+        visualizeModel.updateImageCounts()
+    }
+
+    val filteredOptions = Figures.entries.filter { figure ->
+        imageCounts.any { it.imageType == figure.key }
+    }.sortedBy { it.key }
+
     if (visualizeModel.showFilterDialog) {
         AlertDialog(
             onDismissRequest = {
                 visualizeModel.showFilterDialog = false
-            }, // Close the dialog when clicked outside
+            },
             title = {
                 Text(
                     text = stringResource(R.string.filter_types),
                     style = MaterialTheme.typography.headlineSmall.copy(
                         fontWeight = FontWeight.Bold
                     ),
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
             },
             text = {
                 Box(
                     modifier = Modifier
-                        .height(400.dp) // Set the desired height here
+                        .height(400.dp)
                         .fillMaxWidth()
                 ) {
-                    LazyColumn {
+                    LazyColumn(
+                        contentPadding = PaddingValues(vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
                         item {
-                            TextButton(
-                                onClick = {
-                                    visualizeModel.filterImageType =
-                                        "None" // Update the selected option
-                                    visualizeModel.showFilterDialog = false // Close the dialog
-                                }
+                            Surface(
+                                shape = RoundedCornerShape(12.dp),
+                                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                                modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text(text = stringResource(R.string.all_images))
-                            }
-                            HorizontalDivider(thickness = 1.dp)
-                        }
-                        item {
-                            options.forEach { option ->
-                                TextButton(
-                                    onClick = {
-                                        visualizeModel.filterImageType =
-                                            option.key // Update the selected option
-                                        visualizeModel.showFilterDialog = false // Close the dialog
-                                    }
-                                ) {
-                                    Text(text = stringResource(option.resourceStringId))
-                                }
-                                HorizontalDivider(thickness = 1.dp)
+                                ListItem(
+                                    headlineContent = { Text(text = stringResource(R.string.all_images)) },
+                                    modifier = Modifier.clickable {
+                                        visualizeModel.filterImageType = "None"
+                                        visualizeModel.showFilterDialog = false
+                                        visualizeModel.updateFilteredImages()
+                                    },
+                                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                                )
                             }
                         }
-
+                        items(filteredOptions) { option ->
+                            val count = imageCounts.find { it.imageType == option.key }?.count ?: 0
+                            Surface(
+                                shape = RoundedCornerShape(12.dp),
+                                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                ListItem(
+                                    headlineContent = {
+                                        Text(
+                                            text = stringResource(option.resourceStringId),
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    },
+                                    supportingContent = {
+                                        Text(text = stringResource(option.figureType.stringId))
+                                    },
+                                    leadingContent = {
+                                        Image(
+                                            painter = painterResource(id = option.sampleImage),
+                                            contentDescription = null,
+                                            modifier = Modifier
+                                                .size(56.dp)
+                                                .clip(RoundedCornerShape(8.dp))
+                                                .aspectRatio(1f),
+                                            contentScale = ContentScale.Crop
+                                        )
+                                    },
+                                    trailingContent = {
+                                        Text(
+                                            text = if (count >= 100) "100+" else count.toString(),
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+                                    },
+                                    modifier = Modifier.clickable {
+                                        visualizeModel.filterImageType = option.key
+                                        visualizeModel.showFilterDialog = false
+                                        visualizeModel.updateFilteredImages()
+                                    },
+                                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                                )
+                            }
+                        }
                     }
                 }
             },

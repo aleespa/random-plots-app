@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -39,6 +40,7 @@ import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.tools.LatexMathView
 import com.aleespa.randomsquare.tools.contrasted
 import com.aleespa.randomsquare.tools.generateNewPlot
+import com.aleespa.randomsquare.ui.theme.DarkColorScheme
 
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -141,10 +143,15 @@ fun VisualizeBox(visualizeModel: VisualizeModel) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(visualizeModel.bgColor)),
+                    .background(DarkColorScheme.surface),
                 contentAlignment = Alignment.Center
             ) {
-                LatexMathView(latex = visualizeModel.latexString, bgColor = visualizeModel.bgColor)
+                val latexToShow = if (visualizeModel.selectedFigure == Figures.NEWTON) {
+                    visualizeModel.newtonLatexString
+                } else {
+                    visualizeModel.latexString
+                }
+                LatexMathView(latex = latexToShow, bgColor = DarkColorScheme.surface.toArgb())
             }
         }
     }

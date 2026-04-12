@@ -42,4 +42,12 @@ interface ImageDao {
     )
     suspend fun getFilteredImages(isDarkMode: Boolean?, imageType: String?): List<ImageEntity>
 
+    @Query("SELECT imageType, COUNT(*) as count FROM images GROUP BY imageType")
+    suspend fun getImageCountsByType(): List<ImageTypeCount>
+
 }
+
+data class ImageTypeCount(
+    val imageType: String,
+    val count: Int
+)

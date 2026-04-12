@@ -157,7 +157,7 @@ class VisualizeModel(
                 _selectedFigure = figure
 
                 // Initialize fractal settings if starting with a fractal or if changed
-                if (figure.figureType == FigureType.FRACTAL && (figureChanged || fractalZoom == 1.0)) {
+                if (figure.figureType == FigureType.FRACTAL && figureChanged) {
                     resetFractalSettings()
                 }
 
@@ -242,11 +242,13 @@ class VisualizeModel(
 
     suspend fun deleteImageById(imageId: Int) {
         imageRepository.deleteImageById(imageId)
+        updateImageCounts()
     }
 
     suspend fun deleteAllImages() {
         imageRepository.deleteAllImages()
         updateFilteredImages()
+        updateImageCounts()
     }
 
     fun clearFilters() {
@@ -291,6 +293,9 @@ class VisualizeModel(
     private val _filteredImages = MutableStateFlow<List<ImageEntity>>(emptyList())
     val filteredImages: StateFlow<List<ImageEntity>> = _filteredImages
 
+    private val _imageCountsByType = MutableStateFlow<List<ImageTypeCount>>(emptyList())
+    val imageCountsByType: StateFlow<List<ImageTypeCount>> = _imageCountsByType
+
     // Method to update the filtered images based on user selections
     fun updateFilteredImages() {
         val filterConditions = getImageFilterConditions()
@@ -300,11 +305,18 @@ class VisualizeModel(
         }
     }
 
+    fun updateImageCounts() {
+        viewModelScope.launch {
+            _imageCountsByType.value = imageRepository.getImageCountsByType()
+        }
+    }
+
     suspend fun addImage(imageEntity: ImageEntity) {
         val id = withContext(Dispatchers.IO) {
             insertImage(imageEntity) // Call suspend function on IO dispatcher
         }
         galleryId = id.toInt() // This will be executed on the main thread
+        updateImageCounts()
     }
 
 

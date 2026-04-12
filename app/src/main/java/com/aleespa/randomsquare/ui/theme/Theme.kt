@@ -17,7 +17,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import com.aleespa.randomsquare.data.SettingDarkMode
 
-private val DarkColorScheme = darkColorScheme(
+val DarkColorScheme = darkColorScheme(
     primary = Color(132, 158, 190, 255),
     secondary = Color(91, 120, 157, 255),
     tertiary = Color(38, 61, 91, 255),
@@ -27,7 +27,7 @@ private val DarkColorScheme = darkColorScheme(
     surfaceContainer = Color(0, 13, 30),
 )
 
-private val LightColorScheme = lightColorScheme(
+val LightColorScheme = lightColorScheme(
     primary = Color(40, 40, 40, 255),
     secondary = Color(143, 141, 141, 255),
     tertiary = Color(124, 110, 110, 255),

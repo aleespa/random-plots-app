@@ -40,5 +40,9 @@ class ImageRepository(
         imageDao.deleteAll()
     }
 
+    suspend fun getImageCountsByType(): List<ImageTypeCount> {
+        return imageDao.getImageCountsByType()
+    }
+
 
 }
