@@ -13,6 +13,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -177,14 +178,14 @@ fun SeedText(visualizeModel: VisualizeModel) {
                 text = "x: ${String.format("%.4f", visualizeModel.fractalXCenter)}  " +
                         "y: ${String.format("%.4f", visualizeModel.fractalYCenter)}  " +
                         "zoom: ${String.format("%.2e", 1.0 / visualizeModel.fractalZoom)}" + "x",
-                fontSize = 10.sp,
+                style = MaterialTheme.typography.labelSmall,
                 color = Color.Gray,
                 modifier = Modifier.align(Alignment.Center)
             )
         } else {
             Text(
                 text = "Seed: ${visualizeModel.randomSeed}",
-                fontSize = 10.sp,
+                style = MaterialTheme.typography.labelSmall,
                 color = Color.Gray,
                 modifier = Modifier.align(Alignment.Center)
             )

@@ -148,9 +148,9 @@ fun Carousel(
                         .align(Alignment.BottomStart)
                         .padding(16.dp),
                     color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = parkinsansFontFamily,
-                    fontSize = 16.sp
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    )
                 )
             }
 
@@ -169,9 +169,7 @@ fun PlotTypeDescription(text: String) {
     ) {
         Text(
             text = text,
-            style = TextStyle(
-                fontFamily = parkinsansFontFamily,
-                fontSize = 24.sp,
+            style = MaterialTheme.typography.headlineSmall.copy(
                 fontWeight = FontWeight.Bold
             )
         )

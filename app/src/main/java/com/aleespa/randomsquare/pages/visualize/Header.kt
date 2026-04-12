@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -87,9 +88,7 @@ fun HeaderSection(visualizeModel: VisualizeModel, context: Context) {
 fun TitleText(text: String) {
     Text(
         text = text,
-        style = TextStyle(
-            fontFamily = parkinsansFontFamily,
-            fontSize = 28.sp,
+        style = MaterialTheme.typography.headlineSmall.copy(
             fontWeight = FontWeight.Bold
         ),
         modifier = Modifier

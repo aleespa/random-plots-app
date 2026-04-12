@@ -92,9 +92,7 @@ fun DeleteAllConfirmationDialog(
         title = {
             Text(
                 text = stringResource(R.string.delete_all_confirmation_title),
-                style = TextStyle(
-                    fontFamily = parkinsansFontFamily,
-                    fontSize = 20.sp,
+                style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold
                 )
             )
@@ -102,10 +100,7 @@ fun DeleteAllConfirmationDialog(
         text = {
             Text(
                 text = stringResource(R.string.delete_all_confirmation_text),
-                style = TextStyle(
-                    fontFamily = parkinsansFontFamily,
-                    fontSize = 16.sp
-                )
+                style = MaterialTheme.typography.bodyLarge
             )
         },
         confirmButton = {
@@ -137,9 +132,7 @@ fun FilterTypesDialog(visualizeModel: VisualizeModel) {
             title = {
                 Text(
                     text = stringResource(R.string.filter_types),
-                    style = TextStyle(
-                        fontFamily = parkinsansFontFamily,
-                        fontSize = 24.sp,
+                    style = MaterialTheme.typography.headlineSmall.copy(
                         fontWeight = FontWeight.Bold
                     ),
                     modifier = Modifier
@@ -232,8 +225,7 @@ fun VisualizeOptionsButtons(
                 text = bottomText,
                 modifier = Modifier,
                 textAlign = TextAlign.Center,
-                fontSize = 12.sp,
-                lineHeight = 12.sp,
+                style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.secondary
             )
         }

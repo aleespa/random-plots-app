@@ -132,9 +132,7 @@ fun RandomGalleryTopBar(
                         ) {
                             Text(
                                 text = stringResource(id = R.string.saved_images),
-                                style = TextStyle(
-                                    fontFamily = parkinsansFontFamily,
-                                    fontSize = 25.sp,
+                                style = MaterialTheme.typography.headlineSmall.copy(
                                     fontWeight = FontWeight.Bold
                                 )
                             )
@@ -255,8 +253,7 @@ fun ScrollContent(
             Text(
                 text = stringResource(R.string.no_images),
                 textAlign = TextAlign.Center,
-                fontSize = 16.sp,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
             )

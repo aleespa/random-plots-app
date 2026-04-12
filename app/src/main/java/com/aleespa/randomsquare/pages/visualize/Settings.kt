@@ -84,7 +84,10 @@ fun BackgroundColorSelector(
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp)
     ) {
-        Text("Hue: ${hue.roundToInt()}")
+        Text(
+            text = "Hue: ${hue.roundToInt()}",
+            style = MaterialTheme.typography.bodyMedium
+        )
         val hueGradientColors = (0..6).map { i ->
             val hueValue = i * 60f
             hslToColor(hueValue, saturation, lightness)
@@ -107,7 +110,10 @@ fun BackgroundColorSelector(
         ) {
             Box(modifier = Modifier.weight(1f)) {
                 Column {
-                    Text("Saturation: ${(saturation * 100).roundToInt()}%")
+                    Text(
+                        text = "Saturation: ${(saturation * 100).roundToInt()}%",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                     GradientSlider(
                         value = saturation,
                         onValueChange = { saturation = it },
@@ -125,7 +131,10 @@ fun BackgroundColorSelector(
 
             Box(modifier = Modifier.weight(1f)) {
                 Column {
-                    Text("Lightness: ${(lightness * 100).roundToInt()}%")
+                    Text(
+                        text = "Lightness: ${(lightness * 100).roundToInt()}%",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                     GradientSlider(
                         value = lightness,
                         onValueChange = { lightness = it },
@@ -302,7 +311,10 @@ fun FractalSettings(visualizeModel: VisualizeModel) {
             else -> 50f..2000f
         }
 
-        Text("Iterations: ${visualizeModel.fractalIterations}")
+        Text(
+            text = "Iterations: ${visualizeModel.fractalIterations}",
+            style = MaterialTheme.typography.bodyMedium
+        )
         Slider(
             value = visualizeModel.fractalIterations.toFloat().coerceIn(iterationRange),
             onValueChange = {
@@ -324,9 +336,10 @@ fun FractalSettings(visualizeModel: VisualizeModel) {
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        "r: ${String.format("%.3f", visualizeModel.juliaR)}",
+                        text = "r: ${String.format("%.3f", visualizeModel.juliaR)}",
                         modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyMedium
                     )
                     Slider(
                         value = visualizeModel.juliaR.toFloat(),
@@ -346,9 +359,10 @@ fun FractalSettings(visualizeModel: VisualizeModel) {
                 }
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        "θ: ${String.format("%.3f", visualizeModel.juliaTheta)}",
+                        text = "θ: ${String.format("%.3f", visualizeModel.juliaTheta)}",
                         modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyMedium
                     )
                     Slider(
                         value = visualizeModel.juliaTheta.toFloat(),
@@ -371,7 +385,10 @@ fun FractalSettings(visualizeModel: VisualizeModel) {
 
         if (visualizeModel.selectedFigure == Figures.MULTIBROT) {
             Spacer(Modifier.height(8.dp))
-            Text("Power (d): ${String.format("%.2f", visualizeModel.multibrotD)}")
+            Text(
+                text = "Power (d): ${String.format("%.2f", visualizeModel.multibrotD)}",
+                style = MaterialTheme.typography.bodyMedium
+            )
             Slider(
                 value = visualizeModel.multibrotD.toFloat(),
                 onValueChange = {
