@@ -36,5 +36,9 @@ class ImageRepository(
         imageDao.deleteImageById(imageId)
     }
 
+    suspend fun deleteAllImages() {
+        imageDao.deleteAll()
+    }
+
 
 }

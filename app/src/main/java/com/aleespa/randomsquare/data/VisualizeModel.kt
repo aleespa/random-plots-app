@@ -51,6 +51,7 @@ class VisualizeModel(
     var toFitAspectRatio by mutableStateOf(false)
     var showFilterDialog by mutableStateOf(false)
     var showAspectRatioDialog by mutableStateOf(false)
+    var showDeleteAllDialog by mutableStateOf(false)
 
     private var _imageResolution by mutableIntStateOf(1200)
     var imageResolution: Int
@@ -224,7 +225,19 @@ class VisualizeModel(
     }
 
     suspend fun deleteImageById(imageId: Int) {
-        return imageRepository.deleteImageById(imageId)
+        imageRepository.deleteImageById(imageId)
+    }
+
+    suspend fun deleteAllImages() {
+        imageRepository.deleteAllImages()
+        updateFilteredImages()
+    }
+
+    fun clearFilters() {
+        darkFilter = false
+        lightFilter = false
+        filterImageType = "None"
+        updateFilteredImages()
     }
 
     suspend fun insertImage(imageEntity: ImageEntity): Long {

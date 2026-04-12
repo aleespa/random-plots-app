@@ -83,6 +83,49 @@ fun AspectRatioDialog(
 
 
 @Composable
+fun DeleteAllConfirmationDialog(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = stringResource(R.string.delete_all_confirmation_title),
+                style = TextStyle(
+                    fontFamily = parkinsansFontFamily,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+        },
+        text = {
+            Text(
+                text = stringResource(R.string.delete_all_confirmation_text),
+                style = TextStyle(
+                    fontFamily = parkinsansFontFamily,
+                    fontSize = 16.sp
+                )
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(
+                    text = stringResource(R.string.confirm),
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(R.string.cancel))
+            }
+        }
+    )
+}
+
+
+@Composable
 fun FilterTypesDialog(visualizeModel: VisualizeModel) {
 
     val options = Figures.entries.map { it }.sortedBy { it.key }

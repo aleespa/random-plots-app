@@ -13,7 +13,7 @@
     <string name="settings">Opciones</string>
     <string name="customize">Personalizar</string>
     <string name="visualize">Visualizar</string>
-    <string name="saved_images">Mi Gallería</string>
+    <string name="saved_images">Gallería</string>
     <string name="delete_from_gallery">Eliminar de la galería</string>
     <string name="share">Compartir</string>
     <string name="share_text">Compartir cuadro aleatorio</string>
@@ -65,4 +65,6 @@
     <string name="newton_func_1">z⁵ - 1</string>
     <string name="newton_func_2">sin(z) - 1</string>
     <string name="newton_func_3">z⁶ + z³ - 1</string>
+    <string name="clear_filters">Limpiar filtros</string>
+    <string name="delete_all_images">Eliminar todas las imágenes</string>
 </resources>

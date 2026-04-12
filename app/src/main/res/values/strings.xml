@@ -15,7 +15,7 @@
     <string name="spirograph">Spirograph</string>
     <string name="irrational_spirograph">Irrational Spirograph</string>
     <string name="random_eigen">Random Eigenvalues</string>
-    <string name="saved_images">My Random Plots</string>
+    <string name="saved_images">Gallery</string>
     <string name="delete_from_gallery">Delete from gallery</string>
     <string name="share">Share</string>
     <string name="share_text">Share random square</string>
@@ -69,5 +69,11 @@
     <string name="newton_func_1">z⁵ - 1</string>
     <string name="newton_func_2">sin(z) - 1</string>
     <string name="newton_func_3">z⁶ + z³ - 1</string>
+    <string name="clear_filters">Clear filters</string>
+    <string name="delete_all_images">Delete all saved images</string>
+    <string name="instagram">Random plots IG</string>
+    <string name="delete_all_confirmation_title">Delete all images?</string>
+    <string name="delete_all_confirmation_text">This action cannot be undone. Are you sure you want to delete all saved images?</string>
+    <string name="confirm">Confirm</string>
 
 </resources>

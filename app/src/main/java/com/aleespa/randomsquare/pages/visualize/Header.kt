@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -48,6 +49,24 @@ fun HeaderSection(visualizeModel: VisualizeModel, context: Context) {
             .padding(horizontal = 8.dp),
         contentAlignment = Alignment.Center
     ) {
+        Box(
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .clickable {
+                    com.aleespa.randomsquare.tools.generateNewPlot(
+                        visualizeModel,
+                        context,
+                        randomizeSeed = false,
+                        showAds = false
+                    )
+                }
+        ) {
+            Icon(
+                imageVector = Icons.Default.Refresh,
+                contentDescription = "Reload",
+                modifier = Modifier.size(28.dp)
+            )
+        }
         TitleText(stringResource(visualizeModel.selectedFigure.resourceStringId))
         Box(
             modifier = Modifier

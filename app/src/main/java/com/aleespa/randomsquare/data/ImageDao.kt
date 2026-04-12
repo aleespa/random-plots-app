@@ -21,6 +21,9 @@ interface ImageDao {
     @Query("DELETE FROM images WHERE id = :id")
     suspend fun deleteImageById(id: Int)
 
+    @Query("DELETE FROM images")
+    suspend fun deleteAll()
+
     @Delete
     suspend fun deleteImages(images: List<ImageEntity>)
 
