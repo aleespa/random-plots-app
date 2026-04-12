@@ -34,7 +34,7 @@ public:
                 Point2f p1 = { r[j] * cos_a[s], r[j] * sin_a[s] };
                 int next_s = (s + 1) % sides;
                 Point2f p2 = { r[n - j - 1] * cos_a[next_s], r[n - j - 1] * sin_a[next_s] };
-                ctx.drawPolyline({p1, p2}, color, 1.0f);
+                ctx.drawPolyline({p1, p2}, color, 2.0f);
             }
         }
     }

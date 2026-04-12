@@ -53,7 +53,7 @@ public:
         ctx.setWorldBounds(-max_limit * 1.05f, max_limit * 1.05f, -max_limit * 1.05f, max_limit * 1.05f);
 
         for (const auto& curve : curves) {
-            ctx.drawPolyline(curve.pts, curve.color, 3.5f, 0.9f);
+            ctx.drawPolyline(curve.pts, curve.color, 4.5f, 0.9f);
         }
     }
 };

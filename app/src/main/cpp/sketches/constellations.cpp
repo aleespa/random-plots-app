@@ -26,14 +26,14 @@ public:
                 float dy = pts[i].y - pts[j].y;
                 float dist = std::sqrt(dx * dx + dy * dy);
                 if (dist < radius_limit) {
-                    ctx.drawPolyline({pts[i], pts[j]}, ctx.getColor(dist_01(rng)), 1.2f);
+                    ctx.drawPolyline({pts[i], pts[j]}, ctx.getColor(dist_01(rng)), 3.0f);
                 }
             }
         }
 
         // Points logic simplified
         for (const auto& p : pts) {
-            ctx.drawScatter({p}, SK_ColorWHITE, 3.5f);
+            ctx.drawScatter({p}, SK_ColorWHITE, 8.0f);
         }
     }
 };

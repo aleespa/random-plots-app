@@ -30,7 +30,7 @@ public:
                 for (float tb : theta_base) {
                     pts.push_back({ r * std::cos(tb + t), r * std::sin(tb + t) });
                 }
-                ctx.drawPolyline(pts, color, r + 0.1f, 0.8f);
+                ctx.drawPolyline(pts, color, r + 0.8f, 0.8f);
             }
         }
     }

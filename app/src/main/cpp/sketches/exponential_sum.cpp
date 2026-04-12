@@ -46,7 +46,7 @@ public:
             for (int i = start; i < end; ++i) {
                 pts.push_back({s[i].real(), s[i].imag()});
             }
-            ctx.drawPolyline(pts, ctx.getColor((float)z / num_segments + 0.2f), 1.0f, 0.8f);
+            ctx.drawPolyline(pts, ctx.getColor((float)z / num_segments + 0.2f), 1.4f, 0.8f);
         }
     }
 };
