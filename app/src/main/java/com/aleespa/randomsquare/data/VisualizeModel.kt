@@ -71,7 +71,7 @@ class VisualizeModel(
     var juliaCY by mutableStateOf(0.27015)
 
     var juliaR by mutableStateOf(kotlin.math.sqrt(juliaCX * juliaCX + juliaCY * juliaCY))
-    var juliaTheta by mutableStateOf(kotlin.math.atan2(juliaCY, juliaCX))
+    var juliaTheta by mutableStateOf(kotlin.math.atan2(juliaCY, juliaCX).let { if (it < 0) it + 2 * Math.PI else it })
 
     var multibrotD by mutableStateOf(3.0)
     var newtonCoeffs by mutableStateOf(DoubleArray(9) { 0.0 })
@@ -83,7 +83,8 @@ class VisualizeModel(
 
     fun updatePolarFromJulia() {
         juliaR = kotlin.math.sqrt(juliaCX * juliaCX + juliaCY * juliaCY)
-        juliaTheta = kotlin.math.atan2(juliaCY, juliaCX)
+        val theta = kotlin.math.atan2(juliaCY, juliaCX)
+        juliaTheta = if (theta < 0) theta + 2 * Math.PI else theta
     }
 
     var selectedColormap by mutableStateOf(Colormaps.RAINBOW)

@@ -2,10 +2,12 @@ package com.aleespa.randomsquare
 
 enum class Colormaps(
     val key: String,
+    val text: String,
     val colorlist: List<Int>,
     val isFractalSpecific: Boolean = false
 ) {
     SOLID_WHITE(
+        "solid_white",
         "Solid White",
         listOf(
             0xFFFFFFFF.toInt(),
@@ -13,6 +15,7 @@ enum class Colormaps(
         )
     ),
     SOLID_BLACK(
+        "solid_black",
         "Solid Black",
         listOf(
             0xFF000000.toInt(),
@@ -20,6 +23,7 @@ enum class Colormaps(
         )
     ),
     RAINBOW(
+        "rainbow",
         "Rainbow",
         listOf(
             0xFFFF0000.toInt(), // Red
@@ -32,6 +36,7 @@ enum class Colormaps(
     ),
 
     HEAT(
+        "heat",
         "Heat",
         listOf(
             0xFF000000.toInt(), // Black
@@ -42,6 +47,7 @@ enum class Colormaps(
     ),
 
     COOL(
+        "cool",
         "Cool",
         listOf(
             0xFF00FFFF.toInt(), // Cyan
@@ -50,6 +56,7 @@ enum class Colormaps(
     ),
 
     GRAYSCALE(
+        "grayscale",
         "Grayscale",
         listOf(
             0xFF000000.toInt(), // Black
@@ -58,6 +65,7 @@ enum class Colormaps(
     ),
 
     OCEAN(
+        "ocean",
         "Ocean",
         listOf(
             0xFF000080.toInt(), // Navy
@@ -68,6 +76,7 @@ enum class Colormaps(
     ),
 
     FOREST(
+        "forest",
         "Forest",
         listOf(
             0xFF003300.toInt(), // Dark Green
@@ -77,6 +86,7 @@ enum class Colormaps(
     ),
 
     SUNSET(
+        "sunset",
         "Sunset",
         listOf(
             0xFFFF4500.toInt(), // Orange Red
@@ -87,6 +97,7 @@ enum class Colormaps(
     ),
 
     PASTEL(
+        "pastel",
         "Pastel",
         listOf(
             0xFFFFC0CB.toInt(), // Pink
@@ -96,6 +107,7 @@ enum class Colormaps(
         )
     ),
     VIRIDIS(
+        "viridis",
         "Viridis",
         listOf(
             0xFF440154.toInt(), // RGBA(68, 1, 84, 255)
@@ -111,6 +123,7 @@ enum class Colormaps(
         )
     ),
     MAGMA(
+        "magma",
         "Magma",
         listOf(
             0xFF000004.toInt(),
@@ -126,6 +139,7 @@ enum class Colormaps(
         )
     ),
     INFERNO(
+        "inferno",
         "Inferno",
         listOf(
             0xFF000004.toInt(),
@@ -141,6 +155,7 @@ enum class Colormaps(
         )
     ),
     CIVIDIS(
+        "cividis",
         "Cividis",
         listOf(
             0xFF00224E.toInt(),
@@ -155,6 +170,7 @@ enum class Colormaps(
         )
     ),
     TURBO(
+        "turbo",
         "Turbo",
         listOf(
             0xFF30123B.toInt(),
@@ -174,6 +190,7 @@ enum class Colormaps(
         )
     ),
     TWILIGHT(
+        "twilight",
         "Twilight",
         listOf(
             0xFFE2D9E2.toInt(),
@@ -187,6 +204,7 @@ enum class Colormaps(
         )
     ),
     SPECTRAL(
+        "spectral",
         "Spectral",
         listOf(
             0xFFD53E4F.toInt(),
@@ -201,6 +219,7 @@ enum class Colormaps(
         )
     ),
     COOLWARM(
+        "coolwarm",
         "Coolwarm",
         listOf(
             0xFF3B4CC0.toInt(),
@@ -213,6 +232,7 @@ enum class Colormaps(
         )
     ),
     COPPER(
+        "copper",
         "Copper",
         listOf(
             0xFF000000.toInt(),
@@ -224,6 +244,7 @@ enum class Colormaps(
         )
     ),
     BONE(
+        "bone",
         "Bone",
         listOf(
             0xFF000000.toInt(),
@@ -239,6 +260,7 @@ enum class Colormaps(
         )
     ),
     SPRING(
+        "spring",
         "Spring",
         listOf(
             0xFFFF00FF.toInt(),
@@ -246,6 +268,7 @@ enum class Colormaps(
         )
     ),
     SUMMER(
+        "summer",
         "Summer",
         listOf(
             0xFF008066.toInt(),
@@ -253,6 +276,7 @@ enum class Colormaps(
         )
     ),
     AUTUMN(
+        "autumn",
         "Autumn",
         listOf(
             0xFFFF0000.toInt(),
@@ -261,6 +285,7 @@ enum class Colormaps(
         )
     ),
     WINTER(
+        "winter",
         "Winter",
         listOf(
             0xFF0000FF.toInt(),
@@ -269,6 +294,7 @@ enum class Colormaps(
         )
     ),
     HOT(
+        "hot",
         "Hot",
         listOf(
             0xFF000000.toInt(),
@@ -280,6 +306,7 @@ enum class Colormaps(
         )
     ),
     AFM_HOT(
+        "afm_hot",
         "AFM Hot",
         listOf(
             0xFF000000.toInt(),
@@ -294,6 +321,7 @@ enum class Colormaps(
         )
     ),
     PLASMA(
+        "plasma",
         "Plasma",
         listOf(
             0xFF0C0786.toInt(), // RGBA(12, 7, 134, 255)
@@ -309,6 +337,7 @@ enum class Colormaps(
         )
     ),
     WHITE_WHITE(
+        "white_white",
         "White",
         listOf(
             0xFFFFFFFF.toInt(),
@@ -318,6 +347,7 @@ enum class Colormaps(
         isFractalSpecific = true
     ),
     BLACK_BLACK(
+        "black_black",
         "Black",
         listOf(
             0xFF000000.toInt(),
@@ -327,6 +357,7 @@ enum class Colormaps(
         isFractalSpecific = true
     ),
     RED_BLACK(
+        "red_black",
         "Red",
         listOf(
             0xFF000000.toInt(),
@@ -336,6 +367,7 @@ enum class Colormaps(
         isFractalSpecific = true
     ),
     PLASMA_FRACTAL(
+        "plasma_fractal",
         "Plasma",
         listOf(
             0xFF000000.toInt(), // Start with black
@@ -352,6 +384,7 @@ enum class Colormaps(
         isFractalSpecific = true
     ),
     MAGMA_FRACTAL(
+        "magma_fractal",
         "Magma",
         listOf(
             0xFF000000.toInt(),
@@ -365,6 +398,7 @@ enum class Colormaps(
         isFractalSpecific = true
     ),
     ICE_FRACTAL(
+        "ice_fractal",
         "Ice",
         listOf(
             0xFFFFFFFF.toInt(),
@@ -377,6 +411,7 @@ enum class Colormaps(
     ),
 
     BLUE_FRACTAL(
+        "blue_fractal",
         "Blue",
         listOf(
             0xFF000000.toInt(),
@@ -388,6 +423,7 @@ enum class Colormaps(
         isFractalSpecific = true
     ),
     EMERALD_FRACTAL(
+        "emerald_fractal",
         "Emerald",
         listOf(
             0xFF000000.toInt(),
@@ -399,6 +435,7 @@ enum class Colormaps(
         isFractalSpecific = true
     ),
     FIRE_FRACTAL(
+        "fire_fractal",
         "Fire",
         listOf(
             0xFF000000.toInt(),
@@ -411,6 +448,7 @@ enum class Colormaps(
         isFractalSpecific = true
     ),
     ELECTRIC_FRACTAL(
+        "electric_fractal",
         "Electric",
         listOf(
             0xFF000000.toInt(),
@@ -423,6 +461,7 @@ enum class Colormaps(
         isFractalSpecific = true
     ),
     COPPER_FRACTAL(
+        "copper_fractal",
         "Copper",
         listOf(
             0xFF000000.toInt(),
@@ -436,6 +475,7 @@ enum class Colormaps(
         isFractalSpecific = true
     ),
     BONE_FRACTAL(
+        "bone_fractal",
         "Bone",
         listOf(
             0xFF000000.toInt(),
@@ -449,6 +489,7 @@ enum class Colormaps(
         isFractalSpecific = true
     ),
     HOT_FRACTAL(
+        "hot_fractal",
         "Hot",
         listOf(
             0xFF000000.toInt(),
@@ -462,6 +503,7 @@ enum class Colormaps(
         isFractalSpecific = true
     ),
     SPECTRAL_FRACTAL(
+        "spectral_fractal",
         "Spectral",
         listOf(
             0xFF000000.toInt(),
@@ -478,6 +520,7 @@ enum class Colormaps(
         isFractalSpecific = true
     ),
     COOLWARM_FRACTAL(
+        "coolwarm_fractal",
         "Coolwarm",
         listOf(
             0xFF000000.toInt(),
@@ -491,6 +534,7 @@ enum class Colormaps(
         isFractalSpecific = true
     ),
     MAGMA_FRACTAL_V2(
+        "magma_dark",
         "Magma Dark",
         listOf(
             0xFF000004.toInt(),
@@ -508,6 +552,7 @@ enum class Colormaps(
         isFractalSpecific = true
     ),
     VIRIDIS_FRACTAL(
+        "viridis_fractal",
         "Viridis",
         listOf(
             0xFF000000.toInt(),
@@ -522,6 +567,7 @@ enum class Colormaps(
         isFractalSpecific = true
     ),
     INFERNO_FRACTAL(
+        "inferno_fractal",
         "Inferno",
         listOf(
             0xFF000000.toInt(),
@@ -534,6 +580,7 @@ enum class Colormaps(
         isFractalSpecific = true
     ),
     CIVIDIS_FRACTAL(
+        "cividis_fractal",
         "Cividis",
         listOf(
             0xFF000000.toInt(),
@@ -546,6 +593,7 @@ enum class Colormaps(
         isFractalSpecific = true
     ),
     TURBO_FRACTAL(
+        "turbo_fractal",
         "Turbo",
         listOf(
             0xFF000000.toInt(),
@@ -559,4 +607,20 @@ enum class Colormaps(
         isFractalSpecific = true
     ),
     ;
+
+    companion object {
+        fun fromKey(key: String?, isFractal: Boolean = false): Colormaps {
+            if (key == null) return if (isFractal) PLASMA_FRACTAL else RAINBOW
+
+            // Try to find by the new unique key first
+            val found = entries.find { it.key == key }
+            if (found != null) return found
+
+            // Fallback for old keys (which were the same as the current 'text' field)
+            // If it's a fractal, we prefer the fractal-specific version of that name
+            return entries.find { it.isFractalSpecific == isFractal && it.text.equals(key, ignoreCase = true) }
+                ?: entries.find { it.text.equals(key, ignoreCase = true) }
+                ?: if (isFractal) PLASMA_FRACTAL else RAINBOW
+        }
+    }
 }

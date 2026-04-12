@@ -36,15 +36,29 @@ class VisualizeModelTest {
 
     @Test
     fun testJuliaPolarConversion() {
-        model.juliaCX = 1.0
+        // Test positive y (theta in [0, PI])
+        model.juliaCX = 0.0
+        model.juliaCY = 1.0
+        model.updatePolarFromJulia()
+        assertEquals(1.0, model.juliaR, 0.001)
+        assertEquals(Math.PI / 2.0, model.juliaTheta.toDouble(), 0.001)
+
+        // Test negative y (theta would be negative from atan2, should be normalized to [PI, 2PI])
+        model.juliaCX = 0.0
+        model.juliaCY = -1.0
+        model.updatePolarFromJulia()
+        assertEquals(1.0, model.juliaR, 0.001)
+        assertEquals(3.0 * Math.PI / 2.0, model.juliaTheta.toDouble(), 0.001)
+
+        // Test 0,0
+        model.juliaCX = 0.0
         model.juliaCY = 0.0
         model.updatePolarFromJulia()
-        
-        assertEquals(1.0, model.juliaR, 0.001)
-        assertEquals(0.0, model.juliaTheta, 0.001)
+        assertEquals(0.0, model.juliaR, 0.001)
+        assertEquals(0.0, model.juliaTheta.toDouble(), 0.001)
 
         model.juliaR = 2.0
-        model.juliaTheta = Math.PI.toFloat() / 2.0
+        model.juliaTheta = (Math.PI / 2.0)
         model.updateJuliaFromPolar()
         
         assertEquals(0.0, model.juliaCX, 0.001)

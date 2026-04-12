@@ -42,8 +42,8 @@ class SampleGlanceWidgetActionCallback : ActionCallback {
         val bgColor = prefs[WidgetConfigurationActivity.BG_COLOR_KEY] ?: Color.Black.toArgb()
 
         // 3. Get colormap
-        val colormapKey = prefs[WidgetConfigurationActivity.COLORMAP_KEY] ?: Colormaps.VIRIDIS.key
-        val colormap = Colormaps.entries.find { it.key == colormapKey } ?: Colormaps.VIRIDIS
+        val colormapKey = prefs[WidgetConfigurationActivity.COLORMAP_KEY]
+        val colormap = Colormaps.fromKey(colormapKey, figure.figureType == FigureType.FRACTAL)
 
         withContext(Dispatchers.Default) {
             val seed = generate32BitSeed()

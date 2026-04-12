@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddPhotoAlternate
 import androidx.compose.material.icons.filled.Casino
+import androidx.compose.material.icons.filled.LayersClear
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
@@ -142,7 +143,7 @@ fun FractalActions(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            imageVector = Icons.Default.Refresh,
+            imageVector = Icons.Default.LayersClear,
             contentDescription = "Reset",
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier

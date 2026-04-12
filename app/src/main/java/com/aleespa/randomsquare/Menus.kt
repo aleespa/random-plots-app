@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.ui.Alignment
@@ -19,6 +20,7 @@ import com.aleespa.randomsquare.pages.visualize.GeneratePlotButton
 import com.aleespa.randomsquare.pages.visualize.SeedButton
 
 fun LazyListScope.fractalMenu(visualizeModel: VisualizeModel) {
+    item {Spacer(Modifier.height(16.dp))}
     item {
         val context = LocalContext.current
         FractalActions(visualizeModel, context)
@@ -39,6 +41,7 @@ fun LazyListScope.fractalMenu(visualizeModel: VisualizeModel) {
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 fun LazyListScope.newtonMenu(visualizeModel: VisualizeModel) {
+    item {Spacer(Modifier.height(16.dp))}
     item {
         val context = LocalContext.current
         GeneratePlotButton(visualizeModel, context)

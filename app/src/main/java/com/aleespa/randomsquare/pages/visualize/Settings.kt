@@ -230,7 +230,7 @@ fun ColormapDropdown(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = selectedColormap.key,
+                text = selectedColormap.text,
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.weight(1f)
             )
@@ -256,7 +256,7 @@ fun ColormapDropdown(
                 DropdownMenuItem(
                     text = {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(colormap.key, modifier = Modifier.weight(1f))
+                            Text(colormap.text, modifier = Modifier.weight(1f))
                             Spacer(modifier = Modifier.width(35.dp))
                             ColormapSineWaveLine(
                                 colormap = colormap,
