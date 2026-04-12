@@ -67,4 +67,13 @@
     <string name="newton_func_3">z⁶ + z³ - 1</string>
     <string name="clear_filters">Limpiar filtros</string>
     <string name="delete_all_images">Eliminar todas las imágenes</string>
+    <string name="on">Encendido</string>
+    <string name="off">Apagado</string>
+    <string name="dark_mode">Modo oscuro</string>
+    <string name="resolution">Resolución</string>
+    <string name="glance_widget_description">Prueba de widget</string>
+    <string name="instagram">Random plots IG</string>
+    <string name="delete_all_confirmation_title">¿Eliminar todas las imágenes?</string>
+    <string name="delete_all_confirmation_text">Esta acción no se puede deshacer. ¿Seguro que quieres eliminar todas las imágenes guardadas?</string>
+    <string name="confirm">Confirmar</string>
 </resources>

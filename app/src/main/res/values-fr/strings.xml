@@ -65,4 +65,15 @@
     <string name="newton_func_1">z⁵ - 1</string>
     <string name="newton_func_2">sin(z) - 1</string>
     <string name="newton_func_3">z⁶ + z³ - 1</string>
+    <string name="clear_filters">Effacer les filtres</string>
+    <string name="delete_all_images">Supprimer toutes les images enregistrées</string>
+    <string name="on">Activé</string>
+    <string name="off">Désactivé</string>
+    <string name="dark_mode">Mode sombre</string>
+    <string name="resolution">Résolution</string>
+    <string name="glance_widget_description">Test de widget</string>
+    <string name="instagram">Random plots IG</string>
+    <string name="delete_all_confirmation_title">Supprimer toutes les images ?</string>
+    <string name="delete_all_confirmation_text">Cette action ne peut pas être annulée. Êtes-vous sûr de vouloir supprimer toutes les images enregistrées ?</string>
+    <string name="confirm">Confirmer</string>
 </resources>
