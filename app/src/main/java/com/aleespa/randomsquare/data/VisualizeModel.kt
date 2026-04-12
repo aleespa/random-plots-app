@@ -57,6 +57,7 @@ class VisualizeModel(
     var imageResolution: Int
         get() = _imageResolution
         set(value) {
+            if (_imageResolution == value) return
             _imageResolution = value
             viewModelScope.launch {
                 settingsRepository.saveImageResolution(value)
@@ -92,6 +93,7 @@ class VisualizeModel(
     var settingDarkMode: SettingDarkMode
         get() = _settingDarkMode
         set(value) {
+            if (_settingDarkMode == value) return
             _settingDarkMode = value
             viewModelScope.launch {
                 settingsRepository.saveDarkModeSetting(value) // Persist to DataStore
@@ -117,6 +119,7 @@ class VisualizeModel(
     var selectedFigure: Figures
         get() = _selectedFigure
         set(value) {
+            if (_selectedFigure == value) return
             val wasFractal = _selectedFigure.figureType == FigureType.FRACTAL
             val isNowFractal = value.figureType == FigureType.FRACTAL
             val figureChanged = _selectedFigure != value
@@ -183,6 +186,7 @@ class VisualizeModel(
     var selectedColormapColors: List<Int>
         get() = _selectedColormapColors
         set(value) {
+            if (_selectedColormapColors == value) return
             _selectedColormapColors = value
             viewModelScope.launch {
                 settingsRepository.saveSelectedColormapColors(value) // Persist to DataStore
@@ -202,6 +206,7 @@ class VisualizeModel(
     var bgColor: Int
         get() = _bgColor
         set(value) {
+            if (_bgColor == value) return
             _bgColor = value
             if (!isFromGallery) {
                 viewModelScope.launch {

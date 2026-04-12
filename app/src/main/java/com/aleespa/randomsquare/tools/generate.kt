@@ -407,6 +407,7 @@ fun generateNewPlot(
     showAds: Boolean = true,
     width: Int = -1,
     height: Int = -1,
+    resetGalleryState: Boolean = true,
     onComplete: () -> Unit = {}
 ) {
     visualizeModel.loadingPlotGenerator = true
@@ -485,7 +486,9 @@ fun generateNewPlot(
             visualizeModel.latexString = withContext(Dispatchers.IO) {
                 readTexAssets(context, visualizeModel.selectedFigure.key)
             }
-            visualizeModel.isFromGallery = false
+            if (resetGalleryState) {
+                visualizeModel.isFromGallery = false
+            }
             onComplete()
         } finally {
             visualizeModel.loadingPlotGenerator = false

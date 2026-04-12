@@ -156,8 +156,10 @@ fun BackgroundColorSelector(visualizeModel: VisualizeModel) {
     BackgroundColorSelector(
         bgColor = visualizeModel.bgColor,
         onColorChange = {
-            visualizeModel.bgColor = it
-            generateNewPlot(visualizeModel, context, randomizeSeed = false, showAds = false)
+            if (visualizeModel.bgColor != it) {
+                visualizeModel.bgColor = it
+                generateNewPlot(visualizeModel, context, randomizeSeed = false, showAds = false)
+            }
         }
     )
 }

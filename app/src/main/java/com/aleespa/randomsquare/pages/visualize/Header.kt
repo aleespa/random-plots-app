@@ -58,7 +58,8 @@ fun HeaderSection(visualizeModel: VisualizeModel, context: Context) {
                         visualizeModel,
                         context,
                         randomizeSeed = false,
-                        showAds = false
+                        showAds = false,
+                        resetGalleryState = false
                     )
                 }
         ) {
@@ -148,7 +149,8 @@ fun ThreeDotsDropDownMenu(
                         randomizeSeed = false,
                         showAds = true,
                         width = 1500,
-                        height = 1500
+                        height = 1500,
+                        resetGalleryState = false
                     ) {
                         setWallpaperAfterAd(visualizeModel, context)
                     }
