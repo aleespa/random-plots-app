@@ -122,15 +122,19 @@ class VisualizeModel(
             _selectedFigure = value
 
             // Reset position and settings if switching to a fractal or between fractals
-            if (isNowFractal && figureChanged) {
+            // DO NOT RESET if we are loading from gallery
+            if (isNowFractal && figureChanged && !isFromGallery) {
                 resetFractalSettings()
             }
 
             // Update colormap if switching between fractal and non-fractal types
-            if (isNowFractal && !wasFractal && !selectedColormap.isFractalSpecific) {
-                selectedColormap = Colormaps.PLASMA_FRACTAL
-            } else if (!isNowFractal && wasFractal && selectedColormap.isFractalSpecific) {
-                selectedColormap = Colormaps.RAINBOW
+            // DO NOT UPDATE if we are loading from gallery
+            if (!isFromGallery) {
+                if (isNowFractal && !wasFractal && !selectedColormap.isFractalSpecific) {
+                    selectedColormap = Colormaps.PLASMA_FRACTAL
+                } else if (!isNowFractal && wasFractal && selectedColormap.isFractalSpecific) {
+                    selectedColormap = Colormaps.RAINBOW
+                }
             }
 
             viewModelScope.launch {
@@ -142,10 +146,17 @@ class VisualizeModel(
         // Load selectedFigure from DataStore
         viewModelScope.launch {
             settingsRepository.selectedFigure.collect { figure ->
+                // Do not overwrite if we are currently loading from gallery
+                if (isFromGallery) {
+                    _selectedFigure = figure
+                    return@collect
+                }
+
+                val figureChanged = _selectedFigure != figure
                 _selectedFigure = figure
 
-                // Initialize fractal settings if starting with a fractal
-                if (figure.figureType == FigureType.FRACTAL) {
+                // Initialize fractal settings if starting with a fractal or if changed
+                if (figure.figureType == FigureType.FRACTAL && (figureChanged || fractalZoom == 1.0)) {
                     resetFractalSettings()
                 }
 
@@ -191,15 +202,19 @@ class VisualizeModel(
         get() = _bgColor
         set(value) {
             _bgColor = value
-            viewModelScope.launch {
-                settingsRepository.saveBgColor(value) // Persist to DataStore
+            if (!isFromGallery) {
+                viewModelScope.launch {
+                    settingsRepository.saveBgColor(value) // Persist to DataStore
+                }
             }
         }
 
     init {
         viewModelScope.launch {
             settingsRepository.bgColor.collect { color ->
-                _bgColor = color
+                if (!isFromGallery) {
+                    _bgColor = color
+                }
             }
         }
     }

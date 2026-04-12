@@ -497,6 +497,10 @@ fun loadSavedImage(
     visualizeModel: VisualizeModel, image: ImageEntity, context: Context
 ) {
     visualizeModel.isFromGallery = true
+
+    val figure = Figures.fromKey(image.imageType)
+    visualizeModel.selectedFigure = figure
+
     visualizeModel.galleryURI = image.uri
     visualizeModel.galleryId = image.id
     visualizeModel.bgColor = image.backgroundColor
@@ -508,7 +512,6 @@ fun loadSavedImage(
     if (image.iterations != null) visualizeModel.fractalIterations = image.iterations
 
     // Map params back to model
-    val figure = Figures.fromKey(image.imageType)
     when (figure) {
         Figures.JULIA -> {
             visualizeModel.juliaCX = image.param1 ?: -0.7
@@ -545,7 +548,6 @@ fun loadSavedImage(
         }
     }
 
-    visualizeModel.selectedFigure = figure
     visualizeModel.imageBitmapState = loadImage(context, Uri.parse(image.uri))
     visualizeModel.showInfo = false
 }
