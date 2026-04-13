@@ -62,15 +62,7 @@ fun GeneratePlotButton(
                         figureType == FigureType.COMPOSITIONS
                     ) {
                         visualizeModel.toFitAspectRatio = false
-                        generateNewPlot(
-                            visualizeModel,
-                            context,
-                            randomizeSeed = false,
-                            showAds = true,
-                            resetGalleryState = false
-                        ) {
-                            setWallpaperAfterAd(visualizeModel, context)
-                        }
+                        setWallpaperAfterAd(visualizeModel, context)
                     } else {
                         visualizeModel.showAspectRatioDialog = true
                     }

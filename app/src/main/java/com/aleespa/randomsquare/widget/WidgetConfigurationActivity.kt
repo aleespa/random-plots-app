@@ -112,7 +112,7 @@ class WidgetConfigurationActivity : ComponentActivity() {
                     this[COLORMAP_KEY] = colormap.key
                 }
             }
-            SampleGlanceWidget().update(context, glanceId)
+            WallpaperWidget().update(context, glanceId)
 
             val resultValue = Intent().apply {
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
@@ -167,10 +167,11 @@ fun ConfigurationWizard(onConfigFinished: (List<Figures>, Int, Colormaps) -> Uni
 
         when (step) {
             1 -> {
-                TitleText("Select Plot Types")
+                TitleText("Select Compositions")
                 Spacer(Modifier.height(16.dp))
+                val compositionFigures = Figures.entries.filter { it.figureType == FigureType.COMPOSITIONS }
                 LazyColumn(modifier = Modifier.weight(1f)) {
-                    items(Figures.entries) { figure ->
+                    items(compositionFigures) { figure ->
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
@@ -196,24 +197,14 @@ fun ConfigurationWizard(onConfigFinished: (List<Figures>, Int, Colormaps) -> Uni
                 }
                 Button(
                     onClick = {
-                        val onlyCompositions =
-                            selectedFigures.all { it.figureType == FigureType.COMPOSITIONS }
-                        if (onlyCompositions) {
-                            onConfigFinished(
-                                selectedFigures.toList(),
-                                selectedBgColor,
-                                selectedColormap
-                            )
-                        } else {
-                            step = 2
-                        }
+                        step = 2
                     },
                     enabled = selectedFigures.isNotEmpty(),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp)
                 ) {
-                    Text(if (selectedFigures.all { it.figureType == FigureType.COMPOSITIONS }) "Finish" else "Continue")
+                    Text("Continue")
                 }
             }
 

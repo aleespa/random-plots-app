@@ -78,7 +78,7 @@ fun generateRandomPlot(
 ): ImageBitmap? {
     val finalWidth = if (width == -1) visualizeModel.imageResolution else width
     val finalHeight = if (height == -1) visualizeModel.imageResolution else height
-    
+
     if (visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS) {
         val seed = visualizeModel.randomSeed
         val rng = java.util.Random(seed)
