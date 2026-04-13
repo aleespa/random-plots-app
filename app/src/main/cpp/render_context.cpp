@@ -30,11 +30,12 @@ Point2f RenderContext::worldToPixel(Point2f p) const {
 
 void RenderContext::drawPolyline(const std::vector<Point2f>& pts, SkColor color, float stroke_width, float alpha) {
     if (pts.size() < 2) return;
+    float scale = (float)width_ / 1000.0f;
     SkPaint paint;
     paint.setStyle(SkPaint::kStroke_Style);
     paint.setColor(color);
     paint.setAlphaf(alpha);
-    paint.setStrokeWidth(stroke_width);
+    paint.setStrokeWidth(stroke_width * scale);
     paint.setAntiAlias(true);
     SkPath path;
     auto p0 = worldToPixel(pts[0]);
@@ -48,6 +49,7 @@ void RenderContext::drawPolyline(const std::vector<Point2f>& pts, SkColor color,
 
 void RenderContext::drawScatter(const std::vector<Point2f>& pts, SkColor color, float radius, float alpha) {
     if (pts.empty()) return;
+    float scale = (float)width_ / 1000.0f;
     SkPaint paint;
     paint.setStyle(SkPaint::kFill_Style);
     paint.setColor(color);
@@ -55,7 +57,7 @@ void RenderContext::drawScatter(const std::vector<Point2f>& pts, SkColor color, 
     paint.setAntiAlias(true);
     for (const auto& pt : pts) {
         auto p = worldToPixel(pt);
-        canvas_->drawCircle(p.x, p.y, radius, paint);
+        canvas_->drawCircle(p.x, p.y, radius * scale, paint);
     }
 }
 

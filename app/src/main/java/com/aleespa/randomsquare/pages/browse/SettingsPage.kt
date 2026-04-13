@@ -89,7 +89,7 @@ fun SettingsPage(
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
-                val resolutions = listOf(1000, 1200, 1800)
+                val resolutions = listOf(800, 1000, 1400, 1800)
                 SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
                     resolutions.forEachIndexed { index, res ->
                         SegmentedButton(

@@ -1,9 +1,12 @@
 package com.aleespa.randomsquare.pages
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
@@ -13,7 +16,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -35,13 +41,26 @@ fun MainScreen(
     visualizeModel: VisualizeModel
 ) {
     val navController = rememberNavController()
-    Scaffold(
-        bottomBar = { BottomBar(navController, visualizeModel) }
-    ) {
-        BottomNavGraph(
-            visualizeModel = remember { visualizeModel },
-            navController = navController
-        )
+    val isAnyDialogOpen = visualizeModel.showFilterDialog || 
+                          visualizeModel.showAspectRatioDialog || 
+                          visualizeModel.showDeleteAllDialog
+    
+    val blurRadius by animateDpAsState(
+        targetValue = if (isAnyDialogOpen) 8.dp else 0.dp,
+        animationSpec = tween(durationMillis = 300),
+        label = "BlurAnimation"
+    )
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            modifier = Modifier.blur(blurRadius),
+            bottomBar = { BottomBar(navController, visualizeModel) }
+        ) {
+            BottomNavGraph(
+                visualizeModel = remember { visualizeModel },
+                navController = navController
+            )
+        }
     }
 }
 
