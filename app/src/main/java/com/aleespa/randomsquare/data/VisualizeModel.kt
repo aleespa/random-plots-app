@@ -52,6 +52,7 @@ class VisualizeModel(
     var showFilterDialog by mutableStateOf(false)
     var showAspectRatioDialog by mutableStateOf(false)
     var showDeleteAllDialog by mutableStateOf(false)
+    var showColormapDialog by mutableStateOf(false)
 
     private var _imageResolution by mutableIntStateOf(1200)
     var imageResolution: Int

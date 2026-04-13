@@ -26,6 +26,7 @@ import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.pages.AspectRatioDialog
+import com.aleespa.randomsquare.pages.ColormapSelectionDialog
 import com.aleespa.randomsquare.tools.LatexMathView
 import com.aleespa.randomsquare.tools.generateNewtonLatex
 import com.aleespa.randomsquare.tools.loadBitmapFromFile
@@ -66,6 +67,24 @@ fun Visualize(
             }
         )
     }
+
+    if (visualizeModel.showColormapDialog) {
+        val isFractal = visualizeModel.selectedFigure.figureType == FigureType.FRACTAL
+        ColormapSelectionDialog(
+            selectedColormap = visualizeModel.selectedColormap,
+            isFractal = isFractal,
+            onColormapChange = {
+                visualizeModel.selectedColormap = it
+                com.aleespa.randomsquare.tools.generateNewPlot(
+                    visualizeModel,
+                    context,
+                    randomizeSeed = false,
+                    showAds = false
+                )
+            },
+            onDismiss = { visualizeModel.showColormapDialog = false }
+        )
+    }
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -76,7 +95,7 @@ fun Visualize(
         item { Spacer(Modifier.height(18.dp)) }
         item { VisualizeBox(visualizeModel) }
         item { SeedText(visualizeModel) }
-        item { Spacer(Modifier.height(2.dp)) }
+        item { Spacer(Modifier.height(6.dp)) }
 
         with(visualizeModel.selectedFigure) {
             menuType(visualizeModel)

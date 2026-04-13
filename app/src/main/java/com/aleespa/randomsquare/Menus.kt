@@ -20,12 +20,12 @@ import com.aleespa.randomsquare.pages.visualize.GeneratePlotButton
 import com.aleespa.randomsquare.pages.visualize.SeedButton
 
 fun LazyListScope.fractalMenu(visualizeModel: VisualizeModel) {
-    item {Spacer(Modifier.height(16.dp))}
+    item {Spacer(Modifier.height(10.dp))}
     item {
         val context = LocalContext.current
         FractalActions(visualizeModel, context)
     }
-    item { Spacer(Modifier.height(30.dp)) }
+    item { Spacer(Modifier.height(16.dp)) }
     item {
         Box(
             modifier = Modifier.fillMaxWidth(),
@@ -41,7 +41,7 @@ fun LazyListScope.fractalMenu(visualizeModel: VisualizeModel) {
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 fun LazyListScope.newtonMenu(visualizeModel: VisualizeModel) {
-    item {Spacer(Modifier.height(16.dp))}
+    item {Spacer(Modifier.height(10.dp))}
     item {
         val context = LocalContext.current
         GeneratePlotButton(visualizeModel, context)
@@ -62,11 +62,12 @@ fun LazyListScope.newtonMenu(visualizeModel: VisualizeModel) {
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 fun LazyListScope.standardMenu(visualizeModel: VisualizeModel) {
+    item { Spacer(Modifier.height(4.dp)) }
     item {
         val context = LocalContext.current
         GeneratePlotButton(visualizeModel, context)
     }
-    item { Spacer(Modifier.height(30.dp)) }
+    item { Spacer(Modifier.height(16.dp)) }
     item {
         Box(
             modifier = Modifier.fillMaxWidth(),
@@ -75,13 +76,13 @@ fun LazyListScope.standardMenu(visualizeModel: VisualizeModel) {
             ColormapDropdown(visualizeModel = visualizeModel)
         }
     }
-    item { Spacer(Modifier.height(8.dp)) }
+    item { Spacer(Modifier.height(12.dp)) }
     item { BackgroundColorSelector(visualizeModel) }
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 fun LazyListScope.compositionMenu(visualizeModel: VisualizeModel) {
-    item { Spacer(Modifier.height(35.dp)) }
+    item { Spacer(Modifier.height(16.dp)) }
     item {
         val context = LocalContext.current
         GeneratePlotButton(visualizeModel, context)

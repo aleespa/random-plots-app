@@ -15,10 +15,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,7 +38,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,6 +50,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -46,14 +58,19 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.aleespa.randomsquare.Colormaps
 import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.data.VisualizeModel
+import com.aleespa.randomsquare.pages.ColormapSelectionDialog
 import com.aleespa.randomsquare.tools.LatexMathView
 import com.aleespa.randomsquare.tools.generateNewPlot
 import com.aleespa.randomsquare.tools.hslToColor
@@ -213,63 +230,37 @@ fun GradientSlider(
 fun ColormapDropdown(
     selectedColormap: Colormaps,
     isFractal: Boolean,
-    onColormapChange: (Colormaps) -> Unit,
+    onShowDialogChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var expanded by remember { mutableStateOf(false) }
-
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .widthIn(max = 200.dp)
+            .widthIn(max = 240.dp)
             .fillMaxWidth()
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { expanded = true }
-                .background(MaterialTheme.colorScheme.surface),
-            verticalAlignment = Alignment.CenterVertically
+        Surface(
+            onClick = { onShowDialogChange(true) },
+            shape = RoundedCornerShape(8.dp),
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.0f),
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                text = selectedColormap.text,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.weight(1f)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            ColormapSineWaveLine(
-                colormap = selectedColormap,
-                modifier = Modifier.size(width = 80.dp, height = 20.dp)
-            )
-        }
-
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.widthIn(max = 280.dp)
-        ) {
-            val filteredColormaps = if (isFractal) {
-                Colormaps.entries.filter { it.isFractalSpecific }
-            } else {
-                Colormaps.entries.filter { !it.isFractalSpecific }
-            }
-
-            filteredColormaps.forEach { colormap ->
-                DropdownMenuItem(
-                    text = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(colormap.text, modifier = Modifier.weight(1f))
-                            Spacer(modifier = Modifier.width(35.dp))
-                            ColormapSineWaveLine(
-                                colormap = colormap,
-                                modifier = Modifier.size(width = 80.dp, height = 18.dp)
-                            )
-                        }
-                    },
-                    onClick = {
-                        onColormapChange(colormap)
-                        expanded = false
-                    }
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = selectedColormap.text,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.weight(1f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                ColormapSineWaveLine(
+                    colormap = selectedColormap,
+                    modifier = Modifier.size(width = 80.dp, height = 24.dp)
                 )
             }
         }
@@ -281,16 +272,12 @@ fun ColormapDropdown(
     visualizeModel: VisualizeModel,
     modifier: Modifier = Modifier
 ) {
-    val context = androidx.compose.ui.platform.LocalContext.current
     val isFractal =
         visualizeModel.selectedFigure.figureType == FigureType.FRACTAL
     ColormapDropdown(
         selectedColormap = visualizeModel.selectedColormap,
         isFractal = isFractal,
-        onColormapChange = {
-            visualizeModel.selectedColormap = it
-            generateNewPlot(visualizeModel, context, randomizeSeed = false, showAds = false)
-        },
+        onShowDialogChange = { visualizeModel.showColormapDialog = it },
         modifier = modifier
     )
 }
@@ -427,6 +414,19 @@ fun ColormapSineWaveLine(
                 val y = (height / 2f + amplitude * kotlin.math.sin(frequency * x)).toFloat()
                 lineTo(x.toFloat(), y)
             }
+        }
+
+        // Draw shadow/shade
+        translate(top = 2f, left = 2f) {
+            drawPath(
+                path = path,
+                color = Color.Black.copy(alpha = 0.25f),
+                style = Stroke(
+                    width = strokeWidth,
+                    cap = StrokeCap.Round,
+                    join = StrokeJoin.Round
+                )
+            )
         }
 
         drawPath(

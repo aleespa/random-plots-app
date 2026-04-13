@@ -43,7 +43,8 @@ fun MainScreen(
     val navController = rememberNavController()
     val isAnyDialogOpen = visualizeModel.showFilterDialog || 
                           visualizeModel.showAspectRatioDialog || 
-                          visualizeModel.showDeleteAllDialog
+                          visualizeModel.showDeleteAllDialog ||
+                          visualizeModel.showColormapDialog
     
     val blurRadius by animateDpAsState(
         targetValue = if (isAnyDialogOpen) 8.dp else 0.dp,

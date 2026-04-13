@@ -54,6 +54,7 @@ import androidx.glance.state.PreferencesGlanceStateDefinition
 import com.aleespa.randomsquare.Colormaps
 import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.Figures
+import com.aleespa.randomsquare.pages.ColormapSelectionDialog
 import com.aleespa.randomsquare.pages.visualize.BackgroundColorSelector
 import com.aleespa.randomsquare.pages.visualize.ColormapDropdown
 import com.aleespa.randomsquare.pages.visualize.TitleText
@@ -135,6 +136,7 @@ fun ConfigurationWizard(onConfigFinished: (List<Figures>, Int, Colormaps) -> Uni
     var selectedFigures by remember { mutableStateOf(setOf<Figures>()) }
     var selectedBgColor by remember { mutableIntStateOf(Color.Black.toArgb()) }
     var selectedColormap by remember { mutableStateOf(Colormaps.VIRIDIS) }
+    var showColormapDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -142,6 +144,15 @@ fun ConfigurationWizard(onConfigFinished: (List<Figures>, Int, Colormaps) -> Uni
             .safeDrawingPadding()
             .padding(16.dp)
     ) {
+
+        if (showColormapDialog) {
+            ColormapSelectionDialog(
+                selectedColormap = selectedColormap,
+                isFractal = false,
+                onColormapChange = { selectedColormap = it },
+                onDismiss = { showColormapDialog = false }
+            )
+        }
 
         if (selectedFigures.isNotEmpty()) {
             Box(
@@ -221,7 +232,7 @@ fun ConfigurationWizard(onConfigFinished: (List<Figures>, Int, Colormaps) -> Uni
                         ColormapDropdown(
                             selectedColormap = selectedColormap,
                             isFractal = false,
-                            onColormapChange = { selectedColormap = it }
+                            onShowDialogChange = { showColormapDialog = it }
                         )
                     }
 
