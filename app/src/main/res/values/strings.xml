@@ -59,8 +59,16 @@
     <string name="soft">Soft</string>
     <string name="blackwhite"><![CDATA[Black & White]]></string>
     <string name="noise">Noise</string>
-    <string name="glance_widget_description">Generate a random generator widget.</string>
+    <string name="glance_widget_description">Generate random alphanumeric strings.</string>
+    <string name="coin_flip_widget_description">Simulate a coin flip (Heads or Tails).</string>
+    <string name="dice_widget_description">Simulate tossing a 6-sided die (1-6).</string>
+    <string name="digit4_widget_description">Generate a random 4-digit number (0000-9999).</string>
     <string name="widget_name">Random generator</string>
+    <string name="coin_flip_widget_name">Heads or Tails</string>
+    <string name="dice_widget_name">Dice</string>
+    <string name="digit4_widget_name">4-Digit Number</string>
+    <string name="heads">Heads</string>
+    <string name="tails">Tails</string>
     <string name="mandelbrot">Mandelbrot</string>
     <string name="julia">Julia set</string>
     <string name="tricorn">Tricorn</string>
