@@ -59,8 +59,8 @@
     <string name="soft">Soft</string>
     <string name="blackwhite"><![CDATA[Black & White]]></string>
     <string name="noise">Noise</string>
-    <string name="glance_widget_description">Generate a random wallpaper from compositions with a single tap.</string>
-    <string name="widget_name">Random Wallpaper</string>
+    <string name="glance_widget_description">Generate a random generator widget.</string>
+    <string name="widget_name">Random generator</string>
     <string name="mandelbrot">Mandelbrot</string>
     <string name="julia">Julia set</string>
     <string name="tricorn">Tricorn</string>

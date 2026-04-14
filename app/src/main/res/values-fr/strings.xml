@@ -56,6 +56,7 @@
     <string name="soft">Doux</string>
     <string name="blackwhite">Noir et Blanc</string>
     <string name="noise">Bruit</string>
+    <string name="widget_name">Générateur aléatoire</string>
     <string name="mandelbrot">Mandelbrot</string>
     <string name="julia">Ensemble de Julia</string>
     <string name="tricorn">Tricorne</string>
@@ -71,9 +72,9 @@
     <string name="off">Désactivé</string>
     <string name="dark_mode">Mode sombre</string>
     <string name="resolution">Résolution</string>
-    <string name="glance_widget_description">Test de widget</string>
     <string name="instagram">Random plots IG</string>
     <string name="delete_all_confirmation_title">Supprimer toutes les images ?</string>
     <string name="delete_all_confirmation_text">Cette action ne peut pas être annulée. Êtes-vous sûr de vouloir supprimer toutes les images enregistrées ?</string>
     <string name="confirm">Confirmer</string>
+    <string name="glance_widget_description">Générer un widget de générateur aléatoire.</string>
 </resources>

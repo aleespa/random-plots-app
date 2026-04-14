@@ -56,6 +56,7 @@
     <string name="soft">Suave</string>
     <string name="blackwhite">Blanco y Negro</string>
     <string name="noise">Ruido</string>
+    <string name="widget_name">Generador aleatorio</string>
     <string name="mandelbrot">Mandelbrot</string>
     <string name="julia">Conjunto de Julia</string>
     <string name="tricorn">Tricornio</string>
@@ -71,9 +72,9 @@
     <string name="off">Apagado</string>
     <string name="dark_mode">Modo oscuro</string>
     <string name="resolution">Resolución</string>
-    <string name="glance_widget_description">Prueba de widget</string>
     <string name="instagram">Random plots IG</string>
     <string name="delete_all_confirmation_title">¿Eliminar todas las imágenes?</string>
     <string name="delete_all_confirmation_text">Esta acción no se puede deshacer. ¿Seguro que quieres eliminar todas las imágenes guardadas?</string>
     <string name="confirm">Confirmar</string>
+    <string name="glance_widget_description">Genera un widget generador de números aleatorios.</string>
 </resources>

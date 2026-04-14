@@ -23,7 +23,7 @@
         tools:targetApi="35">
 
         <receiver
-            android:name=".widget.WallpaperWidgetReceiver"
+            android:name=".widget.RandomWidgetReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -33,10 +33,6 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/wallpaper_widget_info" />
         </receiver>
-
-        <activity
-            android:name=".widget.WidgetConfigurationActivity"
-            android:exported="true" />
 
         <activity
             android:name="com.aleespa.randomsquare.MainActivity"
