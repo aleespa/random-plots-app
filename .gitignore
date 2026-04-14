@@ -25,3 +25,4 @@ Banner*
 # Ignore built-in external libraries (headers and binaries)
 /app/src/main/cpp/libs/skia/
 /app/src/main/cpp/libs/eigen/
+*.aab

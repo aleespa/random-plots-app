@@ -72,7 +72,7 @@ fun GeneratePlotButton(
             elevation = FloatingActionButtonDefaults.elevation(10.dp),
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             onClick = {
-                val shouldShowAd = (generate32BitSeed().toLong() % AD_FREQUENCY).toInt() == 0
+                val shouldShowAd = (generate32BitSeed() % AD_FREQUENCY).toInt() == 0
                 val activity = context as? Activity
 
                 if (shouldShowAd && activity != null) {
