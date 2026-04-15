@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -236,18 +237,21 @@ fun ColormapDropdown(
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .widthIn(max = 240.dp)
+            .fillMaxWidth()
+            .wrapContentWidth(Alignment.CenterHorizontally)
+            .widthIn(max = 260.dp)
+            .padding(horizontal = 16.dp)
             .fillMaxWidth()
     ) {
         Surface(
             onClick = { onShowDialogChange(true) },
-            shape = RoundedCornerShape(8.dp),
-            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.0f),
+            shape = RoundedCornerShape(24.dp),
+            color = MaterialTheme.colorScheme.onSecondary,
             modifier = Modifier.fillMaxWidth()
         ) {
             Row(
                 modifier = Modifier
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                    .padding(horizontal = 20.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
