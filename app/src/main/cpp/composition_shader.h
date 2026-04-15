@@ -7,6 +7,8 @@ layout(rgba8, binding = 0) writeonly uniform highp image2D u_image;
 
 uniform int u_width;
 uniform int u_height;
+uniform vec2 u_center;
+uniform float u_zoom;
 
 struct Instruction {
     int op;
@@ -32,8 +34,14 @@ void main() {
     ivec2 pos = ivec2(gl_GlobalInvocationID.xy);
     if (pos.x >= u_width || pos.y >= u_height) return;
 
-    float x_coord = (float(pos.x) / float(u_width)) * 2.0 - 1.0;
-    float y_coord = (float(pos.y) / float(u_height)) * 2.0 - 1.0;
+    float aspectRatio = float(u_width) / float(u_height);
+    float xMin = u_center.x - u_zoom;
+    float xMax = u_center.x + u_zoom;
+    float yMin = u_center.y - u_zoom / aspectRatio;
+    float yMax = u_center.y + u_zoom / aspectRatio;
+
+    float x_coord = xMin + (xMax - xMin) * (float(pos.x) / float(u_width));
+    float y_coord = yMax - (yMax - yMin) * (float(pos.y) / float(u_height));
 
     vec3 stack[64];
     int sp = 0;

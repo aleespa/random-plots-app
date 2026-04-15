@@ -174,7 +174,13 @@ fun generateRandomPlot(
         generateBytecode(k)
 
         val imageBytes = FractalRenderer.renderComposition(
-            finalWidth, finalHeight, opcodes.toIntArray(), params.toFloatArray()
+            finalWidth,
+            finalHeight,
+            visualizeModel.fractalXCenter,
+            visualizeModel.fractalYCenter,
+            visualizeModel.fractalZoom,
+            opcodes.toIntArray(),
+            params.toFloatArray()
         )
         val bitmap = Bitmap.createBitmap(finalWidth, finalHeight, Bitmap.Config.ARGB_8888)
         bitmap.copyPixelsFromBuffer(java.nio.ByteBuffer.wrap(imageBytes))
@@ -411,12 +417,18 @@ fun generateNewPlot(
     onComplete: () -> Unit = {}
 ) {
     visualizeModel.loadingPlotGenerator = true
+    visualizeModel.isGeneratingRandom = randomizeSeed
     visualizeModel.showInfo = false
     if (randomizeSeed && (visualizeModel.userSeed.not()
                 || (visualizeModel.selectedFigure.figureType != FigureType.COMPOSITIONS))
     ) {
         visualizeModel.randomSeed = generate32BitSeed()
         visualizeModel.userSeed = false
+        if (visualizeModel.selectedFigure.figureType == FigureType.FRACTAL ||
+            visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS
+        ) {
+            visualizeModel.resetFractalSettings()
+        }
     }
     CoroutineScope(Dispatchers.Main).launch {
         val builder = ImageEntity.Builder()
@@ -463,9 +475,20 @@ fun generateNewPlot(
                 }
                 else -> {}
             }
-        } else {
+        }
+
+        if (visualizeModel.selectedFigure.figureType == FigureType.FRACTAL ||
+            visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS
+        ) {
+            builder.setFractalXCenter(visualizeModel.fractalXCenter)
+            builder.setFractalYCenter(visualizeModel.fractalYCenter)
+            builder.setFractalZoom(visualizeModel.fractalZoom)
+        }
+
+        if (visualizeModel.selectedFigure.figureType != FigureType.FRACTAL) {
             builder.setRandomSeed(visualizeModel.randomSeed)
         }
+
         visualizeModel.temporalImageEntity = builder
         try {
             val result = withContext(Dispatchers.Default) {

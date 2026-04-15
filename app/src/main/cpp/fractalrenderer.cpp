@@ -99,7 +99,9 @@ struct Instruction {
 
 extern "C" JNIEXPORT jbyteArray JNICALL
 Java_com_aleespa_randomsquare_tools_FractalRenderer_renderCompositionInternal(
-    JNIEnv* env, jobject thiz, jint width, jint height, jintArray opcodes, jfloatArray params) {
+    JNIEnv* env, jobject thiz, jint width, jint height,
+    jdouble xCenter, jdouble yCenter, jdouble zoom,
+    jintArray opcodes, jfloatArray params) {
 
     EGLContextManager egl;
     if (!egl.init()) {
@@ -151,6 +153,8 @@ Java_com_aleespa_randomsquare_tools_FractalRenderer_renderCompositionInternal(
 
     glUniform1i(glGetUniformLocation(program, "u_width"), width);
     glUniform1i(glGetUniformLocation(program, "u_height"), height);
+    glUniform2f(glGetUniformLocation(program, "u_center"), (float)xCenter, (float)yCenter);
+    glUniform1f(glGetUniformLocation(program, "u_zoom"), (float)zoom);
 
     glDispatchCompute((width + 15) / 16, (height + 15) / 16, 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);

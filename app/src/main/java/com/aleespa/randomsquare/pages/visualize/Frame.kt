@@ -59,7 +59,8 @@ fun VisualizeBox(visualizeModel: VisualizeModel) {
             .aspectRatio(1f)
             .clickable { visualizeModel.showInfo = !visualizeModel.showInfo }
             .then(
-                if (visualizeModel.selectedFigure.figureType == FigureType.FRACTAL) {
+                if (visualizeModel.selectedFigure.figureType == FigureType.FRACTAL ||
+                    visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS) {
                     Modifier
                         .pointerInput(Unit) {
                             detectTransformGestures { _, pan, zoom, _ ->
@@ -112,8 +113,10 @@ fun VisualizeBox(visualizeModel: VisualizeModel) {
             ),
     ) {
         if (!visualizeModel.showInfo) {
-            val isFractal = visualizeModel.selectedFigure.figureType == FigureType.FRACTAL
-            if (visualizeModel.loadingPlotGenerator && !isFractal) {
+            val isInteractive = visualizeModel.selectedFigure.figureType == FigureType.FRACTAL ||
+                    visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS
+
+            if (visualizeModel.loadingPlotGenerator && (!isInteractive || visualizeModel.isGeneratingRandom)) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize(),
@@ -180,7 +183,8 @@ fun SeedText(visualizeModel: VisualizeModel) {
             .padding(horizontal = 16.dp),
         contentAlignment = Alignment.Center
     ) {
-        if (visualizeModel.selectedFigure.figureType == FigureType.FRACTAL) {
+        if (visualizeModel.selectedFigure.figureType == FigureType.FRACTAL ||
+            visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS) {
             Text(
                 text = "x: ${String.format("%.4f", visualizeModel.fractalXCenter)}  " +
                         "y: ${String.format("%.4f", visualizeModel.fractalYCenter)}  " +

@@ -56,10 +56,14 @@ object FractalRenderer {
     )
 
     external fun renderCompositionInternal(
-        width: Int, height: Int, opcodes: IntArray, params: FloatArray
+        width: Int, height: Int,
+        xCenter: Double, yCenter: Double, zoom: Double,
+        opcodes: IntArray, params: FloatArray
     ): ByteArray
 
     fun renderComposition(
-        width: Int, height: Int, opcodes: IntArray, params: FloatArray
-    ): ByteArray = renderCompositionInternal(width, height, opcodes, params)
+        width: Int, height: Int,
+        xCenter: Double, yCenter: Double, zoom: Double,
+        opcodes: IntArray, params: FloatArray
+    ): ByteArray = renderCompositionInternal(width, height, xCenter, yCenter, zoom, opcodes, params)
 }

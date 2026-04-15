@@ -34,6 +34,7 @@ class VisualizeModel(
     private val settingsRepository: AppSettingsRepository
 ) : ViewModel() {
     var loadingPlotGenerator by mutableStateOf(false)
+    var isGeneratingRandom by mutableStateOf(false)
     var showInfo by mutableStateOf(false)
     var imageBitmapState by mutableStateOf<ImageBitmap?>(null)
     var latexString by mutableStateOf("")
@@ -121,12 +122,12 @@ class VisualizeModel(
         get() = _selectedFigure
         set(value) {
             if (_selectedFigure == value) return
-            val wasFractal = _selectedFigure.figureType == FigureType.FRACTAL
-            val isNowFractal = value.figureType == FigureType.FRACTAL
+            val wasFractal = _selectedFigure.figureType == FigureType.FRACTAL || _selectedFigure.figureType == FigureType.COMPOSITIONS
+            val isNowFractal = value.figureType == FigureType.FRACTAL || value.figureType == FigureType.COMPOSITIONS
             val figureChanged = _selectedFigure != value
             _selectedFigure = value
 
-            // Reset position and settings if switching to a fractal or between fractals
+            // Reset position and settings if switching to a fractal/composition or between them
             // DO NOT RESET if we are loading from gallery
             if (isNowFractal && figureChanged && !isFromGallery) {
                 resetFractalSettings()
