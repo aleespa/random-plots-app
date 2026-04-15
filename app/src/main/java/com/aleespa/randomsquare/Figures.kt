@@ -2,6 +2,10 @@ package com.aleespa.randomsquare
 
 import androidx.compose.foundation.lazy.LazyListScope
 import com.aleespa.randomsquare.data.VisualizeModel
+import com.aleespa.randomsquare.pages.visualize.compositionMenu
+import com.aleespa.randomsquare.pages.visualize.fractalMenu
+import com.aleespa.randomsquare.pages.visualize.newtonMenu
+import com.aleespa.randomsquare.pages.visualize.standardMenu
 
 enum class FigureType(val stringId: Int) {
     FRACTAL(R.string.fractal),

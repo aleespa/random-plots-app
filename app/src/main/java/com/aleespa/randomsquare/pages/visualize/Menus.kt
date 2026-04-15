@@ -1,10 +1,9 @@
-package com.aleespa.randomsquare
+package com.aleespa.randomsquare.pages.visualize
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.ui.Alignment
@@ -12,13 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.aleespa.randomsquare.data.VisualizeModel
-import com.aleespa.randomsquare.pages.visualize.BackgroundColorSelector
-import com.aleespa.randomsquare.pages.visualize.ColormapDropdown
-import com.aleespa.randomsquare.pages.visualize.FractalActions
-import com.aleespa.randomsquare.pages.visualize.FractalSettings
-import com.aleespa.randomsquare.pages.visualize.GeneratePlotButton
-import com.aleespa.randomsquare.pages.visualize.SeedButton
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 fun LazyListScope.fractalMenu(visualizeModel: VisualizeModel) {
     item {Spacer(Modifier.height(10.dp))}
     item {
