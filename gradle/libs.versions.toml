@@ -1,5 +1,5 @@
 [versions]
-agp = "9.1.0"
+agp = "9.1.1"
 foundationLayout = "1.7.5"
 gradleVersion = "8.7.3"
 kotlin = "2.2.10"
