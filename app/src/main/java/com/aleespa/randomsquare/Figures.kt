@@ -196,7 +196,7 @@ enum class Figures(
 
     companion object {
         fun fromKey(key: String): Figures {
-            return entries.find { it.key == key } ?: SPIROGRAPH;
+            return entries.find { it.key == key } ?: SPIROGRAPH
         }
     }
 }

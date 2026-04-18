@@ -50,7 +50,8 @@ object SketchRenderer {
             palRGB[i] = color
         }
 
-        val bytes = renderSketch(sketchId, seed, width, height, bgColor, palT, palRGB) ?: return null
+        val bytes =
+            renderSketch(sketchId, seed, width, height, bgColor, palT, palRGB) ?: return null
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
     }
 }

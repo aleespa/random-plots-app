@@ -1,11 +1,7 @@
 package com.aleespa.randomsquare.tools
 
 import android.content.Context
-import android.graphics.Color as AndroidColor
-import androidx.compose.ui.graphics.Color as ComposeColor
-import androidx.compose.ui.graphics.toArgb
 import android.util.Log
-import android.view.View
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -15,6 +11,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import ru.noties.jlatexmath.JLatexMathDrawable
 import ru.noties.jlatexmath.JLatexMathView
 import java.io.IOException
+import android.graphics.Color as AndroidColor
 
 @Composable
 fun LatexMathView(latex: String, bgColor: Int) {

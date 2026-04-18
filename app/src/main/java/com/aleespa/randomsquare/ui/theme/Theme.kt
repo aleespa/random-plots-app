@@ -20,9 +20,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import androidx.palette.graphics.Palette
-import com.aleespa.randomsquare.data.SettingDarkMode
 import com.aleespa.randomsquare.data.AppThemeSource
-import androidx.compose.material3.ColorScheme
+import com.aleespa.randomsquare.data.SettingDarkMode
 
 val DarkColorScheme = darkColorScheme(
     primary = Color(132, 158, 190, 255),
@@ -71,8 +70,9 @@ fun MyApplicationTheme(
     val colorScheme = when {
         palette != null -> {
             // Replicate Pixel's "Seed Color" logic by picking the most representative color
-            val seedColor = Color(palette.getVibrantColor(palette.getDominantColor(Color.Gray.toArgb())))
-            
+            val seedColor =
+                Color(palette.getVibrantColor(palette.getDominantColor(Color.Gray.toArgb())))
+
             if (darkTheme) {
                 darkColorScheme(
                     primary = lerp(seedColor, Color.White, 0.4f), // T80

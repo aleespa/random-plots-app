@@ -12,17 +12,17 @@ class PruneImagesWorker(
     workerParams: WorkerParameters
 ) : CoroutineWorker(appContext, workerParams) {
 
-    override suspend fun doWork(): androidx.work.ListenableWorker.Result {
+    override suspend fun doWork(): Result {
         val imageDao = DatabaseProvider.getDatabase(applicationContext).imageDao()
         val images = imageDao.getAllImagesList()
 
         val invalidImages = images.filter { !isUriValid(it.uri) }
-        
+
         if (invalidImages.isNotEmpty()) {
             imageDao.deleteImages(invalidImages)
         }
 
-        return androidx.work.ListenableWorker.Result.success()
+        return Result.success()
     }
 
     private fun isUriValid(uriString: String): Boolean {
@@ -33,9 +33,11 @@ class PruneImagesWorker(
                     val path = uri.path
                     if (path != null) File(path).exists() else false
                 }
+
                 "content" -> {
                     applicationContext.contentResolver.openInputStream(uri)?.use { true } ?: false
                 }
+
                 else -> false
             }
         } catch (e: Exception) {

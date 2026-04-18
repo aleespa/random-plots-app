@@ -52,12 +52,10 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -66,7 +64,6 @@ import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.pages.DeleteAllConfirmationDialog
 import com.aleespa.randomsquare.tools.loadSavedImage
-import com.aleespa.randomsquare.tools.parkinsansFontFamily
 import kotlinx.coroutines.launch
 
 @Composable
@@ -113,7 +110,7 @@ fun RandomGalleryTopBar(
     visualizeModel: VisualizeModel
 ) {
     var showMenu by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
+    rememberCoroutineScope()
 
     Scaffold(
         topBar = {

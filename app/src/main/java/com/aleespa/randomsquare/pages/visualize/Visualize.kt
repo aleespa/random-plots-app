@@ -48,10 +48,12 @@ fun Visualize(
             if (savedBitmap != null) {
                 visualizeModel.imageBitmapState = savedBitmap.asImageBitmap()
                 if (visualizeModel.latexString.isEmpty()) {
-                    visualizeModel.latexString = readTexAssets(context, visualizeModel.selectedFigure.key)
+                    visualizeModel.latexString =
+                        readTexAssets(context, visualizeModel.selectedFigure.key)
                 }
                 if (visualizeModel.selectedFigure == Figures.NEWTON && visualizeModel.newtonLatexString.isEmpty()) {
-                    visualizeModel.newtonLatexString = generateNewtonLatex(visualizeModel.newtonCoeffs)
+                    visualizeModel.newtonLatexString =
+                        generateNewtonLatex(visualizeModel.newtonCoeffs)
                 }
             }
         }
@@ -103,7 +105,9 @@ fun Visualize(
                     .drawWithContent {
                         drawContent()
                         drawRect(
-                            color = if (isDark) Color.Black.copy(alpha = 0.5f) else Color.White.copy(alpha = 0.6f),
+                            color = if (isDark) Color.Black.copy(alpha = 0.5f) else Color.White.copy(
+                                alpha = 0.6f
+                            ),
                             blendMode = BlendMode.SrcOver
                         )
                     }

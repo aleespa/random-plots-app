@@ -208,12 +208,14 @@ fun generateRandomPlot(
                 params[0] = visualizeModel.multibrotD.toFloat()
                 3
             }
+
             Figures.NEWTON -> {
                 visualizeModel.newtonCoeffs.forEachIndexed { i, d ->
                     params[i] = d.toFloat()
                 }
                 4
             }
+
             else -> 0
         }
 
@@ -450,9 +452,11 @@ fun generateNewPlot(
                     builder.setParam1(visualizeModel.juliaCX)
                     builder.setParam2(visualizeModel.juliaCY)
                 }
+
                 Figures.MULTIBROT -> {
                     builder.setParam1(visualizeModel.multibrotD)
                 }
+
                 Figures.NEWTON -> {
                     if (randomizeSeed) {
                         val rng = java.util.Random(generate32BitSeed())
@@ -473,6 +477,7 @@ fun generateNewPlot(
                     builder.setParam8(visualizeModel.newtonCoeffs[7])
                     builder.setParam9(visualizeModel.newtonCoeffs[8])
                 }
+
                 else -> {}
             }
         }
@@ -544,9 +549,11 @@ fun loadSavedImage(
             visualizeModel.juliaCY = image.param2 ?: 0.27015
             visualizeModel.updatePolarFromJulia()
         }
+
         Figures.MULTIBROT -> {
             visualizeModel.multibrotD = image.param1 ?: 3.0
         }
+
         Figures.NEWTON -> {
             visualizeModel.newtonCoeffs = doubleArrayOf(
                 image.param1 ?: -1.0,
@@ -562,6 +569,7 @@ fun loadSavedImage(
             visualizeModel.newtonLatexString = generateNewtonLatex(visualizeModel.newtonCoeffs)
             visualizeModel.latexString = readTexAssets(context, figure.key)
         }
+
         else -> {
             visualizeModel.latexString = readTexAssets(context, figure.key)
         }
@@ -620,7 +628,7 @@ fun convertToAspectRatio(
 }
 
 fun getScreenResolution(context: Context): List<Int> {
-    val displayMetrics = DisplayMetrics()
+    DisplayMetrics()
     val display = context.resources.displayMetrics
 
     // Get the screen width and height in pixels

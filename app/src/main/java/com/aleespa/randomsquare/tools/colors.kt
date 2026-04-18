@@ -61,7 +61,7 @@ fun Color.toHsl(): FloatArray {
         h = 0f
         s = 0f
     } else {
-        s = delta / (1f - kotlin.math.abs(2f * l - 1f))
+        s = delta / (1f - abs(2f * l - 1f))
         h = when (max) {
             r -> ((g - b) / delta) % 6f
             g -> (b - r) / delta + 2f

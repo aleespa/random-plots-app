@@ -618,7 +618,12 @@ enum class Colormaps(
 
             // Fallback for old keys (which were the same as the current 'text' field)
             // If it's a fractal, we prefer the fractal-specific version of that name
-            return entries.find { it.isFractalSpecific == isFractal && it.text.equals(key, ignoreCase = true) }
+            return entries.find {
+                it.isFractalSpecific == isFractal && it.text.equals(
+                    key,
+                    ignoreCase = true
+                )
+            }
                 ?: entries.find { it.text.equals(key, ignoreCase = true) }
                 ?: if (isFractal) PLASMA_FRACTAL else RAINBOW
         }

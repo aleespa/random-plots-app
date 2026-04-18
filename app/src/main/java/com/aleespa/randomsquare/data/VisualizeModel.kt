@@ -77,7 +77,8 @@ class VisualizeModel(
     var juliaCY by mutableStateOf(0.27015)
 
     var juliaR by mutableStateOf(kotlin.math.sqrt(juliaCX * juliaCX + juliaCY * juliaCY))
-    var juliaTheta by mutableStateOf(kotlin.math.atan2(juliaCY, juliaCX).let { if (it < 0) it + 2 * Math.PI else it })
+    var juliaTheta by mutableStateOf(
+        kotlin.math.atan2(juliaCY, juliaCX).let { if (it < 0) it + 2 * Math.PI else it })
 
     var multibrotD by mutableStateOf(3.0)
     var newtonCoeffs by mutableStateOf(DoubleArray(9) { 0.0 })
@@ -142,8 +143,10 @@ class VisualizeModel(
         get() = _selectedFigure
         set(value) {
             if (_selectedFigure == value) return
-            val wasFractal = _selectedFigure.figureType == FigureType.FRACTAL || _selectedFigure.figureType == FigureType.COMPOSITIONS
-            val isNowFractal = value.figureType == FigureType.FRACTAL || value.figureType == FigureType.COMPOSITIONS
+            val wasFractal =
+                _selectedFigure.figureType == FigureType.FRACTAL || _selectedFigure.figureType == FigureType.COMPOSITIONS
+            val isNowFractal =
+                value.figureType == FigureType.FRACTAL || value.figureType == FigureType.COMPOSITIONS
             val figureChanged = _selectedFigure != value
             _selectedFigure = value
 

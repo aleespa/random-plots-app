@@ -32,7 +32,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
@@ -60,7 +59,8 @@ fun VisualizeBox(visualizeModel: VisualizeModel) {
             .clickable { visualizeModel.showInfo = !visualizeModel.showInfo }
             .then(
                 if (visualizeModel.selectedFigure.figureType == FigureType.FRACTAL ||
-                    visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS) {
+                    visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS
+                ) {
                     Modifier
                         .pointerInput(Unit) {
                             detectTransformGestures { _, pan, zoom, _ ->

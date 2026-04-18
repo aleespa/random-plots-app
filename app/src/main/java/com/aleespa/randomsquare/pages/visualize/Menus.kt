@@ -14,7 +14,7 @@ import com.aleespa.randomsquare.data.VisualizeModel
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 fun LazyListScope.fractalMenu(visualizeModel: VisualizeModel) {
-    item {Spacer(Modifier.height(10.dp))}
+    item { Spacer(Modifier.height(10.dp)) }
     item {
         val context = LocalContext.current
         FractalActions(visualizeModel, context)
@@ -35,7 +35,7 @@ fun LazyListScope.fractalMenu(visualizeModel: VisualizeModel) {
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 fun LazyListScope.newtonMenu(visualizeModel: VisualizeModel) {
-    item {Spacer(Modifier.height(10.dp))}
+    item { Spacer(Modifier.height(10.dp)) }
     item {
         val context = LocalContext.current
         GeneratePlotButton(visualizeModel, context)

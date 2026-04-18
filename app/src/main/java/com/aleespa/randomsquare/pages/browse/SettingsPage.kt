@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -65,10 +64,14 @@ fun SettingsPage(
                     val options = SettingDarkMode.values()
                     options.forEachIndexed { index, mode ->
                         SegmentedButton(
-                            shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
-                            onClick = { 
-                                visualizeModel.settingDarkMode = mode 
-                                visualizeModel.bgColor = 0 // Reset bgColor to trigger theme update if necessary
+                            shape = SegmentedButtonDefaults.itemShape(
+                                index = index,
+                                count = options.size
+                            ),
+                            onClick = {
+                                visualizeModel.settingDarkMode = mode
+                                visualizeModel.bgColor =
+                                    0 // Reset bgColor to trigger theme update if necessary
                             },
                             selected = visualizeModel.settingDarkMode == mode,
                             label = {
@@ -95,7 +98,10 @@ fun SettingsPage(
                     val options = AppThemeSource.entries.toTypedArray()
                     options.forEachIndexed { index, source ->
                         SegmentedButton(
-                            shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
+                            shape = SegmentedButtonDefaults.itemShape(
+                                index = index,
+                                count = options.size
+                            ),
                             onClick = { visualizeModel.themeSource = source },
                             selected = visualizeModel.themeSource == source,
                             label = {
@@ -121,7 +127,10 @@ fun SettingsPage(
                 SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
                     resolutions.forEachIndexed { index, res ->
                         SegmentedButton(
-                            shape = SegmentedButtonDefaults.itemShape(index = index, count = resolutions.size),
+                            shape = SegmentedButtonDefaults.itemShape(
+                                index = index,
+                                count = resolutions.size
+                            ),
                             onClick = { visualizeModel.imageResolution = res },
                             selected = visualizeModel.imageResolution == res,
                             label = { Text(res.toString()) }

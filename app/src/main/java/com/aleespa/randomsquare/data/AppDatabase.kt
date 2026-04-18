@@ -17,7 +17,8 @@ abstract class AppDatabase : RoomDatabase() {
         val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 // 1. Create the new table with the exact schema Room expects for v3
-                db.execSQL("""
+                db.execSQL(
+                    """
                     CREATE TABLE images_new (
                         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                         uri TEXT NOT NULL,
@@ -42,16 +43,19 @@ abstract class AppDatabase : RoomDatabase() {
                         colormap TEXT,
                         iterations INTEGER
                     )
-                """.trimIndent())
+                """.trimIndent()
+                )
 
                 // 2. Copy data from the v2 table
                 // v2 columns: id, uri, imageType, timestamp, isDarkMode, randomSeed, backgroundColor
                 // Plus, map the old juliaCX/juliaCY to param1/param2 if they existed (though they are new in v3)
-                db.execSQL("""
+                db.execSQL(
+                    """
                     INSERT INTO images_new (id, uri, imageType, timestamp, isDarkMode, randomSeed, backgroundColor)
                     SELECT id, uri, imageType, timestamp, isDarkMode, randomSeed, backgroundColor 
                     FROM images
-                """.trimIndent())
+                """.trimIndent()
+                )
 
                 // 3. Remove the old table
                 db.execSQL("DROP TABLE images")

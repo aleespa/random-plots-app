@@ -5,18 +5,15 @@ import android.content.Context
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -32,7 +29,6 @@ import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -80,9 +76,18 @@ fun GeneratePlotButton(
         content = {
             customItem(
                 buttonGroupContent = {
-                    val weight by animateFloatAsState(if (pressedIndex == 0) 1.1f else 1f, label = "weight")
-                    val cornerRadius by animateDpAsState(if (pressedIndex == 0) 8.dp else 24.dp, label = "corner")
-                    val innerCornerRadius by animateDpAsState(if (pressedIndex == 0) 12.dp else 8.dp, label = "innerCorner")
+                    val weight by animateFloatAsState(
+                        if (pressedIndex == 0) 1.1f else 1f,
+                        label = "weight"
+                    )
+                    val cornerRadius by animateDpAsState(
+                        if (pressedIndex == 0) 8.dp else 24.dp,
+                        label = "corner"
+                    )
+                    val innerCornerRadius by animateDpAsState(
+                        if (pressedIndex == 0) 12.dp else 8.dp,
+                        label = "innerCorner"
+                    )
                     Button(
                         onClick = {
                             pressedIndex = 0
@@ -129,8 +134,14 @@ fun GeneratePlotButton(
 
             customItem(
                 buttonGroupContent = {
-                    val weight by animateFloatAsState(if (pressedIndex == 1) 3.4f else 3f, label = "weight")
-                    val cornerRadius by animateDpAsState(if (pressedIndex == 1) 12.dp else 8.dp, label = "corner")
+                    val weight by animateFloatAsState(
+                        if (pressedIndex == 1) 3.4f else 3f,
+                        label = "weight"
+                    )
+                    val cornerRadius by animateDpAsState(
+                        if (pressedIndex == 1) 12.dp else 8.dp,
+                        label = "corner"
+                    )
                     Button(
                         onClick = {
                             pressedIndex = 1
@@ -177,9 +188,18 @@ fun GeneratePlotButton(
 
             customItem(
                 buttonGroupContent = {
-                    val weight by animateFloatAsState(if (pressedIndex == 2) 1.1f else 1f, label = "weight")
-                    val cornerRadius by animateDpAsState(if (pressedIndex == 2) 8.dp else 24.dp, label = "corner")
-                    val innerCornerRadius by animateDpAsState(if (pressedIndex == 2) 12.dp else 8.dp, label = "innerCorner")
+                    val weight by animateFloatAsState(
+                        if (pressedIndex == 2) 1.1f else 1f,
+                        label = "weight"
+                    )
+                    val cornerRadius by animateDpAsState(
+                        if (pressedIndex == 2) 8.dp else 24.dp,
+                        label = "corner"
+                    )
+                    val innerCornerRadius by animateDpAsState(
+                        if (pressedIndex == 2) 12.dp else 8.dp,
+                        label = "innerCorner"
+                    )
                     Button(
                         onClick = {
                             pressedIndex = 2
@@ -230,6 +250,7 @@ fun GeneratePlotButton(
         }
     )
 }
+
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 @ExperimentalMaterial3ExpressiveApi
@@ -254,9 +275,18 @@ fun FractalActions(
         content = {
             customItem(
                 buttonGroupContent = {
-                    val weight by animateFloatAsState(if (pressedIndex == 0) 1.1f else 1f, label = "weight")
-                    val cornerRadius by animateDpAsState(if (pressedIndex == 0) 8.dp else 24.dp, label = "corner")
-                    val innerCornerRadius by animateDpAsState(if (pressedIndex == 0) 12.dp else 8.dp, label = "innerCorner")
+                    val weight by animateFloatAsState(
+                        if (pressedIndex == 0) 1.1f else 1f,
+                        label = "weight"
+                    )
+                    val cornerRadius by animateDpAsState(
+                        if (pressedIndex == 0) 8.dp else 24.dp,
+                        label = "corner"
+                    )
+                    val innerCornerRadius by animateDpAsState(
+                        if (pressedIndex == 0) 12.dp else 8.dp,
+                        label = "innerCorner"
+                    )
                     Button(
                         onClick = {
                             pressedIndex = 0
@@ -265,7 +295,12 @@ fun FractalActions(
                                 if (pressedIndex == 0) pressedIndex = -1
                             }
                             visualizeModel.resetFractalSettings()
-                            generateNewPlot(visualizeModel, context, randomizeSeed = false, showAds = false)
+                            generateNewPlot(
+                                visualizeModel,
+                                context,
+                                randomizeSeed = false,
+                                showAds = false
+                            )
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -296,8 +331,14 @@ fun FractalActions(
 
             customItem(
                 buttonGroupContent = {
-                    val weight by animateFloatAsState(if (pressedIndex == 1) 1.1f else 1f, label = "weight")
-                    val cornerRadius by animateDpAsState(if (pressedIndex == 1) 12.dp else 8.dp, label = "corner")
+                    val weight by animateFloatAsState(
+                        if (pressedIndex == 1) 1.1f else 1f,
+                        label = "weight"
+                    )
+                    val cornerRadius by animateDpAsState(
+                        if (pressedIndex == 1) 12.dp else 8.dp,
+                        label = "corner"
+                    )
                     Button(
                         onClick = {
                             pressedIndex = 1
@@ -347,9 +388,18 @@ fun FractalActions(
 
             customItem(
                 buttonGroupContent = {
-                    val weight by animateFloatAsState(if (pressedIndex == 2) 1.1f else 1f, label = "weight")
-                    val cornerRadius by animateDpAsState(if (pressedIndex == 2) 8.dp else 24.dp, label = "corner")
-                    val innerCornerRadius by animateDpAsState(if (pressedIndex == 2) 12.dp else 8.dp, label = "innerCorner")
+                    val weight by animateFloatAsState(
+                        if (pressedIndex == 2) 1.1f else 1f,
+                        label = "weight"
+                    )
+                    val cornerRadius by animateDpAsState(
+                        if (pressedIndex == 2) 8.dp else 24.dp,
+                        label = "corner"
+                    )
+                    val innerCornerRadius by animateDpAsState(
+                        if (pressedIndex == 2) 12.dp else 8.dp,
+                        label = "innerCorner"
+                    )
                     Button(
                         onClick = {
                             pressedIndex = 2
