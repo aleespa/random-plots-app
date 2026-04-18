@@ -2,12 +2,17 @@ package com.aleespa.randomsquare.pages
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
@@ -18,6 +23,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.BlurEffect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -77,28 +85,37 @@ fun BottomBar(navController: NavHostController, visualizeModel: VisualizeModel) 
     val currentDestination = navBackStackEntry?.destination
 
     NavigationBar(
-        containerColor = NavigationBarDefaults.containerColor
-    )
-    {
+        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
+        tonalElevation = 0.dp,
+        windowInsets = NavigationBarDefaults.windowInsets
+    ) {
         screens.forEach { screen ->
+            val isSelected = currentDestination?.hierarchy?.any {
+                it.route == screen.route
+            } == true
             NavigationBarItem(
                 icon = { Icon(screen.icon, contentDescription = null) },
                 label = { Text(stringResource(id = screen.titleResourceId)) },
-                selected = currentDestination?.hierarchy?.any {
-                    it.route == screen.route
-                } == true,
+                selected = isSelected,
                 onClick = {
-                    navController.navigate(screen.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = false
+                    if (!isSelected) {
+                        navController.navigate(screen.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = false
+                            }
+                            launchSingleTop = true
+                            restoreState = false
                         }
-                        launchSingleTop = true
-                        restoreState = false
+                    } else {
+                        when (screen) {
+                            BottomBarScreen.Browse -> visualizeModel.scrollToTopBrowse++
+                            BottomBarScreen.Gallery -> visualizeModel.scrollToTopGallery++
+                            else -> {}
+                        }
                     }
                 }
             )
         }
-
     }
 }
 

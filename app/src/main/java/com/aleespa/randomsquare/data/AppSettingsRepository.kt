@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.map
 class AppSettingsRepository(private val dataStore: DataStore<Preferences>) {
     companion object {
         val DARK_MODE_SETTING = stringPreferencesKey("dark_mode_setting")
+        val THEME_SOURCE = stringPreferencesKey("theme_source")
         val SELECTED_FIGURE = stringPreferencesKey("selected_figure")
 
         // Use different keys for the old String and new Int formats to avoid type errors.
@@ -40,6 +41,19 @@ class AppSettingsRepository(private val dataStore: DataStore<Preferences>) {
             preferences[DARK_MODE_SETTING]?.let { modeName ->
                 SettingDarkMode.valueOf(modeName)
             } ?: SettingDarkMode.Auto
+        }
+
+    suspend fun saveThemeSource(source: AppThemeSource) {
+        dataStore.edit { preferences ->
+            preferences[THEME_SOURCE] = source.name
+        }
+    }
+
+    val themeSource: Flow<AppThemeSource> = dataStore.data
+        .map { preferences ->
+            preferences[THEME_SOURCE]?.let { sourceName ->
+                AppThemeSource.valueOf(sourceName)
+            } ?: AppThemeSource.Device
         }
 
     suspend fun saveSelectedFigure(figure: Figures) {

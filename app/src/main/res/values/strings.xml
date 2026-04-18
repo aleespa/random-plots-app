@@ -52,6 +52,9 @@
     <string name="on">On</string>
     <string name="off">Off</string>
     <string name="dark_mode">Dark Mode</string>
+    <string name="theme_source">Theme Source</string>
+    <string name="device">Device</string>
+    <string name="image">Image</string>
     <string name="resolution">Resolution</string>
     <string name="no_images">Create and save your images from the \'Visualize\' section to see them here.</string>
     <string name="super_random" >Super</string>

@@ -6,3 +6,8 @@ enum class SettingDarkMode(var text: String) {
     Off("Light")
 }
 
+enum class AppThemeSource(val text: String) {
+    Device("Device"),
+    Image("Image")
+}
+

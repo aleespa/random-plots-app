@@ -183,8 +183,7 @@ fun SeedText(visualizeModel: VisualizeModel) {
             .padding(horizontal = 16.dp),
         contentAlignment = Alignment.Center
     ) {
-        if (visualizeModel.selectedFigure.figureType == FigureType.FRACTAL ||
-            visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS) {
+        if (visualizeModel.selectedFigure.figureType == FigureType.FRACTAL) {
             Text(
                 text = "x: ${String.format("%.4f", visualizeModel.fractalXCenter)}  " +
                         "y: ${String.format("%.4f", visualizeModel.fractalYCenter)}  " +

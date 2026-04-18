@@ -10,12 +10,19 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import androidx.palette.graphics.Palette
 import com.aleespa.randomsquare.data.SettingDarkMode
+import com.aleespa.randomsquare.data.AppThemeSource
+import androidx.compose.material3.ColorScheme
 
 val DarkColorScheme = darkColorScheme(
     primary = Color(132, 158, 190, 255),
@@ -40,7 +47,9 @@ val LightColorScheme = lightColorScheme(
 @Composable
 fun MyApplicationTheme(
     darkThemeSetting: SettingDarkMode = SettingDarkMode.Auto,
+    themeSource: AppThemeSource = AppThemeSource.Device,
     dynamicColor: Boolean = true,
+    imageBitmap: ImageBitmap? = null,
     content: @Composable () -> Unit
 ) {
     val darkTheme = when (darkThemeSetting) {
@@ -50,7 +59,47 @@ fun MyApplicationTheme(
     }
 
     val context = LocalContext.current
+
+    val palette = remember(imageBitmap, themeSource) {
+        if (themeSource == AppThemeSource.Image) {
+            imageBitmap?.asAndroidBitmap()?.let {
+                Palette.from(it).generate()
+            }
+        } else null
+    }
+
     val colorScheme = when {
+        palette != null -> {
+            // Replicate Pixel's "Seed Color" logic by picking the most representative color
+            val seedColor = Color(palette.getVibrantColor(palette.getDominantColor(Color.Gray.toArgb())))
+            
+            if (darkTheme) {
+                darkColorScheme(
+                    primary = lerp(seedColor, Color.White, 0.4f), // T80
+                    onPrimary = lerp(seedColor, Color.Black, 0.8f),
+                    primaryContainer = lerp(seedColor, Color.Black, 0.6f), // T30
+                    onPrimaryContainer = lerp(seedColor, Color.White, 0.8f),
+                    secondary = lerp(seedColor, Color.White, 0.2f),
+                    onSecondary = Color.Black,
+                    background = lerp(seedColor, Color.Black, 0.95f), // Very dark background
+                    surface = lerp(seedColor, Color.Black, 0.9f),
+                    onSurface = Color.White
+                )
+            } else {
+                lightColorScheme(
+                    primary = lerp(seedColor, Color.Black, 0.4f), // T40
+                    onPrimary = Color.White,
+                    primaryContainer = lerp(seedColor, Color.White, 0.8f), // T90
+                    onPrimaryContainer = lerp(seedColor, Color.Black, 0.7f),
+                    secondary = lerp(seedColor, Color.Black, 0.2f),
+                    onSecondary = Color.White,
+                    background = lerp(seedColor, Color.White, 0.95f), // Very light background
+                    surface = lerp(seedColor, Color.White, 0.9f),
+                    onSurface = Color.Black
+                )
+            }
+        }
+
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }

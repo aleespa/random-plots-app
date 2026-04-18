@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
@@ -223,8 +224,16 @@ fun ScrollContent(
     navController: NavHostController,
     visualizeModel: VisualizeModel,
 ) {
+    val gridState = rememberLazyGridState()
 
     val images by visualizeModel.filteredImages.collectAsState()
+
+    LaunchedEffect(visualizeModel.scrollToTopGallery) {
+        if (visualizeModel.scrollToTopGallery > 0) {
+            gridState.animateScrollToItem(0)
+        }
+    }
+
     LaunchedEffect(
         visualizeModel.darkFilter,
         visualizeModel.lightFilter,
@@ -259,6 +268,7 @@ fun ScrollContent(
             )
         } else {
             LazyVerticalGrid(
+                state = gridState,
                 columns = GridCells.Fixed(3),
                 modifier = Modifier
                     .fillMaxSize(),

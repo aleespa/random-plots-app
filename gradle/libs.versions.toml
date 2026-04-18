@@ -23,6 +23,7 @@ playServicesAds = "23.6.0"
 jlatexmath = "0.2.0"
 runtimeLivedata = "1.7.5"
 splashscreen = "1.0.1"
+palette = "1.0.0"
 accompanist = "0.30.1"
 junit = "4.13.2"
 testExt = "1.2.1"
@@ -78,6 +79,7 @@ androidx-datastore-preferences-core = { group = "androidx.datastore", name = "da
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-cardview = { group = "androidx.cardview", name = "cardview", version = "1.0.0" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
+androidx-palette-ktx = { group = "androidx.palette", name = "palette-ktx", version.ref = "palette" }
 build-gradle = { module = "com.android.tools.build:gradle", version.ref = "gradleVersion" }
 google-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 google-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }

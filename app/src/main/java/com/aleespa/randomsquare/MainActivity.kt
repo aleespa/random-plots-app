@@ -3,6 +3,7 @@ package com.aleespa.randomsquare
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModelProvider
@@ -23,6 +24,7 @@ import java.util.concurrent.TimeUnit
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         // Initialise AdMob SDK and preload the first interstitial ad early.
@@ -37,7 +39,11 @@ class MainActivity : ComponentActivity() {
         scheduleImagePruning()
 
         setContent {
-            MyApplicationTheme(darkThemeSetting = visualizeModel.settingDarkMode) {
+            MyApplicationTheme(
+                darkThemeSetting = visualizeModel.settingDarkMode,
+                themeSource = visualizeModel.themeSource,
+                imageBitmap = visualizeModel.imageBitmapState
+            ) {
                 MainScreen(visualizeModel)
             }
         }

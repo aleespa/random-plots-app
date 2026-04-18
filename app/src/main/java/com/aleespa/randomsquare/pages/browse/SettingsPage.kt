@@ -25,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.aleespa.randomsquare.R
+import com.aleespa.randomsquare.data.AppThemeSource
 import com.aleespa.randomsquare.data.SettingDarkMode
 import com.aleespa.randomsquare.data.VisualizeModel
 
@@ -76,6 +77,32 @@ fun SettingsPage(
                                         SettingDarkMode.Auto -> stringResource(R.string.auto)
                                         SettingDarkMode.On -> stringResource(R.string.on)
                                         SettingDarkMode.Off -> stringResource(R.string.off)
+                                    }
+                                )
+                            }
+                        )
+                    }
+                }
+            }
+
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = stringResource(R.string.theme_source),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                    val options = AppThemeSource.entries.toTypedArray()
+                    options.forEachIndexed { index, source ->
+                        SegmentedButton(
+                            shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
+                            onClick = { visualizeModel.themeSource = source },
+                            selected = visualizeModel.themeSource == source,
+                            label = {
+                                Text(
+                                    when (source) {
+                                        AppThemeSource.Device -> stringResource(R.string.device)
+                                        AppThemeSource.Image -> stringResource(R.string.image)
                                     }
                                 )
                             }

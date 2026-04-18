@@ -55,6 +55,9 @@ class VisualizeModel(
     var showDeleteAllDialog by mutableStateOf(false)
     var showColormapDialog by mutableStateOf(false)
 
+    var scrollToTopBrowse by mutableIntStateOf(0)
+    var scrollToTopGallery by mutableIntStateOf(0)
+
     private var _imageResolution by mutableIntStateOf(1200)
     var imageResolution: Int
         get() = _imageResolution
@@ -102,11 +105,28 @@ class VisualizeModel(
             }
         }
 
+    private var _themeSource by mutableStateOf(AppThemeSource.Device)
+    var themeSource: AppThemeSource
+        get() = _themeSource
+        set(value) {
+            if (_themeSource == value) return
+            _themeSource = value
+            viewModelScope.launch {
+                settingsRepository.saveThemeSource(value) // Persist to DataStore
+            }
+        }
+
     init {
         // Load settingDarkMode from DataStore
         viewModelScope.launch {
             settingsRepository.darkModeSetting.collect { mode ->
                 _settingDarkMode = mode
+            }
+        }
+        // Load themeSource from DataStore
+        viewModelScope.launch {
+            settingsRepository.themeSource.collect { source ->
+                _themeSource = source
             }
         }
         // Load imageResolution from DataStore
