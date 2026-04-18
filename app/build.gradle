@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace 'com.aleespa.randomsquare'
-    compileSdk = 35
+    compileSdk = 37
 
     defaultConfig {
         applicationId 'com.aleespa.randomsquare'
-        minSdk 29
-        targetSdk 35
+        minSdk = 29
+        targetSdk = 37
         versionCode 30
         versionName "2.1.0"
 
