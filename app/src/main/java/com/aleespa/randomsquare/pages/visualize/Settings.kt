@@ -246,7 +246,7 @@ fun ColormapDropdown(
         Surface(
             onClick = { onShowDialogChange(true) },
             shape = RoundedCornerShape(24.dp),
-            color = MaterialTheme.colorScheme.onSecondary,
+            color = MaterialTheme.colorScheme.secondaryContainer,
             modifier = Modifier.fillMaxWidth()
         ) {
             Row(

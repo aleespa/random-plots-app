@@ -1,33 +1,32 @@
 package com.aleespa.randomsquare.pages.visualize
 
-import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.aleespa.randomsquare.BottomBarScreen
 import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.Figures
+import com.aleespa.randomsquare.data.SettingDarkMode
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.pages.AspectRatioDialog
 import com.aleespa.randomsquare.pages.ColormapSelectionDialog
-import com.aleespa.randomsquare.tools.LatexMathView
 import com.aleespa.randomsquare.tools.generateNewtonLatex
 import com.aleespa.randomsquare.tools.loadBitmapFromFile
 import com.aleespa.randomsquare.tools.readTexAssets
@@ -85,22 +84,49 @@ fun Visualize(
             onDismiss = { visualizeModel.showColormapDialog = false }
         )
     }
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .safeDrawingPadding(),
-    ) {
-        item { Spacer(Modifier.height(20.dp)) }
-        item { HeaderSection(visualizeModel, context) }
-        item { Spacer(Modifier.height(18.dp)) }
-        item { VisualizeBox(visualizeModel) }
-        item { SeedText(visualizeModel) }
-        item { Spacer(Modifier.height(6.dp)) }
 
-        with(visualizeModel.selectedFigure) {
-            menuType(visualizeModel)
+    val isDark = when (visualizeModel.settingDarkMode) {
+        SettingDarkMode.Auto -> isSystemInDarkTheme()
+        SettingDarkMode.On -> true
+        SettingDarkMode.Off -> false
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        visualizeModel.imageBitmapState?.let { bitmap ->
+            Image(
+                bitmap = bitmap,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .blur(40.dp)
+                    .drawWithContent {
+                        drawContent()
+                        drawRect(
+                            color = if (isDark) Color.Black.copy(alpha = 0.5f) else Color.White.copy(alpha = 0.6f),
+                            blendMode = BlendMode.SrcOver
+                        )
+                    }
+            )
         }
 
-        item { Spacer(Modifier.height(80.dp)) }
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .safeDrawingPadding(),
+        ) {
+            item { Spacer(Modifier.height(20.dp)) }
+            item { HeaderSection(visualizeModel, context) }
+            item { Spacer(Modifier.height(18.dp)) }
+            item { VisualizeBox(visualizeModel) }
+            item { SeedText(visualizeModel) }
+            item { Spacer(Modifier.height(6.dp)) }
+
+            with(visualizeModel.selectedFigure) {
+                menuType(visualizeModel)
+            }
+
+            item { Spacer(Modifier.height(80.dp)) }
+        }
     }
 }
