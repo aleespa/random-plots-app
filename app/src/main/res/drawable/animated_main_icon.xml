@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/main_icon">
+    <target
+        android:name="group1"
+        android:animation="@animator/fall_1" />
+    <target
+        android:name="group2"
+        android:animation="@animator/fall_2" />
+    <target
+        android:name="group3"
+        android:animation="@animator/fall_3" />
+    <target
+        android:name="group4"
+        android:animation="@animator/fall_4" />
+    <target
+        android:name="group5"
+        android:animation="@animator/fall_5" />
+</animated-vector>

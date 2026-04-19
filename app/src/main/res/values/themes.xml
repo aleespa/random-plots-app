@@ -2,9 +2,14 @@
 <resources>
 
     <style name="Theme.MyApplication" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="android:windowBackground">@color/splashBackground</item>
+        <item name="android:windowBackground">@color/icon_background_color</item>
         <item name="android:statusBarColor">@color/statusBarColor</item>
+    </style>
 
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/animated_main_icon</item>
+        <item name="windowSplashScreenBackground">@color/icon_background_color</item>
+        <item name="postSplashScreenTheme">@style/Theme.MyApplication</item>
     </style>
 
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">

@@ -3,7 +3,7 @@
     android:height="122.4dp"
     android:viewportWidth="122.4"
     android:viewportHeight="122.4">
-  <group>
+  <group android:name="group1">
     <clip-path
         android:pathData="M0,-0h122.4v122.4h-122.4z"/>
     <path
@@ -14,7 +14,7 @@
         android:strokeLineCap="round"
         android:strokeLineJoin="round"/>
   </group>
-  <group>
+  <group android:name="group2">
     <clip-path
         android:pathData="M0,-0h122.4v122.4h-122.4z"/>
     <path
@@ -25,7 +25,7 @@
         android:strokeLineCap="round"
         android:strokeLineJoin="round"/>
   </group>
-  <group>
+  <group android:name="group3">
     <clip-path
         android:pathData="M0,-0h122.4v122.4h-122.4z"/>
     <path
@@ -36,7 +36,7 @@
         android:strokeLineCap="round"
         android:strokeLineJoin="round"/>
   </group>
-  <group>
+  <group android:name="group4">
     <clip-path
         android:pathData="M0,-0h122.4v122.4h-122.4z"/>
     <path
@@ -47,7 +47,7 @@
         android:strokeLineCap="round"
         android:strokeLineJoin="round"/>
   </group>
-  <group>
+  <group android:name="group5">
     <clip-path
         android:pathData="M0,-0h122.4v122.4h-122.4z"/>
     <path
