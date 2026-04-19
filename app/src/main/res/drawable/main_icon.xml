@@ -3,59 +3,65 @@
     android:height="122.4dp"
     android:viewportWidth="122.4"
     android:viewportHeight="122.4">
-  <group android:name="group1">
-    <clip-path
-        android:pathData="M0,-0h122.4v122.4h-122.4z"/>
-    <path
-        android:pathData="M66.7,57.2L57.2,55.7L55.7,65.2L65.2,66.7Z"
-        android:strokeWidth="5"
-        android:fillColor="#00000000"
-        android:strokeColor="#99abc4"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"/>
-  </group>
-  <group android:name="group2">
-    <clip-path
-        android:pathData="M0,-0h122.4v122.4h-122.4z"/>
-    <path
-        android:pathData="M65.4,48.27L48.27,57L57,74.13L74.13,65.4Z"
-        android:strokeWidth="5"
-        android:fillColor="#00000000"
-        android:strokeColor="#335889"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"/>
-  </group>
-  <group android:name="group3">
-    <clip-path
-        android:pathData="M0,-0h122.4v122.4h-122.4z"/>
-    <path
-        android:pathData="M54.9,41.8L41.8,67.5L67.5,80.6L80.6,54.9Z"
-        android:strokeWidth="5"
-        android:fillColor="#00000000"
-        android:strokeColor="#002556"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"/>
-  </group>
-  <group android:name="group4">
-    <clip-path
-        android:pathData="M0,-0h122.4v122.4h-122.4z"/>
-    <path
-        android:pathData="M39.19,45.21L45.21,83.21L83.21,77.19L77.19,39.19Z"
-        android:strokeWidth="5"
-        android:fillColor="#00000000"
-        android:strokeColor="#00122b"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"/>
-  </group>
-  <group android:name="group5">
-    <clip-path
-        android:pathData="M0,-0h122.4v122.4h-122.4z"/>
-    <path
-        android:pathData="M27.2,61.2L61.2,95.2L95.2,61.2L61.2,27.2Z"
-        android:strokeWidth="5"
-        android:fillColor="#00000000"
-        android:strokeColor="#000000"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"/>
-  </group>
+    <group
+        android:pivotX="61.2"
+        android:pivotY="61.2"
+        android:scaleX="0.9"
+        android:scaleY="0.9">
+        <group android:name="group1">
+            <clip-path
+                android:pathData="M0,-0h122.4v122.4h-122.4z"/>
+            <path
+                android:pathData="M66.7,57.2L57.2,55.7L55.7,65.2L65.2,66.7Z"
+                android:strokeWidth="5"
+                android:fillColor="#00000000"
+                android:strokeColor="#99abc4"
+                android:strokeLineCap="round"
+                android:strokeLineJoin="round"/>
+        </group>
+        <group android:name="group2">
+            <clip-path
+                android:pathData="M0,-0h122.4v122.4h-122.4z"/>
+            <path
+                android:pathData="M65.4,48.27L48.27,57L57,74.13L74.13,65.4Z"
+                android:strokeWidth="5"
+                android:fillColor="#00000000"
+                android:strokeColor="#335889"
+                android:strokeLineCap="round"
+                android:strokeLineJoin="round"/>
+        </group>
+        <group android:name="group3">
+            <clip-path
+                android:pathData="M0,-0h122.4v122.4h-122.4z"/>
+            <path
+                android:pathData="M54.9,41.8L41.8,67.5L67.5,80.6L80.6,54.9Z"
+                android:strokeWidth="5"
+                android:fillColor="#00000000"
+                android:strokeColor="#002556"
+                android:strokeLineCap="round"
+                android:strokeLineJoin="round"/>
+        </group>
+        <group android:name="group4">
+            <clip-path
+                android:pathData="M0,-0h122.4v122.4h-122.4z"/>
+            <path
+                android:pathData="M39.19,45.21L45.21,83.21L83.21,77.19L77.19,39.19Z"
+                android:strokeWidth="5"
+                android:fillColor="#00000000"
+                android:strokeColor="#00122b"
+                android:strokeLineCap="round"
+                android:strokeLineJoin="round"/>
+        </group>
+        <group android:name="group5">
+            <clip-path
+                android:pathData="M0,-0h122.4v122.4h-122.4z"/>
+            <path
+                android:pathData="M27.2,61.2L61.2,95.2L95.2,61.2L61.2,27.2Z"
+                android:strokeWidth="5"
+                android:fillColor="#00000000"
+                android:strokeColor="#000000"
+                android:strokeLineCap="round"
+                android:strokeLineJoin="round"/>
+        </group>
+    </group>
 </vector>
