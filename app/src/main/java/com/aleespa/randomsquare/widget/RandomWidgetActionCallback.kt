@@ -14,9 +14,9 @@ class RandomWidgetActionCallback : ActionCallback {
     ) {
         val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
 
-        // Generate new 4-character alphanumeric codes and store them in GlanceState (6x8 = 48)
+        // Generate new 4-character alphanumeric codes and store them in GlanceState (7x10 = 70)
         updateAppWidgetState(context, glanceId) { prefs ->
-            val newNumbers = List(48) {
+            val newNumbers = List(70) {
                 (1..4).map { _ -> charPool.random() }.joinToString("")
             }.joinToString(",")
             prefs[RandomWidget.NumbersKey] = newNumbers

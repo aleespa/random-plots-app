@@ -53,7 +53,7 @@ class RandomWidget : GlanceAppWidget() {
     private fun WidgetContent() {
         val prefs = currentState<Preferences>()
         val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
-        val defaultNumbers = List(48) {
+        val defaultNumbers = List(70) {
             (1..4).map { _ -> charPool.random() }.joinToString("")
         }.joinToString(",")
         val numbersString = prefs[NumbersKey] ?: defaultNumbers
@@ -65,19 +65,19 @@ class RandomWidget : GlanceAppWidget() {
                 .appWidgetBackground()
                 .background(GlanceTheme.colors.primaryContainer)
                 .cornerRadius(24.dp)
-                .padding(8.dp)
+                .padding(4.dp)
                 .clickable(actionRunCallback<RandomWidgetActionCallback>()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Grid content
-            for (i in 0 until 8) {
+            for (i in 0 until 10) {
                 Row(
                     modifier = GlanceModifier.fillMaxWidth().defaultWeight(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    for (j in 0 until 6) {
-                        val index = i * 6 + j
+                    for (j in 0 until 7) {
+                        val index = i * 7 + j
                         if (index < numbers.size) {
                             Box(
                                 modifier = GlanceModifier.defaultWeight(),

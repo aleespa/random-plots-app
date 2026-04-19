@@ -64,7 +64,7 @@ class Digit4Widget : GlanceAppWidget() {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = result,
+                text = result.chunked(2).joinToString("\n"),
                 style = TextStyle(
                     color = GlanceTheme.colors.onSurface,
                     fontSize = 24.sp,

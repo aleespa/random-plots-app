@@ -51,6 +51,15 @@ class DiceWidget : GlanceAppWidget() {
     private fun WidgetContent() {
         val prefs = currentState<Preferences>()
         val result = prefs[DiceKey] ?: "1"
+        val diceFace = when (result) {
+            "1" -> "⚀"
+            "2" -> "⚁"
+            "3" -> "⚂"
+            "4" -> "⚃"
+            "5" -> "⚄"
+            "6" -> "⚅"
+            else -> "⚀"
+        }
 
         Box(
             modifier = GlanceModifier
@@ -63,10 +72,10 @@ class DiceWidget : GlanceAppWidget() {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = result,
+                text = diceFace,
                 style = TextStyle(
                     color = GlanceTheme.colors.onSurface,
-                    fontSize = 32.sp,
+                    fontSize = 48.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = RandomWidget.Parkinsans,
                     textAlign = TextAlign.Center

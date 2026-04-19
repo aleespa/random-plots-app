@@ -23,6 +23,7 @@ import androidx.glance.background
 import androidx.glance.currentState
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
+import androidx.glance.layout.Column
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.padding
 import androidx.glance.state.GlanceStateDefinition
@@ -54,7 +55,7 @@ class CoinFlipWidget : GlanceAppWidget() {
         val prefs = currentState<Preferences>()
         val result = prefs[ResultKey] ?: context.getString(R.string.heads)
 
-        Box(
+        Column(
             modifier = GlanceModifier
                 .fillMaxSize()
                 .appWidgetBackground()
@@ -62,13 +63,21 @@ class CoinFlipWidget : GlanceAppWidget() {
                 .cornerRadius(24.dp)
                 .padding(8.dp)
                 .clickable(actionRunCallback<CoinFlipActionCallback>()),
-            contentAlignment = Alignment.Center
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            Text(
+                text = "🪙",
+                style = TextStyle(
+                    fontSize = 32.sp,
+                    textAlign = TextAlign.Center
+                )
+            )
             Text(
                 text = result,
                 style = TextStyle(
                     color = GlanceTheme.colors.onSurface,
-                    fontSize = 18.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = RandomWidget.Parkinsans,
                     textAlign = TextAlign.Center
