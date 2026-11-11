@@ -43,7 +43,7 @@ class GenerateTest {
         mockkObject(FractalRenderer)
         every { FractalRenderer["loadNativeLibrary"]() } returns Unit
         every { FractalRenderer.render(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns ByteArray(100 * 100 * 4)
-        every { FractalRenderer.renderComposition(any(), any(), any(), any()) } returns ByteArray(100 * 100 * 4)
+        every { FractalRenderer.renderComposition(any(), any(), any(), any(), any(), any(), any()) } returns ByteArray(100 * 100 * 4)
 
         mockkObject(SketchRenderer)
         try {
@@ -176,7 +176,7 @@ class GenerateTest {
         val fakeImageBytes = ByteArray(width * height * 4)
         
         every { 
-            FractalRenderer.renderComposition(any(), any(), any(), any()) 
+            FractalRenderer.renderComposition(any(), any(), any(), any(), any(), any(), any()) 
         } returns fakeImageBytes
 
         visualizeModel.selectedFigure = Figures.SOFT
@@ -186,7 +186,7 @@ class GenerateTest {
 
         assertNotNull(result)
         verify { 
-            FractalRenderer.renderComposition(width, height, any(), any()) 
+            FractalRenderer.renderComposition(width, height, any(), any(), any(), any(), any()) 
         }
     }
 }
