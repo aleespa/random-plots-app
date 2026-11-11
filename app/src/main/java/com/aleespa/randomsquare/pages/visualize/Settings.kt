@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.SliderState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -181,10 +182,12 @@ fun GradientSlider(
             .background(brush = gradient, shape = MaterialTheme.shapes.small),
         contentAlignment = Alignment.Center
     ) {
+        val sliderState = remember(valueRange) { SliderState(value, trackRange = valueRange) }
+        sliderState.value = value
+
         Slider(
-            value = value,
+            state = sliderState,
             onValueChange = onValueChange,
-            valueRange = valueRange,
             modifier = Modifier.fillMaxWidth(),
             colors = SliderDefaults.colors(
                 activeTrackColor = Color.Transparent,

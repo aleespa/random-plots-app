@@ -150,3 +150,11 @@ java {
         languageVersion = JavaLanguageVersion.of(17)
     }
 }
+
+kotlin {
+    compilerOptions {
+        // Kotlin 2.4 derives the module name as "<rootProject.name>:<variant>". The colon makes the
+        // Compose compiler's report file names (see composeCompiler.reportsDestination) invalid on Windows.
+        moduleName.set("app")
+    }
+}
