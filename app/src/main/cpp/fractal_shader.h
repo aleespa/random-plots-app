@@ -5,7 +5,7 @@ const char* COMPUTE_SHADER_SOURCE = R"(#version 310 es
 layout(local_size_x = 16, local_size_y = 16) in;
 layout(rgba8, binding = 0) writeonly uniform highp image2D u_image;
 
-uniform int u_type; // 0: Mandelbrot, 1: Julia, 2: Tricorn, 3: Multibrot, 4: Newton
+uniform int u_type; // 0: Mandelbrot, 1: Julia, 2: Tricorn, 3: Multibrot, 4: Newton // Figures.fractalType in Figures.kt (checked by FiguresTest)
 uniform int u_width;
 uniform int u_height;
 uniform int u_maxIterations;

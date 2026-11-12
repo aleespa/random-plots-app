@@ -57,6 +57,7 @@ Java_com_aleespa_randomsquare_SketchRenderer_renderSketch(
     env->ReleaseIntArrayElements(colormap_rgb, rgb_ptr, JNI_ABORT);
 
     std::unique_ptr<SketchBase> sketch;
+    // IDs must match Figures.sketchId in Figures.kt (checked by FiguresTest).
     switch (sketch_id) {
         case 0: sketch = std::make_unique<NoisyCirclesSketch>(); break;
         case 1: sketch = std::make_unique<BubblesSketch>(); break;

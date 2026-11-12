@@ -35,15 +35,15 @@ There are three native render paths. All return encoded image bytes (`ByteArray`
 2. **Fractals** (`tools/FractalRenderer.render`, `cpp/fractalrenderer.cpp` + `fractal_shader.h`). Covers Mandelbrot, Julia, Tricorn, Multibrot and Newton. The type is an int, and the palette is passed as `palT`/`palRGB` float arrays.
 3. **Compositions** (`FractalRenderer.renderComposition`, `composition_shader.h`). A small stack-based VM. Kotlin (`generateRandomPlot` in `tools/generate.kt`) builds a random opcode/param bytecode, and the shader interprets it per pixel. Opcodes 0–10 are X, Y, Const, Sum, Prod, Mod, Well, Tent, Sin, Level and Mix.
 
-**Integer IDs are hand-synced across languages, with no shared definition:**
-- Sketch IDs: the `switch` in `cpp/jni_bridge.cpp` must match the `Figures → Int` `when` blocks in `tools/generate.kt`. That mapping appears **twice** in the file, so update both.
-- Fractal type ints and composition opcodes in `generate.kt` must match `fractalrenderer.cpp` and `composition_shader.h`.
+**Native IDs live on the `Figures` enum and must match the C++ side:**
+- `Figures.sketchId` ↔ the `switch` in `cpp/jni_bridge.cpp`; `Figures.fractalType` ↔ `u_type` in `cpp/fractal_shader.h`. `FiguresTest` checks that every sketch/fractal has an ID, that sketch IDs are unique and contiguous from 0, and pins the existing values — never renumber them.
+- Composition opcodes in `generate.kt` must match `composition_shader.h` (no test covers these).
 
 ### Adding a figure
 
-1. For a sketch, add `cpp/sketches/<name>.cpp` and register it with a new case in `jni_bridge.cpp`.
-2. Add an entry to the `Figures` enum in `Figures.kt`. The entry needs a `key` string, a `FigureType` category, a string resource, a sample drawable, and a menu lambda (`standardMenu` / `fractalMenu` / `newtonMenu` / `compositionMenu` from `pages/visualize/Menus.kt`).
-3. Map the figure to its native ID in both `when` blocks in `tools/generate.kt`.
+1. For a sketch, add `cpp/sketches/<name>.cpp` and register it with the next free case in `jni_bridge.cpp`. For a fractal, add a `u_type` branch in `fractal_shader.h`.
+2. Add an entry to the `Figures` enum in `Figures.kt`: a `key` string, a `FigureType` category, a string resource (en/es/fr), a sample drawable, a menu lambda (`standardMenu` / `fractalMenu` / `newtonMenu` / `compositionMenu` from `pages/visualize/Menus.kt`), and `sketchId = <case>` or `fractalType = <u_type>`. `generate.kt` reads the ID from the enum; there is nothing else to map.
+3. Add the new value to `existingNativeIdsAreUnchanged` in `FiguresTest`.
 4. Optionally add `assets/latex/<key>.tex`. `readTexAssets` loads it by `Figures.key` to show the figure's math with jlatexmath.
 
 `Figures.key` is persisted, both in Room (`ImageEntity.imageType`) and in DataStore (the selected figure), and is resolved back with `Figures.fromKey`. Treat existing keys as stable.

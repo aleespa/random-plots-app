@@ -41,24 +41,7 @@ fun generateRandomPlot(
     figure: Figures,
     colormap: Colormaps
 ): ImageBitmap? {
-    val sketchId = when (figure) {
-        Figures.NOISY_CIRCLES -> 0
-        Figures.BUBBLES -> 1
-        Figures.WAVES -> 2
-        Figures.CONSTELLATIONS -> 3
-        Figures.POLYGON_GRID -> 4
-        Figures.SPIRAL -> 5
-        Figures.CUBISM -> 6
-        Figures.EXPONENTIAL_SUM -> 7
-        Figures.POLYGON_FEEDBACK -> 8
-        Figures.POLYGON_TUNNEL -> 9
-        Figures.ROTATIONS -> 10
-        Figures.ORBITS -> 11
-        Figures.SPIROGRAPH -> 12
-        Figures.CONTINUOUS_SPIROGRAPH -> 13
-        Figures.RANDOM_EIGENVALUES -> 14
-        else -> return null
-    }
+    val sketchId = figure.sketchId ?: return null
 
     val bitmap = SketchRenderer.renderBitmap(
         sketchId = sketchId,
@@ -199,24 +182,15 @@ fun generateRandomPlot(
 
         val maxIter = visualizeModel.fractalIterations
 
+        val type = visualizeModel.selectedFigure.fractalType ?: return null
         val params = FloatArray(10)
-        val type = when (visualizeModel.selectedFigure) {
-            Figures.MANDELBROT -> 0
-            Figures.JULIA -> 1
-            Figures.TRICORN -> 2
-            Figures.MULTIBROT -> {
-                params[0] = visualizeModel.multibrotD.toFloat()
-                3
+        when (visualizeModel.selectedFigure) {
+            Figures.MULTIBROT -> params[0] = visualizeModel.multibrotD.toFloat()
+            Figures.NEWTON -> visualizeModel.newtonCoeffs.forEachIndexed { i, d ->
+                params[i] = d.toFloat()
             }
 
-            Figures.NEWTON -> {
-                visualizeModel.newtonCoeffs.forEachIndexed { i, d ->
-                    params[i] = d.toFloat()
-                }
-                4
-            }
-
-            else -> 0
+            else -> {}
         }
 
         val imageBytes = FractalRenderer.render(
@@ -239,38 +213,16 @@ fun generateRandomPlot(
         return bitmap.asImageBitmap()
     }
 
-    val sketchId = when (visualizeModel.selectedFigure) {
-        Figures.NOISY_CIRCLES -> 0
-        Figures.BUBBLES -> 1
-        Figures.WAVES -> 2
-        Figures.CONSTELLATIONS -> 3
-        Figures.POLYGON_GRID -> 4
-        Figures.SPIRAL -> 5
-        Figures.CUBISM -> 6
-        Figures.EXPONENTIAL_SUM -> 7
-        Figures.POLYGON_FEEDBACK -> 8
-        Figures.POLYGON_TUNNEL -> 9
-        Figures.ROTATIONS -> 10
-        Figures.ORBITS -> 11
-        Figures.SPIROGRAPH -> 12
-        Figures.CONTINUOUS_SPIROGRAPH -> 13
-        Figures.RANDOM_EIGENVALUES -> 14
-        else -> -1
-    }
-
-    if (sketchId != -1) {
-        val result = SketchRenderer.renderBitmap(
-            sketchId = sketchId,
-            seed = visualizeModel.randomSeed,
-            width = finalWidth,
-            height = finalHeight,
-            bgColor = visualizeModel.bgColor,
-            colormap = visualizeModel.selectedColormap
-        )
-        return result?.asImageBitmap()
-    }
-
-    return null
+    val sketchId = visualizeModel.selectedFigure.sketchId ?: return null
+    val result = SketchRenderer.renderBitmap(
+        sketchId = sketchId,
+        seed = visualizeModel.randomSeed,
+        width = finalWidth,
+        height = finalHeight,
+        bgColor = visualizeModel.bgColor,
+        colormap = visualizeModel.selectedColormap
+    )
+    return result?.asImageBitmap()
 }
 
 
