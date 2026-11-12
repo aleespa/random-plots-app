@@ -15,6 +15,7 @@ import io.mockk.unmockkAll
 import io.mockk.verify
 import org.junit.After
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
@@ -185,8 +186,32 @@ class GenerateTest {
         val result = generateRandomPlot(visualizeModel, width, height)
 
         assertNotNull(result)
-        verify { 
-            FractalRenderer.renderComposition(width, height, any(), any(), any(), any(), any()) 
+        verify {
+            FractalRenderer.renderComposition(width, height, any(), any(), any(), any(), any())
         }
+    }
+
+    // The native renderer returns null when the device has no OpenGL ES 3.1 (e.g. EGL init fails).
+    // That must surface as a null plot, not an NPE that crashes the app.
+    @Test
+    fun testGenerateRandomPlot_FractalRendererUnavailable_ReturnsNull() {
+        every {
+            FractalRenderer.render(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any())
+        } returns null
+
+        visualizeModel.selectedFigure = Figures.MANDELBROT
+
+        assertNull(generateRandomPlot(visualizeModel, 100, 100))
+    }
+
+    @Test
+    fun testGenerateRandomPlot_CompositionRendererUnavailable_ReturnsNull() {
+        every {
+            FractalRenderer.renderComposition(any(), any(), any(), any(), any(), any(), any())
+        } returns null
+
+        visualizeModel.selectedFigure = Figures.SOFT
+
+        assertNull(generateRandomPlot(visualizeModel, 100, 100))
     }
 }

@@ -6,6 +6,7 @@
     <string name="generate_img_first">Generate a plot first</string>
     <string name="wallpaper_set">Wallpaper set successfully</string>
     <string name="wallpaper_fail">Failed to set wallpaper</string>
+    <string name="render_unavailable">This device can\'t render this figure</string>
     <string name="save_success">Plot saved successfully</string>
     <string name="create">Create</string>
     <string name="gallery">Gallery</string>

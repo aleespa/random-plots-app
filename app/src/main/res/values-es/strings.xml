@@ -7,6 +7,7 @@
     <string name="generate_img_first">Genere una gráfica primero</string>
     <string name="wallpaper_set">Fondo de pantalla establecido</string>
     <string name="wallpaper_fail">Fallo al establecer fondo de pantalla</string>
+    <string name="render_unavailable">Este dispositivo no puede generar esta figura</string>
     <string name="save_success">Gráfica guardada correctamente</string>
     <string name="create">Crear</string>
     <string name="gallery">Galería</string>

@@ -181,7 +181,7 @@ fun generateRandomPlot(
             visualizeModel.fractalZoom,
             opcodes.toIntArray(),
             params.toFloatArray()
-        )
+        ) ?: return null // GPU renderer unavailable (no OpenGL ES 3.1)
         val bitmap = Bitmap.createBitmap(finalWidth, finalHeight, Bitmap.Config.ARGB_8888)
         bitmap.copyPixelsFromBuffer(java.nio.ByteBuffer.wrap(imageBytes))
         return bitmap.asImageBitmap()
@@ -232,7 +232,7 @@ fun generateRandomPlot(
             params,
             palT,
             palRGB
-        )
+        ) ?: return null // GPU renderer unavailable (no OpenGL ES 3.1)
         val bitmap = Bitmap.createBitmap(finalWidth, finalHeight, Bitmap.Config.ARGB_8888)
         val buffer = java.nio.ByteBuffer.wrap(imageBytes)
         bitmap.copyPixelsFromBuffer(buffer)
@@ -499,7 +499,13 @@ fun generateNewPlot(
             val result = withContext(Dispatchers.Default) {
                 generateRandomPlot(visualizeModel, width, height)
             }
-            val androidBitmap = result?.asAndroidBitmap()
+            if (result == null) {
+                // Rendering failed (e.g. no OpenGL ES 3.1 for fractals/compositions):
+                // keep the current image instead of blanking it, and tell the user.
+                Toast.makeText(context, R.string.render_unavailable, Toast.LENGTH_SHORT).show()
+                return@launch
+            }
+            val androidBitmap = result.asAndroidBitmap()
             if (androidBitmap != null) {
                 withContext(Dispatchers.IO) {
                     setBitmapToCache(context, androidBitmap, "cache_front.png")
