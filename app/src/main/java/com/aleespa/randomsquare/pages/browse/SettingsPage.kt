@@ -18,7 +18,6 @@ import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,6 +28,9 @@ import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.AppThemeSource
 import com.aleespa.randomsquare.data.SettingDarkMode
 import com.aleespa.randomsquare.data.VisualizeModel
+import com.aleespa.randomsquare.ui.components.AppTopBar
+import com.aleespa.randomsquare.ui.theme.Sizes
+import com.aleespa.randomsquare.ui.theme.Spacing
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,11 +40,14 @@ fun SettingsPage(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.settings)) },
+            AppTopBar(
+                title = stringResource(R.string.settings),
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back)
+                        )
                     }
                 }
             )
@@ -51,12 +56,12 @@ fun SettingsPage(
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(16.dp)
+                .padding(Spacing.screenGutter)
                 .fillMaxSize()
                 .wrapContentWidth(Alignment.CenterHorizontally)
-                .widthIn(max = 560.dp),
+                .widthIn(max = Sizes.maxContentWidth),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(Spacing.xl)
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(

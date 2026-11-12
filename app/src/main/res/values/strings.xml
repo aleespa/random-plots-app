@@ -89,4 +89,9 @@
     <string name="delete_all_confirmation_text">This action cannot be undone. Are you sure you want to delete all saved images?</string>
     <string name="confirm">Confirm</string>
 
+    <string name="back">Back</string>
+    <string name="more_options">More options</string>
+    <string name="reload">Reload</string>
+    <string name="reset">Reset</string>
+    <string name="select_colormap">Select colormap</string>
 </resources>

@@ -78,4 +78,9 @@
     <string name="delete_all_confirmation_text">Cette action ne peut pas être annulée. Êtes-vous sûr de vouloir supprimer toutes les images enregistrées ?</string>
     <string name="confirm">Confirmer</string>
     <string name="glance_widget_description">Générer un widget de générateur aléatoire.</string>
+    <string name="back">Retour</string>
+    <string name="more_options">Plus d\'options</string>
+    <string name="reload">Recharger</string>
+    <string name="reset">Réinitialiser</string>
+    <string name="select_colormap">Choisir une palette</string>
 </resources>

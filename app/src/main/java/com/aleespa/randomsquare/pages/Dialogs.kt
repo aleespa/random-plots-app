@@ -53,6 +53,9 @@ import androidx.compose.ui.window.DialogProperties
 import com.aleespa.randomsquare.Colormaps
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
+import com.aleespa.randomsquare.ui.theme.Sizes
+import com.aleespa.randomsquare.ui.theme.Spacing
+import androidx.compose.material3.AlertDialogDefaults
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.pages.visualize.ColormapSineWaveLine
 
@@ -111,14 +114,7 @@ fun DeleteAllConfirmationDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = {
-            Text(
-                text = stringResource(R.string.delete_all_confirmation_title),
-                style = MaterialTheme.typography.headlineSmall.copy(
-                    fontWeight = FontWeight.Bold
-                )
-            )
-        },
+        title = { Text(text = stringResource(R.string.delete_all_confirmation_title)) },
         text = {
             Text(
                 text = stringResource(R.string.delete_all_confirmation_text),
@@ -159,16 +155,7 @@ fun FilterTypesDialog(visualizeModel: VisualizeModel) {
             onDismissRequest = {
                 visualizeModel.showFilterDialog = false
             },
-            title = {
-                Text(
-                    text = stringResource(R.string.filter_types),
-                    style = MaterialTheme.typography.headlineSmall.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
-            },
+            title = { Text(text = stringResource(R.string.filter_types)) },
             text = {
                 Box(
                     modifier = Modifier
@@ -308,23 +295,26 @@ fun ColormapSelectionDialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
+        // Styled like the app's AlertDialogs (container, shape, elevation, title, padding) so all
+        // dialogs look the same; a custom Dialog is only needed for the large grid.
         Surface(
             modifier = Modifier
-                .padding(24.dp)
-                .widthIn(max = 560.dp)
+                .padding(Spacing.xl)
+                .widthIn(max = Sizes.maxContentWidth)
                 .fillMaxWidth()
                 .fillMaxHeight(0.8f),
-            shape = RoundedCornerShape(28.dp),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 6.dp
+            shape = AlertDialogDefaults.shape,
+            color = AlertDialogDefaults.containerColor,
+            tonalElevation = AlertDialogDefaults.TonalElevation
         ) {
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(Spacing.xl)
             ) {
                 Text(
-                    text = "Select Colormap",
+                    text = stringResource(R.string.select_colormap),
                     style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(bottom = 16.dp, start = 8.dp)
+                    color = AlertDialogDefaults.titleContentColor,
+                    modifier = Modifier.padding(bottom = Spacing.l)
                 )
 
                 val filteredColormaps = if (isFractal) {
@@ -387,7 +377,7 @@ fun ColormapSelectionDialog(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = onDismiss) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.cancel))
                     }
                 }
             }

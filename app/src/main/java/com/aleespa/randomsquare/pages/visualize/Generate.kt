@@ -44,6 +44,9 @@ import androidx.compose.ui.unit.dp
 import com.aleespa.randomsquare.AD_FREQUENCY
 import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.R
+import com.aleespa.randomsquare.ui.theme.Sizes
+import com.aleespa.randomsquare.ui.theme.Spacing
+import androidx.compose.ui.res.stringResource
 import com.aleespa.randomsquare.ads.AdManager
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.tools.generate32BitSeed
@@ -66,8 +69,8 @@ fun GeneratePlotButton(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentWidth(Alignment.CenterHorizontally)
-            .widthIn(max = 300.dp)
-            .padding(horizontal = 16.dp)
+            .widthIn(max = Sizes.maxControlWidth)
+            .padding(horizontal = Spacing.screenGutter)
             .animateContentSize(),
         overflowIndicator = { menuState ->
             ButtonGroupDefaults.OverflowIndicator(menuState)
@@ -117,18 +120,17 @@ fun GeneratePlotButton(
                         ),
                         modifier = Modifier
                             .weight(weight)
-                            .height(56.dp),
+                            .height(Sizes.actionButtonHeight),
                         contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.AddPhotoAlternate,
-                            contentDescription = "Set Wallpaper",
-                            modifier = Modifier.size(26.dp)
+                            contentDescription = stringResource(R.string.set_wallpaper),
                         )
                     }
                 },
                 menuContent = {
-                    Text(text = "Set Wallpaper")
+                    Text(text = stringResource(R.string.set_wallpaper))
                 }
             )
 
@@ -167,7 +169,7 @@ fun GeneratePlotButton(
                         shape = RoundedCornerShape(cornerRadius),
                         modifier = Modifier
                             .weight(weight)
-                            .height(56.dp),
+                            .height(Sizes.actionButtonHeight),
                         contentPadding = PaddingValues(horizontal = 12.dp)
                     ) {
                         Icon(
@@ -176,13 +178,13 @@ fun GeneratePlotButton(
                         )
                         Spacer(Modifier.width(8.dp))
                         Text(
-                            text = context.getString(R.string.generate),
+                            text = stringResource(R.string.generate),
                             textAlign = TextAlign.Center,
                         )
                     }
                 },
                 menuContent = {
-                    Text(text = context.getString(R.string.generate))
+                    Text(text = stringResource(R.string.generate))
                 }
             )
 
@@ -225,7 +227,7 @@ fun GeneratePlotButton(
                         ),
                         modifier = Modifier
                             .weight(weight)
-                            .height(56.dp),
+                            .height(Sizes.actionButtonHeight),
                         contentPadding = PaddingValues(horizontal = 8.dp),
                     ) {
                         if (visualizeModel.isSavingLoading) {
@@ -237,14 +239,13 @@ fun GeneratePlotButton(
                         } else {
                             Icon(
                                 imageVector = if (visualizeModel.isFromGallery.not()) Icons.Default.StarBorder else Icons.Default.Star,
-                                contentDescription = "Gallery",
-                                modifier = Modifier.size(26.dp)
+                                contentDescription = stringResource(if (visualizeModel.isFromGallery.not()) R.string.save else R.string.delete_from_gallery),
                             )
                         }
                     }
                 },
                 menuContent = {
-                    Text(text = if (visualizeModel.isFromGallery.not()) "Save to Gallery" else "Delete from Gallery")
+                    Text(text = stringResource(if (visualizeModel.isFromGallery.not()) R.string.save else R.string.delete_from_gallery))
                 }
             )
         }
@@ -265,8 +266,8 @@ fun FractalActions(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentWidth(Alignment.CenterHorizontally)
-            .widthIn(max = 260.dp)
-            .padding(horizontal = 16.dp)
+            .widthIn(max = Sizes.maxControlWidth)
+            .padding(horizontal = Spacing.screenGutter)
             .animateContentSize(),
         overflowIndicator = { menuState ->
             ButtonGroupDefaults.OverflowIndicator(menuState)
@@ -314,18 +315,17 @@ fun FractalActions(
                         ),
                         modifier = Modifier
                             .weight(weight)
-                            .height(40.dp),
+                            .height(Sizes.actionButtonHeight),
                         contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.LayersClear,
-                            contentDescription = "Reset",
-                            modifier = Modifier.size(26.dp)
+                            contentDescription = stringResource(R.string.reset),
                         )
                     }
                 },
                 menuContent = {
-                    Text(text = "Reset")
+                    Text(text = stringResource(R.string.reset))
                 }
             )
 
@@ -371,18 +371,17 @@ fun FractalActions(
                         shape = RoundedCornerShape(cornerRadius),
                         modifier = Modifier
                             .weight(weight)
-                            .height(40.dp),
+                            .height(Sizes.actionButtonHeight),
                         contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.AddPhotoAlternate,
-                            contentDescription = "Set Wallpaper",
-                            modifier = Modifier.size(26.dp)
+                            contentDescription = stringResource(R.string.set_wallpaper),
                         )
                     }
                 },
                 menuContent = {
-                    Text(text = "Set Wallpaper")
+                    Text(text = stringResource(R.string.set_wallpaper))
                 }
             )
 
@@ -425,7 +424,7 @@ fun FractalActions(
                         ),
                         modifier = Modifier
                             .weight(weight)
-                            .height(40.dp),
+                            .height(Sizes.actionButtonHeight),
                         contentPadding = PaddingValues(horizontal = 8.dp),
                     ) {
                         if (visualizeModel.isSavingLoading) {
@@ -437,14 +436,13 @@ fun FractalActions(
                         } else {
                             Icon(
                                 imageVector = if (visualizeModel.isFromGallery.not()) Icons.Default.StarBorder else Icons.Default.Star,
-                                contentDescription = "Gallery",
-                                modifier = Modifier.size(26.dp)
+                                contentDescription = stringResource(if (visualizeModel.isFromGallery.not()) R.string.save else R.string.delete_from_gallery),
                             )
                         }
                     }
                 },
                 menuContent = {
-                    Text(text = if (visualizeModel.isFromGallery.not()) "Save to Gallery" else "Delete from Gallery")
+                    Text(text = stringResource(if (visualizeModel.isFromGallery.not()) R.string.save else R.string.delete_from_gallery))
                 }
             )
         }

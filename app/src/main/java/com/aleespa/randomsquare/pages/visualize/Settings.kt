@@ -60,6 +60,8 @@ import com.aleespa.randomsquare.tools.generateNewPlot
 import com.aleespa.randomsquare.tools.hslToColor
 import com.aleespa.randomsquare.tools.toHsl
 import kotlin.math.roundToInt
+import com.aleespa.randomsquare.ui.theme.Sizes
+import com.aleespa.randomsquare.ui.theme.Spacing
 
 @Composable
 fun BackgroundColorSelector(
@@ -83,18 +85,16 @@ fun BackgroundColorSelector(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp)
+            .padding(horizontal = Spacing.screenGutter),
+        verticalArrangement = Arrangement.spacedBy(Spacing.m)
     ) {
-        Text(
-            text = "Hue: ${hue.roundToInt()}",
-            style = MaterialTheme.typography.bodyMedium
-        )
         val hueGradientColors = (0..6).map { i ->
             val hueValue = i * 60f
             hslToColor(hueValue, saturation, lightness)
         } + listOf(hslToColor(0f, saturation, lightness))
 
-        GradientSlider(
+        LabeledGradientSlider(
+            label = "Hue: ${hue.roundToInt()}",
             value = hue,
             onValueChange = { hue = it },
             valueRange = 0f..360f,
@@ -102,52 +102,62 @@ fun BackgroundColorSelector(
             thumbColor = currentColor
         )
 
-        Spacer(Modifier.height(12.dp))
-
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(Spacing.s)
         ) {
-            Box(modifier = Modifier.weight(1f)) {
-                Column {
-                    Text(
-                        text = "Saturation: ${(saturation * 100).roundToInt()}%",
-                        style = MaterialTheme.typography.bodyMedium
+            LabeledGradientSlider(
+                label = "Saturation: ${(saturation * 100).roundToInt()}%",
+                value = saturation,
+                onValueChange = { saturation = it },
+                valueRange = 0f..1f,
+                gradient = Brush.horizontalGradient(
+                    listOf(
+                        hslToColor(hue, 0f, lightness),
+                        hslToColor(hue, 1f, lightness)
                     )
-                    GradientSlider(
-                        value = saturation,
-                        onValueChange = { saturation = it },
-                        valueRange = 0f..1f,
-                        gradient = Brush.horizontalGradient(
-                            listOf(
-                                hslToColor(hue, 0f, lightness),
-                                hslToColor(hue, 1f, lightness)
-                            )
-                        ),
-                        thumbColor = currentColor
-                    )
-                }
-            }
-
-            Box(modifier = Modifier.weight(1f)) {
-                Column {
-                    Text(
-                        text = "Lightness: ${(lightness * 100).roundToInt()}%",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    GradientSlider(
-                        value = lightness,
-                        onValueChange = { lightness = it },
-                        valueRange = 0f..1f,
-                        gradient = Brush.horizontalGradient(
-                            listOf(Color.Black, hslToColor(hue, saturation, 0.5f), Color.White)
-                        ),
-                        thumbColor = currentColor
-                    )
-                }
-            }
+                ),
+                thumbColor = currentColor,
+                modifier = Modifier.weight(1f)
+            )
+            LabeledGradientSlider(
+                label = "Lightness: ${(lightness * 100).roundToInt()}%",
+                value = lightness,
+                onValueChange = { lightness = it },
+                valueRange = 0f..1f,
+                gradient = Brush.horizontalGradient(
+                    listOf(Color.Black, hslToColor(hue, saturation, 0.5f), Color.White)
+                ),
+                thumbColor = currentColor,
+                modifier = Modifier.weight(1f)
+            )
         }
+    }
+}
+
+/** Left-aligned label above a [GradientSlider]: the one slider pattern used on Visualize. */
+@Composable
+fun LabeledGradientSlider(
+    label: String,
+    value: Float,
+    onValueChange: (Float) -> Unit,
+    valueRange: ClosedFloatingPointRange<Float>,
+    gradient: Brush,
+    thumbColor: Color,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(Spacing.xs)
+    ) {
+        Text(text = label, style = MaterialTheme.typography.bodyMedium)
+        GradientSlider(
+            value = value,
+            onValueChange = onValueChange,
+            valueRange = valueRange,
+            gradient = gradient,
+            thumbColor = thumbColor
+        )
     }
 }
 
@@ -224,8 +234,8 @@ fun ColormapDropdown(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentWidth(Alignment.CenterHorizontally)
-            .widthIn(max = 260.dp)
-            .padding(horizontal = 16.dp)
+            .widthIn(max = Sizes.maxControlWidth)
+            .padding(horizontal = Spacing.screenGutter)
             .fillMaxWidth()
     ) {
         Surface(
@@ -274,11 +284,21 @@ fun ColormapDropdown(
 @Composable
 fun FractalSettings(visualizeModel: VisualizeModel) {
     val context = androidx.compose.ui.platform.LocalContext.current
+    // Same slider style as the background color controls; numeric parameters get a neutral
+    // theme gradient instead of a color one.
+    val trackGradient = Brush.horizontalGradient(
+        listOf(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.primary)
+    )
+    val thumbColor = MaterialTheme.colorScheme.primary
+    val regenerate = {
+        generateNewPlot(visualizeModel, context, randomizeSeed = false, showAds = false)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(horizontal = Spacing.screenGutter),
+        verticalArrangement = Arrangement.spacedBy(Spacing.m)
     ) {
         val iterationRange = when (visualizeModel.selectedFigure) {
             Figures.MANDELBROT -> 50f..1000f
@@ -289,95 +309,65 @@ fun FractalSettings(visualizeModel: VisualizeModel) {
             else -> 50f..2000f
         }
 
-        Text(
-            text = "Iterations: ${visualizeModel.fractalIterations}",
-            style = MaterialTheme.typography.bodyMedium
-        )
-        Slider(
+        LabeledGradientSlider(
+            label = "Iterations: ${visualizeModel.fractalIterations}",
             value = visualizeModel.fractalIterations.toFloat().coerceIn(iterationRange),
             onValueChange = {
                 visualizeModel.fractalIterations = it.toInt()
-                generateNewPlot(visualizeModel, context, randomizeSeed = false, showAds = false)
+                regenerate()
             },
             valueRange = iterationRange,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp)
-                .height(35.dp)
+            gradient = trackGradient,
+            thumbColor = thumbColor
         )
 
         if (visualizeModel.selectedFigure == Figures.JULIA) {
-            Spacer(Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(Spacing.s)
             ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "r: ${String.format("%.3f", visualizeModel.juliaR)}",
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Slider(
-                        value = visualizeModel.juliaR.toFloat(),
-                        onValueChange = {
-                            visualizeModel.juliaR = it.toDouble()
-                            visualizeModel.updateJuliaFromPolar()
-                            generateNewPlot(
-                                visualizeModel,
-                                context,
-                                randomizeSeed = false,
-                                showAds = false
-                            )
-                        },
-                        valueRange = 0f..2f,
-                        modifier = Modifier.height(30.dp)
-                    )
-                }
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "θ: ${String.format("%.3f", visualizeModel.juliaTheta)}",
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Slider(
-                        value = visualizeModel.juliaTheta.toFloat(),
-                        onValueChange = {
-                            visualizeModel.juliaTheta = it.toDouble()
-                            visualizeModel.updateJuliaFromPolar()
-                            generateNewPlot(
-                                visualizeModel,
-                                context,
-                                randomizeSeed = false,
-                                showAds = false
-                            )
-                        },
-                        valueRange = 0f..(2 * Math.PI).toFloat(),
-                        modifier = Modifier.height(30.dp)
-                    )
-                }
+                LabeledGradientSlider(
+                    label = "r: ${String.format("%.3f", visualizeModel.juliaR)}",
+                    value = visualizeModel.juliaR.toFloat(),
+                    onValueChange = {
+                        visualizeModel.juliaR = it.toDouble()
+                        visualizeModel.updateJuliaFromPolar()
+                        regenerate()
+                    },
+                    valueRange = 0f..2f,
+                    gradient = trackGradient,
+                    thumbColor = thumbColor,
+                    modifier = Modifier.weight(1f)
+                )
+                LabeledGradientSlider(
+                    label = "θ: ${String.format("%.3f", visualizeModel.juliaTheta)}",
+                    value = visualizeModel.juliaTheta.toFloat(),
+                    onValueChange = {
+                        visualizeModel.juliaTheta = it.toDouble()
+                        visualizeModel.updateJuliaFromPolar()
+                        regenerate()
+                    },
+                    valueRange = 0f..(2 * Math.PI).toFloat(),
+                    gradient = trackGradient,
+                    thumbColor = thumbColor,
+                    modifier = Modifier.weight(1f)
+                )
             }
         }
 
         if (visualizeModel.selectedFigure == Figures.MULTIBROT) {
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = "Power (d): ${String.format("%.2f", visualizeModel.multibrotD)}",
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Slider(
+            LabeledGradientSlider(
+                label = "Power (d): ${String.format("%.2f", visualizeModel.multibrotD)}",
                 value = visualizeModel.multibrotD.toFloat(),
                 onValueChange = {
                     visualizeModel.multibrotD = it.toDouble()
-                    generateNewPlot(visualizeModel, context, randomizeSeed = false, showAds = false)
+                    regenerate()
                 },
                 valueRange = 2f..10f,
-                modifier = Modifier.fillMaxWidth()
+                gradient = trackGradient,
+                thumbColor = thumbColor
             )
         }
-
     }
 }
 
@@ -447,7 +437,11 @@ fun SeedButton(visualizeModel: VisualizeModel) {
                 visualizeModel.userSeed = false
             }
         },
-        modifier = Modifier.padding(horizontal = 95.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentWidth(Alignment.CenterHorizontally)
+            .widthIn(max = Sizes.maxControlWidth)
+            .padding(horizontal = Spacing.screenGutter),
         textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),

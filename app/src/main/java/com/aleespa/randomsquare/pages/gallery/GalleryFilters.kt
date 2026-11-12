@@ -1,8 +1,9 @@
 package com.aleespa.randomsquare.pages.gallery
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
@@ -16,71 +17,41 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.pages.FilterTypesDialog
+import com.aleespa.randomsquare.ui.theme.Spacing
+
+private const val NO_TYPE_FILTER = "None"
 
 @Composable
 fun FilterChips(visualizeModel: VisualizeModel) {
     LazyRow(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        contentPadding = PaddingValues(horizontal = Spacing.screenGutter),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.s)
     ) {
         item {
-            FilterChip(
-                modifier = Modifier
-                    .padding(start = 10.dp),
-                onClick = {
-                    if (visualizeModel.darkFilter) {
-                        visualizeModel.darkFilter = false
-                    } else {
-                        visualizeModel.darkFilter = true
-                        visualizeModel.lightFilter = false
-                    }
-                },
-                label = { Text(stringResource(R.string.dark_name)) },
+            ToggleFilterChip(
+                label = stringResource(R.string.dark_name),
                 selected = visualizeModel.darkFilter,
-                leadingIcon = if (visualizeModel.darkFilter) {
-                    {
-                        Icon(
-                            imageVector = Icons.Filled.Done,
-                            contentDescription = "Done icon",
-                            modifier = Modifier.size(FilterChipDefaults.IconSize)
-                        )
-                    }
-                } else {
-                    null
-                },
+                onClick = {
+                    visualizeModel.darkFilter = !visualizeModel.darkFilter
+                    if (visualizeModel.darkFilter) visualizeModel.lightFilter = false
+                }
             )
         }
         item {
-            FilterChip(
-                modifier = Modifier
-                    .padding(start = 10.dp),
-                onClick = {
-                    if (visualizeModel.lightFilter) {
-                        visualizeModel.lightFilter = false
-                    } else {
-                        visualizeModel.lightFilter = true
-                        visualizeModel.darkFilter = false
-                    }
-                },
-                label = { Text(stringResource(R.string.light_name)) },
+            ToggleFilterChip(
+                label = stringResource(R.string.light_name),
                 selected = visualizeModel.lightFilter,
-                leadingIcon = if (visualizeModel.lightFilter) {
-                    {
-                        Icon(
-                            imageVector = Icons.Filled.Done,
-                            contentDescription = "Done icon",
-                            modifier = Modifier.size(FilterChipDefaults.IconSize)
-                        )
-                    }
-                } else {
-                    null
-                },
+                onClick = {
+                    visualizeModel.lightFilter = !visualizeModel.lightFilter
+                    if (visualizeModel.lightFilter) visualizeModel.darkFilter = false
+                }
             )
         }
         item {
@@ -89,30 +60,51 @@ fun FilterChips(visualizeModel: VisualizeModel) {
     }
 }
 
+/** Every selected chip shows the same check icon. */
+@Composable
+private fun SelectedCheckIcon() {
+    Icon(
+        imageVector = Icons.Filled.Done,
+        contentDescription = null,
+        modifier = Modifier.size(FilterChipDefaults.IconSize)
+    )
+}
+
+@Composable
+private fun ToggleFilterChip(label: String, selected: Boolean, onClick: () -> Unit) {
+    FilterChip(
+        selected = selected,
+        onClick = onClick,
+        label = { Text(label) },
+        leadingIcon = if (selected) {
+            { SelectedCheckIcon() }
+        } else null,
+    )
+}
 
 @Composable
 fun FilterChipWithDropdown(visualizeModel: VisualizeModel) {
+    val selected = visualizeModel.filterImageType != NO_TYPE_FILTER
     FilterChip(
-        selected = (visualizeModel.filterImageType != "None"),
+        selected = selected,
         onClick = { visualizeModel.showFilterDialog = true },
         label = {
-            if (visualizeModel.filterImageType == "None") {
-                Text(text = stringResource(R.string.filter_types))
-            } else {
+            if (selected) {
                 Text(stringResource(Figures.fromKey(visualizeModel.filterImageType).resourceStringId))
+            } else {
+                Text(text = stringResource(R.string.filter_types))
             }
         },
-        modifier = Modifier.padding(start = 10.dp),
-        trailingIcon = if (visualizeModel.filterImageType == "None") {
-            {
-                Icon(
-                    imageVector = Icons.Filled.ArrowDropDown,
-                    contentDescription = "Done icon",
-                    modifier = Modifier.size(FilterChipDefaults.IconSize)
-                )
-            }
-        } else {
-            null
+        leadingIcon = if (selected) {
+            { SelectedCheckIcon() }
+        } else null,
+        // Always shown: this chip opens a picker rather than toggling.
+        trailingIcon = {
+            Icon(
+                imageVector = Icons.Filled.ArrowDropDown,
+                contentDescription = null,
+                modifier = Modifier.size(FilterChipDefaults.IconSize)
+            )
         }
     )
     FilterTypesDialog(visualizeModel)

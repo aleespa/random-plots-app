@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
+import com.aleespa.randomsquare.ui.theme.Spacing
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.tools.LatexMathView
 import com.aleespa.randomsquare.tools.contrasted
@@ -48,7 +49,7 @@ fun VisualizeBox(
     // Sizes the square card. The default fills the width (single-column layout); the two-pane
     // layout passes a height-first aspect ratio instead.
     modifier: Modifier = Modifier
-        .padding(horizontal = 10.dp)
+        .padding(horizontal = Spacing.screenGutter)
         .aspectRatio(1f)
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current

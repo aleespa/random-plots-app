@@ -9,78 +9,74 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import com.aleespa.randomsquare.data.VisualizeModel
+import com.aleespa.randomsquare.ui.theme.Spacing
+
+// Every menu uses the same rhythm: a small gap above the action buttons, then Spacing.l between
+// sections, so switching figure types doesn't make the controls jump around.
+
+private fun LazyListScope.smallGap() = item { Spacer(Modifier.height(Spacing.s)) }
+private fun LazyListScope.sectionGap() = item { Spacer(Modifier.height(Spacing.l)) }
+
+private fun LazyListScope.colormapPicker(visualizeModel: VisualizeModel) = item {
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center,
+    ) {
+        ColormapDropdown(visualizeModel = visualizeModel)
+    }
+}
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 fun LazyListScope.fractalMenu(visualizeModel: VisualizeModel) {
-    item { Spacer(Modifier.height(10.dp)) }
+    smallGap()
     item {
         val context = LocalContext.current
         FractalActions(visualizeModel, context)
     }
-    item { Spacer(Modifier.height(16.dp)) }
-    item {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center,
-        ) {
-            ColormapDropdown(visualizeModel = visualizeModel)
-        }
-    }
-    item { Spacer(Modifier.height(8.dp)) }
+    sectionGap()
+    colormapPicker(visualizeModel)
+    sectionGap()
     item { FractalSettings(visualizeModel) }
-    item { Spacer(Modifier.height(16.dp)) }
+    sectionGap()
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 fun LazyListScope.newtonMenu(visualizeModel: VisualizeModel) {
-    item { Spacer(Modifier.height(10.dp)) }
+    smallGap()
     item {
         val context = LocalContext.current
         GeneratePlotButton(visualizeModel, context)
     }
-    item { Spacer(Modifier.height(30.dp)) }
-    item {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center,
-        ) {
-            ColormapDropdown(visualizeModel = visualizeModel)
-        }
-    }
-    item { Spacer(Modifier.height(8.dp)) }
+    sectionGap()
+    colormapPicker(visualizeModel)
+    sectionGap()
     item { FractalSettings(visualizeModel) }
-    item { Spacer(Modifier.height(16.dp)) }
+    sectionGap()
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 fun LazyListScope.standardMenu(visualizeModel: VisualizeModel) {
-    item { Spacer(Modifier.height(4.dp)) }
+    smallGap()
     item {
         val context = LocalContext.current
         GeneratePlotButton(visualizeModel, context)
     }
-    item { Spacer(Modifier.height(16.dp)) }
-    item {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center,
-        ) {
-            ColormapDropdown(visualizeModel = visualizeModel)
-        }
-    }
-    item { Spacer(Modifier.height(12.dp)) }
+    sectionGap()
+    colormapPicker(visualizeModel)
+    sectionGap()
     item { BackgroundColorSelector(visualizeModel) }
+    sectionGap()
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 fun LazyListScope.compositionMenu(visualizeModel: VisualizeModel) {
-    item { Spacer(Modifier.height(16.dp)) }
+    smallGap()
     item {
         val context = LocalContext.current
         GeneratePlotButton(visualizeModel, context)
     }
-    item { Spacer(Modifier.height(25.dp)) }
+    sectionGap()
     item { SeedButton(visualizeModel) }
+    sectionGap()
 }

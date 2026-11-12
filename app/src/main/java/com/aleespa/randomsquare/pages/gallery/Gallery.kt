@@ -13,10 +13,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
@@ -25,7 +22,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -35,8 +31,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -52,7 +46,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -64,6 +57,14 @@ import com.aleespa.randomsquare.BottomBarScreen
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.pages.DeleteAllConfirmationDialog
+import com.aleespa.randomsquare.pages.visualize.DropDownMenuIcon
+import com.aleespa.randomsquare.ui.components.AppTopBar
+import com.aleespa.randomsquare.ui.theme.Spacing
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.filled.DeleteSweep
+import androidx.compose.material.icons.filled.FilterAltOff
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import com.aleespa.randomsquare.tools.loadSavedImage
 import kotlinx.coroutines.launch
 
@@ -116,58 +117,16 @@ fun RandomGalleryTopBar(
     Scaffold(
         topBar = {
             Column {
-                TopAppBar(
-                    modifier = Modifier
-                        .height(75.dp),
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.surface,
-                    ),
-                    title = {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.saved_images),
-                                style = MaterialTheme.typography.headlineSmall.copy(
-                                    fontWeight = FontWeight.Bold
-                                )
-                            )
-                        }
-                    },
-                    navigationIcon = {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxHeight(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            IconButton(onClick = {
-                                navController.navigate(BottomBarScreen.Browse.route)
-                            }) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "Back"
-                                )
-                            }
-                        }
-                    },
+                // Gallery is a top-level tab like Browse/Visualize, so no back arrow;
+                // system back still returns to Browse (see BackHandler in Gallery()).
+                AppTopBar(
+                    title = stringResource(id = R.string.saved_images),
                     actions = {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .padding(end = 8.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            IconButton(
-                                onClick = { showMenu = !showMenu },
-                                modifier = Modifier.size(40.dp)
-                            ) {
+                        Box {
+                            IconButton(onClick = { showMenu = !showMenu }) {
                                 Icon(
                                     imageVector = Icons.Default.MoreVert,
-                                    contentDescription = "More options",
-                                    modifier = Modifier.size(28.dp)
+                                    contentDescription = stringResource(R.string.more_options)
                                 )
                             }
                             DropdownMenu(
@@ -176,6 +135,7 @@ fun RandomGalleryTopBar(
                             ) {
                                 DropdownMenuItem(
                                     text = { Text(stringResource(R.string.clear_filters)) },
+                                    leadingIcon = { DropDownMenuIcon(Icons.Default.FilterAltOff) },
                                     onClick = {
                                         visualizeModel.clearFilters()
                                         showMenu = false
@@ -183,6 +143,7 @@ fun RandomGalleryTopBar(
                                 )
                                 DropdownMenuItem(
                                     text = { Text(stringResource(R.string.delete_all_images)) },
+                                    leadingIcon = { DropDownMenuIcon(Icons.Default.DeleteSweep) },
                                     onClick = {
                                         visualizeModel.showDeleteAllDialog = true
                                         showMenu = false
@@ -190,6 +151,9 @@ fun RandomGalleryTopBar(
                                 )
                                 DropdownMenuItem(
                                     text = { Text(stringResource(R.string.instagram)) },
+                                    leadingIcon = {
+                                        DropDownMenuIcon(Icons.AutoMirrored.Filled.OpenInNew)
+                                    },
                                     onClick = {
                                         val intent = Intent(
                                             Intent.ACTION_VIEW,
@@ -201,15 +165,12 @@ fun RandomGalleryTopBar(
                                 )
                             }
                         }
-
                     },
                 )
                 FilterChips(visualizeModel)
-
             }
         },
-
-        ) { innerPadding ->
+    ) { innerPadding ->
         ScrollContent(innerPadding, context, navController, visualizeModel)
     }
 
@@ -262,7 +223,7 @@ fun ScrollContent(
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = Spacing.screenGutter)
             )
         } else {
             LazyVerticalGrid(
@@ -270,11 +231,13 @@ fun ScrollContent(
                 columns = GridCells.Adaptive(minSize = 120.dp),
                 modifier = Modifier
                     .fillMaxSize(),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+                verticalArrangement = Arrangement.spacedBy(Spacing.xs),
                 contentPadding = PaddingValues(
-                    start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
-                    end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
-                    top = innerPadding.calculateTopPadding(),
-                    bottom = innerPadding.calculateBottomPadding() + 16.dp
+                    start = innerPadding.calculateStartPadding(LayoutDirection.Ltr) + Spacing.screenGutter,
+                    end = innerPadding.calculateEndPadding(LayoutDirection.Ltr) + Spacing.screenGutter,
+                    top = innerPadding.calculateTopPadding() + Spacing.s,
+                    bottom = innerPadding.calculateBottomPadding() + Spacing.l
                 )
             ) {
                 items(images, key = { it.id }) { image ->
@@ -284,9 +247,11 @@ fun ScrollContent(
                             .crossfade(true)
                             .build(),
                         contentDescription = null,
+                        // Crop: saved images can have any aspect ratio (wallpaper sizes).
+                        contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .padding(2.dp)
                             .aspectRatio(1f)
+                            .clip(MaterialTheme.shapes.medium)
                             .clickable {
                                 loadSavedImage(visualizeModel, image, context)
                                 navController.navigate(BottomBarScreen.Visualize.route)

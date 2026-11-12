@@ -2,7 +2,8 @@ package com.aleespa.randomsquare.pages.browse
 
 import android.app.Activity
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.size
+import androidx.compose.ui.res.stringResource
+import com.aleespa.randomsquare.R
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -61,8 +62,7 @@ fun Browse(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Settings,
-                            contentDescription = "Settings",
-                            modifier = Modifier.size(28.dp)
+                            contentDescription = stringResource(R.string.settings)
                         )
                     }
                 }

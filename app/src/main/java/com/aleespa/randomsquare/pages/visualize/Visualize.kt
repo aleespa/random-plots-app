@@ -40,6 +40,7 @@ import com.aleespa.randomsquare.pages.ColormapSelectionDialog
 import com.aleespa.randomsquare.tools.generateNewtonLatex
 import com.aleespa.randomsquare.tools.loadBitmapFromFile
 import com.aleespa.randomsquare.tools.readTexAssets
+import com.aleespa.randomsquare.ui.theme.Spacing
 
 /** Single-column content never gets wider than this (keeps the square image sane on tablets). */
 private val MaxSingleColumnWidth = 600.dp
@@ -144,18 +145,15 @@ fun Visualize(
                         .fillMaxHeight()
                         .widthIn(max = MaxSingleColumnWidth),
                 ) {
-                    item { Spacer(Modifier.height(20.dp)) }
                     item { HeaderSection(visualizeModel, context) }
-                    item { Spacer(Modifier.height(18.dp)) }
+                    item { Spacer(Modifier.height(Spacing.s)) }
                     item { VisualizeBox(visualizeModel) }
                     item { SeedText(visualizeModel) }
-                    item { Spacer(Modifier.height(6.dp)) }
 
+                    // Menus own their spacing (see Menus.kt), including the bottom gap.
                     with(visualizeModel.selectedFigure) {
                         menuType(visualizeModel)
                     }
-
-                    item { Spacer(Modifier.height(16.dp)) }
                 }
             }
         }
@@ -205,13 +203,10 @@ private fun TwoPaneVisualize(visualizeModel: VisualizeModel) {
             verticalArrangement = Arrangement.Center
         ) {
             item { HeaderSection(visualizeModel, context) }
-            item { Spacer(Modifier.height(12.dp)) }
 
             with(visualizeModel.selectedFigure) {
                 menuType(visualizeModel)
             }
-
-            item { Spacer(Modifier.height(16.dp)) }
         }
     }
 }
