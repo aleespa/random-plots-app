@@ -8,7 +8,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -28,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
@@ -41,10 +45,20 @@ import androidx.navigation.NavHostController
 import coil3.compose.rememberAsyncImagePainter
 import com.aleespa.randomsquare.BottomBarScreen
 import com.aleespa.randomsquare.FigureType
+import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.getFiguresByType
 import com.aleespa.randomsquare.tools.generateNewPlot
 import com.aleespa.randomsquare.tools.readTexAssets
+
+/** Horizontal gutter shared by the section headings, carousels and grids. */
+private val SectionPadding = 16.dp
+private val CardSpacing = 8.dp
+private val CardHeight = 205.dp
+
+/** Windows at least this wide show each section as a grid instead of a carousel. */
+private val GridLayoutMinWidth = 600.dp
+private val GridMinCardWidth = 200.dp
 
 @Composable
 fun BrowserScrollable(
@@ -75,102 +89,151 @@ fun BrowserScrollable(
         item {
             Spacer(modifier = Modifier.height(innerPadding.calculateTopPadding() - 10.dp))
         }
-        item { Carousel(visualizeModel, navController, context) }
+        item { FigureSections(visualizeModel, navController, context) }
+    }
+}
+
+/**
+ * One titled section per [FigureType]. Compact windows (phones) use a horizontal carousel; wider
+ * windows lay the cards out in a grid that fills the width, since every section would otherwise
+ * fit in a short row and leave the rest of the screen empty.
+ */
+@Composable
+fun FigureSections(
+    visualizeModel: VisualizeModel, navController: NavHostController,
+    context: Context = LocalContext.current
+) {
+    val onFigureClick: (Figures) -> Unit = { figure ->
+        visualizeModel.selectedFigure = figure
+        visualizeModel.latexString = readTexAssets(context, figure.key)
+        generateNewPlot(visualizeModel, context)
+        navController.navigate(BottomBarScreen.Visualize.route)
+    }
+
+    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+        val useGrid = maxWidth >= GridLayoutMinWidth
+        val gridColumns = (((maxWidth - SectionPadding * 2 + CardSpacing) /
+                (GridMinCardWidth + CardSpacing)).toInt()).coerceAtLeast(2)
+
+        Column {
+            for (figureType in FigureType.entries) {
+                val figures = getFiguresByType(figureType)
+                PlotTypeDescription(stringResource(figureType.stringId))
+                if (useGrid) {
+                    FigureGrid(figures, gridColumns, onFigureClick)
+                } else {
+                    FigureCarousel(figures, onFigureClick)
+                }
+            }
+        }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Carousel(
-    visualizeModel: VisualizeModel, navController: NavHostController,
-    context: Context = LocalContext.current
-) {
-
-    for (figureType in FigureType.entries) {
-        val figures = getFiguresByType(figureType)
-        val carouselState = rememberCarouselState { figures.count() }
-
-        PlotTypeDescription(stringResource(figureType.stringId))
-        HorizontalMultiBrowseCarousel(
+private fun FigureCarousel(figures: List<Figures>, onFigureClick: (Figures) -> Unit) {
+    val carouselState = rememberCarouselState { figures.count() }
+    HorizontalMultiBrowseCarousel(
+        state = carouselState,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(221.dp),
+        preferredItemWidth = 186.dp,
+        itemSpacing = CardSpacing,
+        contentPadding = PaddingValues(horizontal = SectionPadding),
+        flingBehavior = CarouselDefaults.singleAdvanceFlingBehavior(
             state = carouselState,
+            snapAnimationSpec = spring(
+                stiffness = 5000f,
+                dampingRatio = Spring.DampingRatioNoBouncy
+            )
+        )
+    ) { i ->
+        val figure = figures[i]
+        FigureCard(
+            figure = figure,
             modifier = Modifier
-                .fillMaxWidth()
-                .height(221.dp),
-            preferredItemWidth = 186.dp,
-            itemSpacing = 8.dp,
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            flingBehavior = CarouselDefaults.singleAdvanceFlingBehavior(
-                state = carouselState,
-                snapAnimationSpec = spring(
-                    stiffness = 5000f,
-                    dampingRatio = Spring.DampingRatioNoBouncy
-                )
-            )
-        ) { i ->
-            val item = figures[i]
-            val sampleImage = item.sampleImage
-            val painter = rememberAsyncImagePainter(
-                model = sampleImage,
-                contentScale = ContentScale.Crop,
-                filterQuality = FilterQuality.High
-            )
-            Box(
-                modifier = Modifier
-                    .height(205.dp)
-                    .maskClip(MaterialTheme.shapes.extraLarge)
-                    .clickable {
-                        visualizeModel.selectedFigure = item
+                .height(CardHeight)
+                .maskClip(MaterialTheme.shapes.extraLarge)
+                .clickable { onFigureClick(figure) }
+        )
+    }
+}
 
-                        visualizeModel.latexString = readTexAssets(
-                            context,
-                            visualizeModel.selectedFigure.key
-                        )
-                        generateNewPlot(visualizeModel, context)
-                        navController.navigate(BottomBarScreen.Visualize.route)
-                    }
-            ) {
-                Image(
-                    modifier = Modifier.fillMaxSize(),
-                    painter = painter,
-                    contentDescription = stringResource(item.resourceStringId),
-                    contentScale = ContentScale.Crop
-                )
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Brush.verticalGradient(
-                                0.5f to Color.Transparent,
-                                1f to Color.Black.copy(alpha = 0.7f)
-                            )
-                        )
-                )
-                Text(
-                    text = stringResource(item.resourceStringId),
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(16.dp),
-                    color = Color.White,
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold
+@Composable
+private fun FigureGrid(figures: List<Figures>, columns: Int, onFigureClick: (Figures) -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = SectionPadding, vertical = CardSpacing),
+        verticalArrangement = Arrangement.spacedBy(CardSpacing)
+    ) {
+        figures.chunked(columns).forEach { rowFigures ->
+            Row(horizontalArrangement = Arrangement.spacedBy(CardSpacing)) {
+                rowFigures.forEach { figure ->
+                    FigureCard(
+                        figure = figure,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(CardHeight)
+                            .clip(MaterialTheme.shapes.extraLarge)
+                            .clickable { onFigureClick(figure) }
+                    )
+                }
+                // Keep cards in a partial last row the same width as the others.
+                repeat(columns - rowFigures.size) { Spacer(Modifier.weight(1f)) }
+            }
+        }
+    }
+}
+
+/** Sample image with a bottom scrim and the figure name; shared by carousel and grid. */
+@Composable
+private fun FigureCard(figure: Figures, modifier: Modifier) {
+    val painter = rememberAsyncImagePainter(
+        model = figure.sampleImage,
+        contentScale = ContentScale.Crop,
+        filterQuality = FilterQuality.High
+    )
+    Box(modifier = modifier) {
+        Image(
+            modifier = Modifier.fillMaxSize(),
+            painter = painter,
+            contentDescription = stringResource(figure.resourceStringId),
+            contentScale = ContentScale.Crop
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        0.5f to Color.Transparent,
+                        1f to Color.Black.copy(alpha = 0.7f)
                     )
                 )
-            }
-
-        }
+        )
+        Text(
+            text = stringResource(figure.resourceStringId),
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(16.dp),
+            color = Color.White,
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.Bold
+            )
+        )
     }
 }
 
 
 @Composable
 fun PlotTypeDescription(text: String) {
-    // Start-aligned with the carousel's 16.dp content padding, so headings line up with the first
-    // card on every width (carousels can't center their items on wide screens).
+    // Start-aligned with the 16.dp section padding, so headings line up with the first card.
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(40.dp)
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = SectionPadding),
         contentAlignment = Alignment.CenterStart
     ) {
         Text(
