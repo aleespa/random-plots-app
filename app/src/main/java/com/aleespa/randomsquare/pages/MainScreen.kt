@@ -1,19 +1,18 @@
 package com.aleespa.randomsquare.pages
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarDefaults
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaults
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -36,7 +35,17 @@ import com.aleespa.randomsquare.pages.browse.SettingsPage
 import com.aleespa.randomsquare.pages.gallery.Gallery
 import com.aleespa.randomsquare.pages.visualize.Visualize
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+private val topLevelScreens = listOf(
+    BottomBarScreen.Browse,
+    BottomBarScreen.Visualize,
+    BottomBarScreen.Gallery
+)
+
+/**
+ * App shell. Shows a bottom navigation bar on compact windows (phones) and a navigation rail on
+ * medium/expanded windows (tablets, unfolded foldables). The scaffold lays the screens out next
+ * to the navigation component and consumes its insets, so screens need no extra bottom padding.
+ */
 @Composable
 fun MainScreen(
     visualizeModel: VisualizeModel
@@ -53,62 +62,67 @@ fun MainScreen(
         label = "BlurAnimation"
     )
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Scaffold(
-            modifier = Modifier.blur(blurRadius),
-            bottomBar = { BottomBar(navController, visualizeModel) }
-        ) {
-            BottomNavGraph(
-                visualizeModel = remember { visualizeModel },
-                navController = navController
-            )
-        }
-    }
-}
-
-@Composable
-fun BottomBar(navController: NavHostController, visualizeModel: VisualizeModel) {
-
-    val screens = listOf(
-        BottomBarScreen.Browse,
-        BottomBarScreen.Visualize,
-        BottomBarScreen.Gallery
-    )
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+    val navigationContainerColor = MaterialTheme.colorScheme.surface
+    // Material defaults the selected label to `secondary`, which in the light scheme is a pale
+    // gray — lighter than the unselected labels. Use the strongest text color instead.
+    val selectedItemContentColor = MaterialTheme.colorScheme.onSurface
+    val navigationItemColors = NavigationSuiteDefaults.itemColors(
+        navigationBarItemColors = NavigationBarItemDefaults.colors(
+            selectedIconColor = selectedItemContentColor,
+            selectedTextColor = selectedItemContentColor,
+        ),
+        navigationRailItemColors = NavigationRailItemDefaults.colors(
+            selectedIconColor = selectedItemContentColor,
+            selectedTextColor = selectedItemContentColor,
+        ),
+    )
 
-    NavigationBar(
-        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
-        tonalElevation = 0.dp,
-        windowInsets = NavigationBarDefaults.windowInsets
-    ) {
-        screens.forEach { screen ->
-            val isSelected = currentDestination?.hierarchy?.any {
-                it.route == screen.route
-            } == true
-            NavigationBarItem(
-                icon = { Icon(screen.icon, contentDescription = null) },
-                label = { Text(stringResource(id = screen.titleResourceId)) },
-                selected = isSelected,
-                onClick = {
-                    if (!isSelected) {
-                        navController.navigate(screen.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = false
+    NavigationSuiteScaffold(
+        modifier = Modifier.blur(blurRadius),
+        layoutType = NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(
+            currentWindowAdaptiveInfoV2()
+        ),
+        navigationSuiteColors = NavigationSuiteDefaults.colors(
+            navigationBarContainerColor = navigationContainerColor,
+            navigationRailContainerColor = navigationContainerColor,
+        ),
+        navigationSuiteItems = {
+            topLevelScreens.forEach { screen ->
+                val isSelected = currentDestination?.hierarchy?.any {
+                    it.route == screen.route
+                } == true
+                item(
+                    selected = isSelected,
+                    icon = { Icon(screen.icon, contentDescription = null) },
+                    label = { Text(stringResource(id = screen.titleResourceId)) },
+                    colors = navigationItemColors,
+                    onClick = {
+                        if (!isSelected) {
+                            navController.navigate(screen.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = false
+                                }
+                                launchSingleTop = true
+                                restoreState = false
                             }
-                            launchSingleTop = true
-                            restoreState = false
-                        }
-                    } else {
-                        when (screen) {
-                            BottomBarScreen.Browse -> visualizeModel.scrollToTopBrowse++
-                            BottomBarScreen.Gallery -> visualizeModel.scrollToTopGallery++
-                            else -> {}
+                        } else {
+                            when (screen) {
+                                BottomBarScreen.Browse -> visualizeModel.scrollToTopBrowse++
+                                BottomBarScreen.Gallery -> visualizeModel.scrollToTopGallery++
+                                else -> {}
+                            }
                         }
                     }
-                }
-            )
+                )
+            }
         }
+    ) {
+        BottomNavGraph(
+            visualizeModel = remember { visualizeModel },
+            navController = navController
+        )
     }
 }
 

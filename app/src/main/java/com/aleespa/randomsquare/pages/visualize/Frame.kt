@@ -39,12 +39,18 @@ import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.tools.LatexMathView
 import com.aleespa.randomsquare.tools.contrasted
 import com.aleespa.randomsquare.tools.generateNewPlot
-import com.aleespa.randomsquare.ui.theme.DarkColorScheme
 
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun VisualizeBox(visualizeModel: VisualizeModel) {
+fun VisualizeBox(
+    visualizeModel: VisualizeModel,
+    // Sizes the square card. The default fills the width (single-column layout); the two-pane
+    // layout passes a height-first aspect ratio instead.
+    modifier: Modifier = Modifier
+        .padding(horizontal = 10.dp)
+        .aspectRatio(1f)
+) {
     val context = androidx.compose.ui.platform.LocalContext.current
     var offset by remember { mutableStateOf(Offset.Zero) }
     var scale by remember { mutableStateOf(1f) }
@@ -53,9 +59,7 @@ fun VisualizeBox(visualizeModel: VisualizeModel) {
         elevation = CardDefaults.cardElevation(
             defaultElevation = 8.dp
         ),
-        modifier = Modifier
-            .padding(horizontal = 10.dp)
-            .aspectRatio(1f)
+        modifier = modifier
             .clickable { visualizeModel.showInfo = !visualizeModel.showInfo }
             .then(
                 if (visualizeModel.selectedFigure.figureType == FigureType.FRACTAL ||
@@ -146,7 +150,7 @@ fun VisualizeBox(visualizeModel: VisualizeModel) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(DarkColorScheme.surface),
+                    .background(MaterialTheme.colorScheme.surfaceContainerHigh),
                 contentAlignment = Alignment.Center
             ) {
                 val latexToShow = if (visualizeModel.selectedFigure == Figures.NEWTON) {
@@ -154,7 +158,7 @@ fun VisualizeBox(visualizeModel: VisualizeModel) {
                 } else {
                     visualizeModel.latexString
                 }
-                LatexMathView(latex = latexToShow, bgColor = DarkColorScheme.surface.toArgb())
+                LatexMathView(latex = latexToShow, bgColor = MaterialTheme.colorScheme.surfaceContainerHigh.toArgb())
             }
         }
     }
@@ -189,14 +193,14 @@ fun SeedText(visualizeModel: VisualizeModel) {
                         "y: ${String.format("%.4f", visualizeModel.fractalYCenter)}  " +
                         "zoom: ${String.format("%.2e", 1.0 / visualizeModel.fractalZoom)}" + "x",
                 style = MaterialTheme.typography.labelSmall,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.align(Alignment.Center)
             )
         } else {
             Text(
                 text = "Seed: ${visualizeModel.randomSeed}",
                 style = MaterialTheme.typography.labelSmall,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.align(Alignment.Center)
             )
         }

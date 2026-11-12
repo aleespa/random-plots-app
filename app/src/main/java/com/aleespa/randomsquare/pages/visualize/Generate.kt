@@ -230,7 +230,7 @@ fun GeneratePlotButton(
                     ) {
                         if (visualizeModel.isSavingLoading) {
                             CircularProgressIndicator(
-                                color = MaterialTheme.colorScheme.onPrimary,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer,
                                 modifier = Modifier.size(20.dp),
                                 strokeWidth = 2.dp
                             )

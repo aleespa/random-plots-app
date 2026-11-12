@@ -267,14 +267,14 @@ fun ScrollContent(
         } else {
             LazyVerticalGrid(
                 state = gridState,
-                columns = GridCells.Fixed(3),
+                columns = GridCells.Adaptive(minSize = 120.dp),
                 modifier = Modifier
                     .fillMaxSize(),
                 contentPadding = PaddingValues(
                     start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
                     end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
                     top = innerPadding.calculateTopPadding(),
-                    bottom = innerPadding.calculateBottomPadding() + 80.dp
+                    bottom = innerPadding.calculateBottomPadding() + 16.dp
                 )
             ) {
                 items(images, key = { it.id }) { image ->

@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -70,7 +69,7 @@ fun BrowserScrollable(
         contentPadding = PaddingValues(
             start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
             end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
-            bottom = innerPadding.calculateBottomPadding() + 80.dp
+            bottom = innerPadding.calculateBottomPadding() + 16.dp
         )
     ) {
         item {
@@ -95,7 +94,7 @@ fun Carousel(
         HorizontalMultiBrowseCarousel(
             state = carouselState,
             modifier = Modifier
-                .width(412.dp)
+                .fillMaxWidth()
                 .height(221.dp),
             preferredItemWidth = 186.dp,
             itemSpacing = 8.dp,
@@ -165,11 +164,14 @@ fun Carousel(
 
 @Composable
 fun PlotTypeDescription(text: String) {
+    // Start-aligned with the carousel's 16.dp content padding, so headings line up with the first
+    // card on every width (carousels can't center their items on wide screens).
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(40.dp),
-        contentAlignment = Alignment.Center
+            .height(40.dp)
+            .padding(horizontal = 16.dp),
+        contentAlignment = Alignment.CenterStart
     ) {
         Text(
             text = text,
