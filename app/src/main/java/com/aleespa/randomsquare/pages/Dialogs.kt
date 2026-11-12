@@ -53,6 +53,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.aleespa.randomsquare.Colormaps
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
+import com.aleespa.randomsquare.displayName
 import com.aleespa.randomsquare.ui.theme.Sizes
 import com.aleespa.randomsquare.ui.theme.Spacing
 import androidx.compose.material3.AlertDialogDefaults
@@ -81,7 +82,7 @@ fun AspectRatioDialog(
                     VisualizeOptionsButtons(
                         id = R.drawable.fit,
                         iconSize = 50.dp,
-                        bottomText = "Fit"
+                        bottomText = stringResource(R.string.fit)
                     ) {
                         visualizeModel.toFitAspectRatio = true
                         onConfirm()
@@ -89,7 +90,7 @@ fun AspectRatioDialog(
                     VisualizeOptionsButtons(
                         id = R.drawable.fill,
                         iconSize = 50.dp,
-                        bottomText = "Fill"
+                        bottomText = stringResource(R.string.fill)
                     ) {
                         visualizeModel.toFitAspectRatio = false
                         onConfirm()
@@ -359,7 +360,7 @@ fun ColormapSelectionDialog(
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
-                                    text = colormap.text,
+                                    text = colormap.displayName(),
                                     style = MaterialTheme.typography.labelSmall,
                                     textAlign = TextAlign.Center,
                                     maxLines = 1,

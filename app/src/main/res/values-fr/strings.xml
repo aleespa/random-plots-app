@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Random</string>
-    <string name="generate">Générer\nRandom Plot</string>
+    <string name="generate">Générer\nun graphique</string>
     <string name="save">Enregistrer dans la galerie</string>
     <string name="set_wallpaper">Définir comme fond d\'écran</string>
     <string name="generate_img_first">Générer un graphique d\'abord</string>
@@ -83,4 +83,51 @@
     <string name="reload">Recharger</string>
     <string name="reset">Réinitialiser</string>
     <string name="select_colormap">Choisir une palette</string>
+    <string name="hue_label">Teinte : %1$d</string>
+    <string name="saturation_label">Saturation : %1$d%%</string>
+    <string name="lightness_label">Luminosité : %1$d%%</string>
+    <string name="iterations_label">Itérations : %1$d</string>
+    <string name="power_label">Puissance (d) : %1$s</string>
+    <string name="seed">Graine</string>
+    <string name="seed_value">Graine : %1$d</string>
+    <string name="fractal_position" formatted="true">x : %1$s  y : %2$s  zoom : %3$s×</string>
+    <string name="fit">Ajuster</string>
+    <string name="fill">Remplir</string>
+    <string name="clear">Effacer</string>
+    <string name="cm_solid_white">Blanc uni</string>
+    <string name="cm_solid_black">Noir uni</string>
+    <string name="cm_rainbow">Arc-en-ciel</string>
+    <string name="cm_heat">Chaleur</string>
+    <string name="cm_cool">Froid</string>
+    <string name="cm_grayscale">Gris</string>
+    <string name="cm_ocean">Océan</string>
+    <string name="cm_forest">Forêt</string>
+    <string name="cm_sunset">Crépuscule</string>
+    <string name="cm_pastel">Pastel</string>
+    <string name="cm_copper">Cuivre</string>
+    <string name="cm_bone">Os</string>
+    <string name="cm_spring">Printemps</string>
+    <string name="cm_summer">Été</string>
+    <string name="cm_autumn">Automne</string>
+    <string name="cm_winter">Hiver</string>
+    <string name="cm_hot">Chaud</string>
+    <string name="cm_white">Blanc</string>
+    <string name="cm_black">Noir</string>
+    <string name="cm_red">Rouge</string>
+    <string name="cm_ice">Glace</string>
+    <string name="cm_blue">Bleu</string>
+    <string name="cm_emerald">Émeraude</string>
+    <string name="cm_fire">Feu</string>
+    <string name="cm_electric">Électrique</string>
+    <string name="theme_source">Source du thème</string>
+    <string name="device">Appareil</string>
+    <string name="image">Image</string>
+    <string name="coin_flip_widget_description">Simule un lancer de pièce (pile ou face).</string>
+    <string name="dice_widget_description">Simule le lancer d\'un dé à 6 faces (1-6).</string>
+    <string name="digit4_widget_description">Génère un nombre aléatoire à 4 chiffres (0000-9999).</string>
+    <string name="coin_flip_widget_name">Pile ou face</string>
+    <string name="dice_widget_name">Dé</string>
+    <string name="digit4_widget_name">Nombre à 4 chiffres</string>
+    <string name="heads">Face</string>
+    <string name="tails">Pile</string>
 </resources>

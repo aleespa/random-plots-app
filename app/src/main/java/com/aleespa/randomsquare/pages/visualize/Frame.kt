@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.R
+import androidx.compose.ui.res.stringResource
 import com.aleespa.randomsquare.ui.theme.Spacing
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.tools.LatexMathView
@@ -185,21 +186,24 @@ fun SeedText(visualizeModel: VisualizeModel) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = Spacing.screenGutter),
         contentAlignment = Alignment.Center
     ) {
         if (visualizeModel.selectedFigure.figureType == FigureType.FRACTAL) {
             Text(
-                text = "x: ${String.format("%.4f", visualizeModel.fractalXCenter)}  " +
-                        "y: ${String.format("%.4f", visualizeModel.fractalYCenter)}  " +
-                        "zoom: ${String.format("%.2e", 1.0 / visualizeModel.fractalZoom)}" + "x",
+                text = stringResource(
+                    R.string.fractal_position,
+                    String.format("%.4f", visualizeModel.fractalXCenter),
+                    String.format("%.4f", visualizeModel.fractalYCenter),
+                    String.format("%.2e", 1.0 / visualizeModel.fractalZoom)
+                ),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.align(Alignment.Center)
             )
         } else {
             Text(
-                text = "Seed: ${visualizeModel.randomSeed}",
+                text = stringResource(R.string.seed_value, visualizeModel.randomSeed),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.align(Alignment.Center)

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Random</string>
-    <string name="generate">"Generar\nRandom Plot"</string>
+    <string name="generate">"Generar\ngráfico"</string>
     <string name="save">Guardar en galería</string>
     <string name="set_wallpaper">Definir como fondo de pantalla</string>
     <string name="generate_img_first">Genere una gráfica primero</string>
@@ -83,4 +83,51 @@
     <string name="reload">Recargar</string>
     <string name="reset">Restablecer</string>
     <string name="select_colormap">Seleccionar mapa de color</string>
+    <string name="hue_label">Tono: %1$d</string>
+    <string name="saturation_label">Saturación: %1$d%%</string>
+    <string name="lightness_label">Luminosidad: %1$d%%</string>
+    <string name="iterations_label">Iteraciones: %1$d</string>
+    <string name="power_label">Potencia (d): %1$s</string>
+    <string name="seed">Semilla</string>
+    <string name="seed_value">Semilla: %1$d</string>
+    <string name="fractal_position" formatted="true">x: %1$s  y: %2$s  zoom: %3$s×</string>
+    <string name="fit">Ajustar</string>
+    <string name="fill">Rellenar</string>
+    <string name="clear">Borrar</string>
+    <string name="cm_solid_white">Blanco liso</string>
+    <string name="cm_solid_black">Negro liso</string>
+    <string name="cm_rainbow">Arcoíris</string>
+    <string name="cm_heat">Calor</string>
+    <string name="cm_cool">Frío</string>
+    <string name="cm_grayscale">Grises</string>
+    <string name="cm_ocean">Océano</string>
+    <string name="cm_forest">Bosque</string>
+    <string name="cm_sunset">Atardecer</string>
+    <string name="cm_pastel">Pastel</string>
+    <string name="cm_copper">Cobre</string>
+    <string name="cm_bone">Hueso</string>
+    <string name="cm_spring">Primavera</string>
+    <string name="cm_summer">Verano</string>
+    <string name="cm_autumn">Otoño</string>
+    <string name="cm_winter">Invierno</string>
+    <string name="cm_hot">Caliente</string>
+    <string name="cm_white">Blanco</string>
+    <string name="cm_black">Negro</string>
+    <string name="cm_red">Rojo</string>
+    <string name="cm_ice">Hielo</string>
+    <string name="cm_blue">Azul</string>
+    <string name="cm_emerald">Esmeralda</string>
+    <string name="cm_fire">Fuego</string>
+    <string name="cm_electric">Eléctrico</string>
+    <string name="theme_source">Fuente del tema</string>
+    <string name="device">Dispositivo</string>
+    <string name="image">Imagen</string>
+    <string name="coin_flip_widget_description">Simula lanzar una moneda (cara o cruz).</string>
+    <string name="dice_widget_description">Simula lanzar un dado de 6 caras (1-6).</string>
+    <string name="digit4_widget_description">Genera un número aleatorio de 4 cifras (0000-9999).</string>
+    <string name="coin_flip_widget_name">Cara o cruz</string>
+    <string name="dice_widget_name">Dado</string>
+    <string name="digit4_widget_name">Número de 4 cifras</string>
+    <string name="heads">Cara</string>
+    <string name="tails">Cruz</string>
 </resources>

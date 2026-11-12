@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import com.aleespa.randomsquare.R
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.core.content.FileProvider
@@ -54,7 +55,7 @@ fun setWallpaperAfterAd(visualizeModel: VisualizeModel, context: Context) {
             visualizeModel
         )
     } else {
-        Toast.makeText(context, "Failed to set wallpaper", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, R.string.wallpaper_fail, Toast.LENGTH_SHORT).show()
     }
 }
 

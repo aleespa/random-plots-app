@@ -61,6 +61,9 @@ import com.aleespa.randomsquare.tools.hslToColor
 import com.aleespa.randomsquare.tools.toHsl
 import kotlin.math.roundToInt
 import com.aleespa.randomsquare.ui.theme.Sizes
+import com.aleespa.randomsquare.R
+import com.aleespa.randomsquare.displayName
+import androidx.compose.ui.res.stringResource
 import com.aleespa.randomsquare.ui.theme.Spacing
 
 @Composable
@@ -94,7 +97,7 @@ fun BackgroundColorSelector(
         } + listOf(hslToColor(0f, saturation, lightness))
 
         LabeledGradientSlider(
-            label = "Hue: ${hue.roundToInt()}",
+            label = stringResource(R.string.hue_label, hue.roundToInt()),
             value = hue,
             onValueChange = { hue = it },
             valueRange = 0f..360f,
@@ -107,7 +110,7 @@ fun BackgroundColorSelector(
             horizontalArrangement = Arrangement.spacedBy(Spacing.s)
         ) {
             LabeledGradientSlider(
-                label = "Saturation: ${(saturation * 100).roundToInt()}%",
+                label = stringResource(R.string.saturation_label, (saturation * 100).roundToInt()),
                 value = saturation,
                 onValueChange = { saturation = it },
                 valueRange = 0f..1f,
@@ -121,7 +124,7 @@ fun BackgroundColorSelector(
                 modifier = Modifier.weight(1f)
             )
             LabeledGradientSlider(
-                label = "Lightness: ${(lightness * 100).roundToInt()}%",
+                label = stringResource(R.string.lightness_label, (lightness * 100).roundToInt()),
                 value = lightness,
                 onValueChange = { lightness = it },
                 valueRange = 0f..1f,
@@ -250,7 +253,7 @@ fun ColormapDropdown(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = selectedColormap.text,
+                    text = selectedColormap.displayName(),
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.weight(1f),
                     maxLines = 1,
@@ -310,7 +313,7 @@ fun FractalSettings(visualizeModel: VisualizeModel) {
         }
 
         LabeledGradientSlider(
-            label = "Iterations: ${visualizeModel.fractalIterations}",
+            label = stringResource(R.string.iterations_label, visualizeModel.fractalIterations),
             value = visualizeModel.fractalIterations.toFloat().coerceIn(iterationRange),
             onValueChange = {
                 visualizeModel.fractalIterations = it.toInt()
@@ -357,7 +360,7 @@ fun FractalSettings(visualizeModel: VisualizeModel) {
 
         if (visualizeModel.selectedFigure == Figures.MULTIBROT) {
             LabeledGradientSlider(
-                label = "Power (d): ${String.format("%.2f", visualizeModel.multibrotD)}",
+                label = stringResource(R.string.power_label, String.format("%.2f", visualizeModel.multibrotD)),
                 value = visualizeModel.multibrotD.toFloat(),
                 onValueChange = {
                     visualizeModel.multibrotD = it.toDouble()
@@ -445,7 +448,7 @@ fun SeedButton(visualizeModel: VisualizeModel) {
         textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        label = { Text("Seed") },
+        label = { Text(stringResource(R.string.seed)) },
         trailingIcon = {
             if (text.isNotEmpty()) {
                 IconButton(onClick = {
@@ -455,7 +458,7 @@ fun SeedButton(visualizeModel: VisualizeModel) {
                 }) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Clear"
+                        contentDescription = stringResource(R.string.clear)
                     )
                 }
             }
