@@ -39,7 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import coil.compose.rememberAsyncImagePainter
+import coil3.compose.rememberAsyncImagePainter
 import com.aleespa.randomsquare.BottomBarScreen
 import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.data.VisualizeModel

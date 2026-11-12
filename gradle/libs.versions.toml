@@ -14,7 +14,7 @@ coreSplashscreen = "1.2.0"
 lifecycle = "2.11.0"
 material3 = "1.5.0-rc01"
 material = "1.14.0"
-coil = "2.7.0"
+coil = "3.6.3"
 glance = "1.2.0"
 playServicesAds = "25.5.0"
 jlatexmath = "0.2.0"
@@ -60,7 +60,7 @@ androidx-datastore-preferences-core = { group = "androidx.datastore", name = "da
 androidx-palette-ktx = { group = "androidx.palette", name = "palette-ktx", version.ref = "palette" }
 google-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 google-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
-coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 jlatexmath-android = { group = "ru.noties", name = "jlatexmath-android", version.ref = "jlatexmath" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "testExt" }

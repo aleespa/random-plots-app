@@ -57,8 +57,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.aleespa.randomsquare.BottomBarScreen
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.VisualizeModel
