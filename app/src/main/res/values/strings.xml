@@ -132,4 +132,14 @@
     <string name="cm_electric">Electric</string>
     <string name="cm_full_color">Full color</string>
     <string name="prism">Prism</string>
+    <string name="strange_attractor">Strange Attractor</string>
+    <string name="lorenz_flow">Lorenz Flow</string>
+    <string name="random_circles">Random Circles</string>
+    <string name="phyllotaxis">Phyllotaxis</string>
+    <string name="truchet">Truchet Tiles</string>
+    <string name="flow_field">Flow Field</string>
+    <string name="fractal_flame">Fractal Flame</string>
+    <string name="voronoi">Voronoi Mosaic</string>
+    <string name="domain_coloring">Domain Coloring</string>
+    <string name="lyapunov">Lyapunov Fractal</string>
 </resources>

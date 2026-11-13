@@ -245,7 +245,10 @@ fun generateNewPlot(
             .setColormap(visualizeModel.selectedColormap.key)
 
         if (visualizeModel.selectedFigure.figureType == FigureType.FRACTAL) {
-            builder.setRandomSeed(null)
+            // Fractals are defined by their view; Lyapunov also needs the seed (its A/B sequence).
+            builder.setRandomSeed(
+                if (visualizeModel.selectedFigure == Figures.LYAPUNOV) visualizeModel.randomSeed else null
+            )
             builder.setFractalXCenter(visualizeModel.fractalXCenter)
             builder.setFractalYCenter(visualizeModel.fractalYCenter)
             builder.setFractalZoom(visualizeModel.fractalZoom)

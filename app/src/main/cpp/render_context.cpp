@@ -112,7 +112,10 @@ void RenderContext::drawDensity(const DensityAccumulator& density, float gamma, 
             uint32_t n = counts[x];
             if (n == 0) continue;
             float t = std::pow(std::log1p((float)n) * inv_log_max, gamma);
-            SkColor c = getColor(t);
+            // With colour coordinates, hue comes from their mean and t only sets the intensity.
+            SkColor c = density.t_sum_.empty()
+                ? getColor(t)
+                : getColor(density.t_sum_[(size_t)y * width_ + x] / (float)n);
             U8CPU a = (U8CPU)std::lround(std::clamp(t * alpha, 0.0f, 1.0f) * 255.0f);
             row[x] = SkPreMultiplyARGB(a, SkColorGetR(c), SkColorGetG(c), SkColorGetB(c));
         }
@@ -147,6 +150,19 @@ void RenderContext::drawRGB(const std::vector<float>& r, const std::vector<float
         size_t o = (size_t)y * width_;
         for (int x = 0; x < width_; ++x) {
             row[x] = SkPreMultiplyARGB(0xFF, byte(r[o + x]), byte(g[o + x]), byte(b[o + x]));
+        }
+    }
+}
+
+void RenderContext::drawPixels(const std::vector<uint32_t>& argb) {
+    if (argb.size() != (size_t)width_ * height_) return;
+    for (int y = 0; y < height_; ++y) {
+        uint32_t* row = bitmap_.getAddr32(0, y);
+        const uint32_t* src = argb.data() + (size_t)y * width_;
+        for (int x = 0; x < width_; ++x) {
+            uint32_t c = src[x];
+            if (SkColorGetA(c) == 0) continue;
+            row[x] = SkPreMultiplyARGB(0xFF, SkColorGetR(c), SkColorGetG(c), SkColorGetB(c));
         }
     }
 }

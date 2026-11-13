@@ -309,6 +309,7 @@ fun FractalSettings(visualizeModel: VisualizeModel) {
             Figures.JULIA -> 50f..1000f
             Figures.MULTIBROT -> 20f..500f
             Figures.NEWTON -> 10f..100f
+            Figures.LYAPUNOV -> 50f..1000f
             else -> 50f..2000f
         }
 

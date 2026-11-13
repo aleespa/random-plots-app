@@ -5,7 +5,7 @@ const char* COMPUTE_SHADER_SOURCE = R"(#version 310 es
 layout(local_size_x = 16, local_size_y = 16) in;
 layout(rgba8, binding = 0) writeonly uniform highp image2D u_image;
 
-uniform int u_type; // 0: Mandelbrot, 1: Julia, 2: Tricorn, 3: Multibrot, 4: Newton // Figures.fractalType in Figures.kt (checked by FiguresTest)
+uniform int u_type; // 0: Mandelbrot, 1: Julia, 2: Tricorn, 3: Multibrot, 4: Newton, 5: Lyapunov // Figures.fractalType in Figures.kt (checked by FiguresTest)
 uniform int u_width;
 uniform int u_height;
 uniform int u_maxIterations;
@@ -63,6 +63,29 @@ void main() {
     float xMax = u_center.x + u_zoom;
     float yMin = u_center.y - u_zoom / aspectRatio;
     float yMax = u_center.y + u_zoom / aspectRatio;
+
+    if (u_type == 5) {
+        // Lyapunov (Markus-Lyapunov): the logistic map x <- r x (1 - x), where r follows the A/B
+        // sequence in u_params (u_params[0] = length, u_params[1..8] = 0 for A, 1 for B) and
+        // (A, B) is this pixel's (x, y). Stable (negative exponent) regions get the palette,
+        // chaotic ones its start.
+        float ra = xMin + (xMax - xMin) * (float(pos.x) + 0.5) / float(u_width);
+        float rb = yMax - (yMax - yMin) * (float(pos.y) + 0.5) / float(u_height);
+        int len = clamp(int(u_params[0]), 1, 8);
+        float xv = 0.5;
+        float lsum = 0.0;
+        const int warmup = 40;
+        for (int i = 0; i < warmup + u_maxIterations; i++) {
+            float r = (u_params[1 + (i % len)] > 0.5) ? rb : ra;
+            xv = r * xv * (1.0 - xv);
+            if (i >= warmup) lsum += log(abs(r * (1.0 - 2.0 * xv)) + 1e-7);
+        }
+        float lambda = lsum / float(u_maxIterations);
+        float tl = (isnan(lambda) || isinf(lambda) || lambda >= 0.0)
+            ? 0.0 : 0.05 + 0.85 * (1.0 - exp(1.6 * lambda));
+        imageStore(u_image, pos, vec4(paletteColor(tl), 1.0));
+        return;
+    }
 
     float x0, y0, x, y;
     if (u_type == 0 || u_type == 2 || u_type == 3) { // Mandelbrot, Tricorn, Multibrot

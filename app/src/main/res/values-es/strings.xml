@@ -132,4 +132,14 @@
     <string name="heads">Cara</string>
     <string name="tails">Cruz</string>
     <string name="prism">Prisma</string>
+    <string name="strange_attractor">Atractor extraño</string>
+    <string name="lorenz_flow">Flujo de Lorenz</string>
+    <string name="random_circles">Círculos aleatorios</string>
+    <string name="phyllotaxis">Filotaxis</string>
+    <string name="truchet">Teselas de Truchet</string>
+    <string name="flow_field">Campo de flujo</string>
+    <string name="fractal_flame">Llama fractal</string>
+    <string name="voronoi">Mosaico de Voronoi</string>
+    <string name="domain_coloring">Coloreado de dominio</string>
+    <string name="lyapunov">Fractal de Lyapunov</string>
 </resources>

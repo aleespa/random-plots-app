@@ -33,6 +33,20 @@ public:
         uint32_t c = ++counts_[(size_t)py * width_ + px];
         if (c > max_count_) max_count_ = c;
     }
+    /**
+     * Like add(), plus a colour coordinate t in [0, 1]: drawDensity then colours each pixel by
+     * the mean t of its hits (e.g. which map of a fractal flame landed there) instead of by density.
+     */
+    void add(Point2f world, float t) {
+        int px = (int)((world.x - wx_min_) * sx_);
+        int py = (int)((wy_max_ - world.y) * sy_);
+        if (px < 0 || py < 0 || px >= width_ || py >= height_) return;
+        size_t i = (size_t)py * width_ + px;
+        if (t_sum_.empty()) t_sum_.assign(counts_.size(), 0.0f);
+        t_sum_[i] += t;
+        uint32_t c = ++counts_[i];
+        if (c > max_count_) max_count_ = c;
+    }
     uint32_t maxCount() const { return max_count_; }
 
 private:
@@ -44,6 +58,7 @@ private:
     int width_, height_;
     float wx_min_, wy_max_, sx_, sy_;
     std::vector<uint32_t> counts_;
+    std::vector<float> t_sum_;  // only allocated when add(p, t) is used
     uint32_t max_count_ = 0;
 };
 
@@ -78,6 +93,11 @@ public:
      * `values` is row-major, width() * height(), each in [-1, 1] (mapped to t = (v + 1) / 2).
      */
     void drawValues(const std::vector<float>& values);
+    /**
+     * Writes ARGB colours (row-major, width() * height()) straight into the image. Pixels with
+     * alpha 0 are skipped, so the background shows through them.
+     */
+    void drawPixels(const std::vector<uint32_t>& argb);
     /** Like drawValues, but one field per channel (each in [-1, 1]); ignores the colormap. */
     void drawRGB(const std::vector<float>& r, const std::vector<float>& g, const std::vector<float>& b);
     int width() const { return width_; }

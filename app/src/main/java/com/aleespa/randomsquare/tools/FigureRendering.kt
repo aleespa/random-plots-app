@@ -25,7 +25,13 @@ data class FractalView(
 ) {
     companion object {
         fun defaultsFor(figure: Figures) = FractalView(
-            xCenter = if (figure == Figures.MANDELBROT) -1.0 else 0.0,
+            xCenter = when (figure) {
+                Figures.MANDELBROT -> -1.0
+                Figures.LYAPUNOV -> 3.2 // (a, b) in [2.4, 4]^2: the logistic map's interesting range
+                else -> 0.0
+            },
+            yCenter = if (figure == Figures.LYAPUNOV) 3.2 else 0.0,
+            zoom = if (figure == Figures.LYAPUNOV) 0.8 else 1.0,
             iterations = when (figure) {
                 Figures.MANDELBROT -> 100
                 Figures.JULIA -> 80
@@ -39,6 +45,19 @@ data class FractalView(
             } else DoubleArray(9),
         )
     }
+}
+
+/**
+ * Lyapunov fractal A/B sequence picked by [seed], in the layout fractal_shader.h reads:
+ * params[0] = length (2-7), params[1..length] = 0 for A, 1 for B. Always uses both letters.
+ */
+internal fun lyapunovSequence(seed: Long, params: FloatArray) {
+    val rng = java.util.Random(seed)
+    val bits = IntArray(2 + rng.nextInt(6)) { rng.nextInt(2) }
+    if (bits.none { it == 0 }) bits[0] = 0
+    if (bits.none { it == 1 }) bits[bits.size - 1] = 1
+    params[0] = bits.size.toFloat()
+    bits.forEachIndexed { i, b -> params[1 + i] = b.toFloat() }
 }
 
 /** Everything needed to render one image of a figure, independent of UI state. */
@@ -188,6 +207,8 @@ fun renderFigure(spec: RenderSpec): ImageBitmap? {
             Figures.NEWTON -> spec.fractal.newtonCoeffs.forEachIndexed { i, d ->
                 params[i] = d.toFloat()
             }
+
+            Figures.LYAPUNOV -> lyapunovSequence(spec.seed, params)
 
             else -> {}
         }

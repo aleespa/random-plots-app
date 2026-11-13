@@ -74,6 +74,15 @@ enum class Figures(
         { fractalMenu(it) },
         fractalType = 2
     ),
+    /** Seeded: the seed picks the A/B sequence, so it gets a Generate button (newtonMenu). */
+    LYAPUNOV(
+        "lyapunov",
+        FigureType.FRACTAL,
+        R.string.lyapunov,
+        R.drawable.lyapunov,
+        { newtonMenu(it) },
+        fractalType = 5
+    ),
     SUPER_RANDOM(
         "super",
         FigureType.COMPOSITIONS,
@@ -111,6 +120,15 @@ enum class Figures(
         { prismMenu(it) },
         sketchId = 15,
         supportsFullColor = true
+    ),
+    /** Coloured by hue (phase), so it has no colormap picker. Pans and zooms like Prism. */
+    DOMAIN_COLORING(
+        "domain_coloring",
+        FigureType.COMPOSITIONS,
+        R.string.domain_coloring,
+        R.drawable.domain_coloring,
+        { compositionMenu(it) },
+        sketchId = 24
     ),
     CONTINUOUS_SPIROGRAPH(
         "irrational_spirograph",
@@ -231,6 +249,70 @@ enum class Figures(
         R.drawable.cubism,
         { standardMenu(it) },
         sketchId = 6
+    ),
+    STRANGE_ATTRACTOR(
+        "strange_attractor",
+        FigureType.CHAOS,
+        R.string.strange_attractor,
+        R.drawable.strange_attractor,
+        { standardMenu(it) },
+        sketchId = 16
+    ),
+    LORENZ_FLOW(
+        "lorenz_flow",
+        FigureType.CHAOS,
+        R.string.lorenz_flow,
+        R.drawable.lorenz_flow,
+        { standardMenu(it) },
+        sketchId = 17
+    ),
+    FRACTAL_FLAME(
+        "fractal_flame",
+        FigureType.CHAOS,
+        R.string.fractal_flame,
+        R.drawable.fractal_flame,
+        { standardMenu(it) },
+        sketchId = 22
+    ),
+    RANDOM_CIRCLES(
+        "random_circles",
+        FigureType.CIRCULAR,
+        R.string.random_circles,
+        R.drawable.random_circles,
+        { standardMenu(it) },
+        sketchId = 18
+    ),
+    PHYLLOTAXIS(
+        "phyllotaxis",
+        FigureType.CIRCULAR,
+        R.string.phyllotaxis,
+        R.drawable.phyllotaxis,
+        { standardMenu(it) },
+        sketchId = 19
+    ),
+    TRUCHET(
+        "truchet",
+        FigureType.POLYGON,
+        R.string.truchet,
+        R.drawable.truchet,
+        { standardMenu(it) },
+        sketchId = 20
+    ),
+    VORONOI(
+        "voronoi",
+        FigureType.POLYGON,
+        R.string.voronoi,
+        R.drawable.voronoi,
+        { standardMenu(it) },
+        sketchId = 23
+    ),
+    FLOW_FIELD(
+        "flow_field",
+        FigureType.MISC,
+        R.string.flow_field,
+        R.drawable.flow_field,
+        { standardMenu(it) },
+        sketchId = 21
     ),
     ;
 

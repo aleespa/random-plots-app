@@ -23,6 +23,15 @@
 #include "sketches/irrational_spirograph.cpp"
 #include "sketches/random_eigen.cpp"
 #include "sketches/prism.cpp"
+#include "sketches/strange_attractor.cpp"
+#include "sketches/lorenz_flow.cpp"
+#include "sketches/random_circles.cpp"
+#include "sketches/phyllotaxis.cpp"
+#include "sketches/truchet.cpp"
+#include "sketches/flow_field.cpp"
+#include "sketches/fractal_flame.cpp"
+#include "sketches/voronoi.cpp"
+#include "sketches/domain_coloring.cpp"
 
 #define LOG_TAG "SketchJNI"
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
@@ -80,6 +89,15 @@ Java_com_aleespa_randomsquare_SketchRenderer_renderSketch(
         case 13: sketch = std::make_unique<IrrationalSpirographSketch>(); break;
         case 14: sketch = std::make_unique<RandomEigenSketch>(); break;
         case 15: sketch = std::make_unique<PrismSketch>(); break;
+        case 16: sketch = std::make_unique<StrangeAttractorSketch>(); break;
+        case 17: sketch = std::make_unique<LorenzFlowSketch>(); break;
+        case 18: sketch = std::make_unique<RandomCirclesSketch>(); break;
+        case 19: sketch = std::make_unique<PhyllotaxisSketch>(); break;
+        case 20: sketch = std::make_unique<TruchetSketch>(); break;
+        case 21: sketch = std::make_unique<FlowFieldSketch>(); break;
+        case 22: sketch = std::make_unique<FractalFlameSketch>(); break;
+        case 23: sketch = std::make_unique<VoronoiSketch>(); break;
+        case 24: sketch = std::make_unique<DomainColoringSketch>(); break;
         default:
             LOGE("Unknown sketch_id %d", sketch_id);
             return nullptr;

@@ -77,6 +77,15 @@ class FiguresTest {
             Figures.CONTINUOUS_SPIROGRAPH to 13,
             Figures.RANDOM_EIGENVALUES to 14,
             Figures.PRISM to 15,
+            Figures.STRANGE_ATTRACTOR to 16,
+            Figures.LORENZ_FLOW to 17,
+            Figures.RANDOM_CIRCLES to 18,
+            Figures.PHYLLOTAXIS to 19,
+            Figures.TRUCHET to 20,
+            Figures.FLOW_FIELD to 21,
+            Figures.FRACTAL_FLAME to 22,
+            Figures.VORONOI to 23,
+            Figures.DOMAIN_COLORING to 24,
         )
         expectedSketchIds.forEach { (figure, id) -> assertEquals(figure.name, id, figure.sketchId) }
 
@@ -86,6 +95,7 @@ class FiguresTest {
             Figures.TRICORN to 2,
             Figures.MULTIBROT to 3,
             Figures.NEWTON to 4,
+            Figures.LYAPUNOV to 5,
         )
         expectedFractalTypes.forEach { (figure, type) ->
             assertEquals(figure.name, type, figure.fractalType)
