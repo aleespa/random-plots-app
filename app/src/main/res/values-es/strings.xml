@@ -130,4 +130,5 @@
     <string name="digit4_widget_name">Número de 4 cifras</string>
     <string name="heads">Cara</string>
     <string name="tails">Cruz</string>
+    <string name="prism">Prisma</string>
 </resources>

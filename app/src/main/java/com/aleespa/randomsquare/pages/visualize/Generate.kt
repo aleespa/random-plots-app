@@ -98,10 +98,7 @@ fun GeneratePlotButton(
                                 delay(300)
                                 if (pressedIndex == 0) pressedIndex = -1
                             }
-                            val figureType = visualizeModel.selectedFigure.figureType
-                            if (figureType == FigureType.FRACTAL ||
-                                figureType == FigureType.COMPOSITIONS
-                            ) {
+                            if (visualizeModel.selectedFigure.hasPanZoomView) {
                                 visualizeModel.toFitAspectRatio = false
                                 setWallpaperAfterAd(visualizeModel, context)
                             } else {
@@ -346,10 +343,7 @@ fun FractalActions(
                                 delay(300)
                                 if (pressedIndex == 1) pressedIndex = -1
                             }
-                            val figureType = visualizeModel.selectedFigure.figureType
-                            if (figureType == FigureType.FRACTAL ||
-                                figureType == FigureType.COMPOSITIONS
-                            ) {
+                            if (visualizeModel.selectedFigure.hasPanZoomView) {
                                 visualizeModel.toFitAspectRatio = false
                                 generateNewPlot(
                                     visualizeModel,

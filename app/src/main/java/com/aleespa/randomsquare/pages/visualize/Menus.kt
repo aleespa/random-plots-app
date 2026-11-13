@@ -80,3 +80,18 @@ fun LazyListScope.compositionMenu(visualizeModel: VisualizeModel) {
     item { SeedButton(visualizeModel) }
     sectionGap()
 }
+
+/** Prism: like the compositions (generate + seed), plus a colormap, since it is palette-coloured. */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+fun LazyListScope.prismMenu(visualizeModel: VisualizeModel) {
+    smallGap()
+    item {
+        val context = LocalContext.current
+        GeneratePlotButton(visualizeModel, context)
+    }
+    sectionGap()
+    colormapPicker(visualizeModel)
+    sectionGap()
+    item { SeedButton(visualizeModel) }
+    sectionGap()
+}

@@ -1,8 +1,10 @@
 package com.aleespa.randomsquare
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
@@ -11,17 +13,19 @@ import org.junit.Test
  */
 class FiguresTest {
 
-    private val sketches = Figures.entries.filter {
-        it.figureType != FigureType.FRACTAL && it.figureType != FigureType.COMPOSITIONS
-    }
+    private val sketches = Figures.entries.filter { it.sketchId != null }
 
     @Test
-    fun everySketchHasASketchId_andOnlySketchesDo() {
+    fun everyFigureUsesExactlyOneEngine() {
         Figures.entries.forEach { figure ->
-            if (figure in sketches) {
+            assertFalse(
+                "${figure.name} has both a sketchId and a fractalType",
+                figure.sketchId != null && figure.fractalType != null
+            )
+            // Outside Fractals and Compositions, every figure is a Skia sketch. Compositions are
+            // either GPU-VM compositions (no ID) or C++ sketches such as Prism.
+            if (figure.figureType != FigureType.FRACTAL && figure.figureType != FigureType.COMPOSITIONS) {
                 assertNotNull("${figure.name} needs a sketchId", figure.sketchId)
-            } else {
-                assertNull("${figure.name} is not a Skia sketch", figure.sketchId)
             }
         }
     }
@@ -30,6 +34,14 @@ class FiguresTest {
     fun sketchIdsAreUniqueAndContiguousFromZero() {
         val ids = sketches.map { it.sketchId!! }.sorted()
         assertEquals((0 until sketches.size).toList(), ids)
+    }
+
+    @Test
+    fun onlyFractalsAndGpuCompositionsHaveAPanZoomView() {
+        assertTrue(Figures.MANDELBROT.hasPanZoomView)
+        assertTrue(Figures.SUPER_RANDOM.hasPanZoomView)
+        assertFalse(Figures.SPIRAL.hasPanZoomView)
+        assertFalse("Prism is a C++ sketch", Figures.PRISM.hasPanZoomView)
     }
 
     @Test
@@ -64,6 +76,7 @@ class FiguresTest {
             Figures.SPIROGRAPH to 12,
             Figures.CONTINUOUS_SPIROGRAPH to 13,
             Figures.RANDOM_EIGENVALUES to 14,
+            Figures.PRISM to 15,
         )
         expectedSketchIds.forEach { (figure, id) -> assertEquals(figure.name, id, figure.sketchId) }
 

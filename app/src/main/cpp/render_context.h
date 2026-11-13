@@ -64,6 +64,14 @@ public:
      */
     void drawDensity(const DensityAccumulator& density, float gamma = 0.5f, float alpha = 1.0f);
 
+    /**
+     * Paints a per-pixel scalar field through the colormap, replacing the whole image.
+     * `values` is row-major, width() * height(), each in [-1, 1] (mapped to t = (v + 1) / 2).
+     */
+    void drawValues(const std::vector<float>& values);
+    int width() const { return width_; }
+    int height() const { return height_; }
+
     std::vector<uint8_t> encodeJpeg(int quality = 92) const;
 
 private:

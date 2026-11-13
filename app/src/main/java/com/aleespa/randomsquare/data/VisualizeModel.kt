@@ -145,9 +145,9 @@ class VisualizeModel(
         set(value) {
             if (_selectedFigure == value) return
             val wasFractal =
-                _selectedFigure.figureType == FigureType.FRACTAL || _selectedFigure.figureType == FigureType.COMPOSITIONS
+                _selectedFigure.hasPanZoomView
             val isNowFractal =
-                value.figureType == FigureType.FRACTAL || value.figureType == FigureType.COMPOSITIONS
+                value.hasPanZoomView
             val figureChanged = _selectedFigure != value
             _selectedFigure = value
 

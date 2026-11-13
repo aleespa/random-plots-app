@@ -107,10 +107,7 @@ private fun VisualizeOverflowMenu(
             text = { Text(stringResource(id = R.string.set_wallpaper)) },
             leadingIcon = { DropDownMenuIcon(Icons.Default.AddPhotoAlternate) },
             onClick = {
-                val figureType = visualizeModel.selectedFigure.figureType
-                if (figureType == com.aleespa.randomsquare.FigureType.FRACTAL ||
-                    figureType == com.aleespa.randomsquare.FigureType.COMPOSITIONS
-                ) {
+                if (visualizeModel.selectedFigure.hasPanZoomView) {
                     visualizeModel.toFitAspectRatio = false
                     com.aleespa.randomsquare.tools.generateNewPlot(
                         visualizeModel,

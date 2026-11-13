@@ -122,6 +122,19 @@ void RenderContext::drawDensity(const DensityAccumulator& density, float gamma, 
     canvas_->drawImage(overlay.asImage(), 0, 0, SkSamplingOptions(), &paint);
 }
 
+void RenderContext::drawValues(const std::vector<float>& values) {
+    if (values.size() != (size_t)width_ * height_) return;
+    for (int y = 0; y < height_; ++y) {
+        uint32_t* row = bitmap_.getAddr32(0, y);
+        const float* v = values.data() + (size_t)y * width_;
+        for (int x = 0; x < width_; ++x) {
+            float t = std::clamp((v[x] + 1.0f) * 0.5f, 0.0f, 1.0f);
+            SkColor c = getColor(t);
+            row[x] = SkPreMultiplyARGB(0xFF, SkColorGetR(c), SkColorGetG(c), SkColorGetB(c));
+        }
+    }
+}
+
 std::vector<uint8_t> RenderContext::encodeJpeg(int quality) const {
     SkDynamicMemoryWStream stream;
     SkJpegEncoder::Options opts;

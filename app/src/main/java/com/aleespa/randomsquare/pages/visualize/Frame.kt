@@ -64,8 +64,7 @@ fun VisualizeBox(
         modifier = modifier
             .clickable { visualizeModel.showInfo = !visualizeModel.showInfo }
             .then(
-                if (visualizeModel.selectedFigure.figureType == FigureType.FRACTAL ||
-                    visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS
+                if (visualizeModel.selectedFigure.hasPanZoomView
                 ) {
                     Modifier
                         .pointerInput(Unit) {
@@ -119,8 +118,7 @@ fun VisualizeBox(
             ),
     ) {
         if (!visualizeModel.showInfo) {
-            val isInteractive = visualizeModel.selectedFigure.figureType == FigureType.FRACTAL ||
-                    visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS
+            val isInteractive = visualizeModel.selectedFigure.hasPanZoomView
 
             if (visualizeModel.loadingPlotGenerator && (!isInteractive || visualizeModel.isGeneratingRandom)) {
                 Box(

@@ -61,7 +61,8 @@ fun renderFigure(spec: RenderSpec): ImageBitmap? {
     val finalWidth = spec.width
     val finalHeight = spec.height
 
-    if (spec.figure.figureType == FigureType.COMPOSITIONS) {
+    // GPU composition VM. Compositions with a sketchId (e.g. Prism) are C++ sketches instead.
+    if (spec.figure.figureType == FigureType.COMPOSITIONS && spec.figure.sketchId == null) {
         val seed = spec.seed
         val rng = java.util.Random(seed)
         val k = when (spec.figure) {

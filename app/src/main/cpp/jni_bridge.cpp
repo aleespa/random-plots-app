@@ -22,6 +22,7 @@
 #include "sketches/spirograph.cpp"
 #include "sketches/irrational_spirograph.cpp"
 #include "sketches/random_eigen.cpp"
+#include "sketches/prism.cpp"
 
 #define LOG_TAG "SketchJNI"
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
@@ -74,6 +75,7 @@ Java_com_aleespa_randomsquare_SketchRenderer_renderSketch(
         case 12: sketch = std::make_unique<SpirographSketch>(); break;
         case 13: sketch = std::make_unique<IrrationalSpirographSketch>(); break;
         case 14: sketch = std::make_unique<RandomEigenSketch>(); break;
+        case 15: sketch = std::make_unique<PrismSketch>(); break;
         default:
             LOGE("Unknown sketch_id %d", sketch_id);
             return nullptr;

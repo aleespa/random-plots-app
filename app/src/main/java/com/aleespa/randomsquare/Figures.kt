@@ -5,6 +5,7 @@ import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.pages.visualize.compositionMenu
 import com.aleespa.randomsquare.pages.visualize.fractalMenu
 import com.aleespa.randomsquare.pages.visualize.newtonMenu
+import com.aleespa.randomsquare.pages.visualize.prismMenu
 import com.aleespa.randomsquare.pages.visualize.standardMenu
 
 enum class FigureType(val stringId: Int) {
@@ -95,6 +96,15 @@ enum class Figures(
         R.string.soft,
         R.drawable.soft,
         { compositionMenu(it) }
+    ),
+    /** Extended Random Art, rendered on the CPU by cpp/sketches/prism.cpp (not the GPU VM). */
+    PRISM(
+        "prism",
+        FigureType.COMPOSITIONS,
+        R.string.prism,
+        R.drawable.prism,
+        { prismMenu(it) },
+        sketchId = 15
     ),
     CONTINUOUS_SPIROGRAPH(
         "irrational_spirograph",
@@ -217,6 +227,13 @@ enum class Figures(
         sketchId = 6
     ),
     ;
+
+    /**
+     * Fractals and the GPU composition VM render a view of the plane that the user can pan and
+     * zoom (and that resets when switching figures). Sketches, including Prism, render a fixed image.
+     */
+    val hasPanZoomView: Boolean
+        get() = fractalType != null || (figureType == FigureType.COMPOSITIONS && sketchId == null)
 
     companion object {
         fun fromKey(key: String): Figures {

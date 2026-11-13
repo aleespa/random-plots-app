@@ -231,8 +231,7 @@ fun generateNewPlot(
     ) {
         visualizeModel.randomSeed = generate32BitSeed()
         visualizeModel.userSeed = false
-        if (visualizeModel.selectedFigure.figureType == FigureType.FRACTAL ||
-            visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS
+        if (visualizeModel.selectedFigure.hasPanZoomView
         ) {
             visualizeModel.resetFractalSettings()
         }
@@ -287,8 +286,7 @@ fun generateNewPlot(
             }
         }
 
-        if (visualizeModel.selectedFigure.figureType == FigureType.FRACTAL ||
-            visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS
+        if (visualizeModel.selectedFigure.hasPanZoomView
         ) {
             builder.setFractalXCenter(visualizeModel.fractalXCenter)
             builder.setFractalYCenter(visualizeModel.fractalYCenter)
