@@ -229,11 +229,12 @@ enum class Figures(
     ;
 
     /**
-     * Fractals and the GPU composition VM render a view of the plane that the user can pan and
-     * zoom (and that resets when switching figures). Sketches, including Prism, render a fixed image.
+     * Fractals and all compositions (the GPU VM ones and Prism) render a view of the plane that
+     * the user can pan and zoom, and that resets when switching figures or generating a new one.
+     * Other sketches render a fixed image.
      */
     val hasPanZoomView: Boolean
-        get() = fractalType != null || (figureType == FigureType.COMPOSITIONS && sketchId == null)
+        get() = fractalType != null || figureType == FigureType.COMPOSITIONS
 
     companion object {
         fun fromKey(key: String): Figures {

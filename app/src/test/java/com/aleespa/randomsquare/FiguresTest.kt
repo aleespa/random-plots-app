@@ -37,11 +37,11 @@ class FiguresTest {
     }
 
     @Test
-    fun onlyFractalsAndGpuCompositionsHaveAPanZoomView() {
+    fun fractalsAndAllCompositionsHaveAPanZoomView() {
         assertTrue(Figures.MANDELBROT.hasPanZoomView)
         assertTrue(Figures.SUPER_RANDOM.hasPanZoomView)
+        assertTrue("Prism pans/zooms through the sketch view", Figures.PRISM.hasPanZoomView)
         assertFalse(Figures.SPIRAL.hasPanZoomView)
-        assertFalse("Prism is a C++ sketch", Figures.PRISM.hasPanZoomView)
     }
 
     @Test

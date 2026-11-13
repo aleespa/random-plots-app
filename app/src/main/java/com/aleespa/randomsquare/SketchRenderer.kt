@@ -32,16 +32,26 @@ object SketchRenderer {
         height: Int,
         bgColor: Int,
         colormapT: FloatArray,
-        colormapRGB: IntArray
+        colormapRGB: IntArray,
+        xCenter: Double,
+        yCenter: Double,
+        zoom: Double
     ): ByteArray?
 
+    /**
+     * [xCenter]/[yCenter]/[zoom] are the pan/zoom view (same convention as the fractals); only
+     * sketches with Figures.hasPanZoomView (Prism) use it, the others ignore it.
+     */
     fun renderBitmap(
         sketchId: Int,
         seed: Long,
         width: Int = 1200,
         height: Int = 1200,
         bgColor: Int = Color.BLACK,
-        colormap: Colormaps
+        colormap: Colormaps,
+        xCenter: Double = 0.0,
+        yCenter: Double = 0.0,
+        zoom: Double = 1.0
     ): Bitmap? {
         val palSize = colormap.colorlist.size
         val palT = FloatArray(palSize) { i -> i.toFloat() / (palSize - 1) }
@@ -51,7 +61,8 @@ object SketchRenderer {
         }
 
         val bytes =
-            renderSketch(sketchId, seed, width, height, bgColor, palT, palRGB) ?: return null
+            renderSketch(sketchId, seed, width, height, bgColor, palT, palRGB, xCenter, yCenter, zoom)
+                ?: return null
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
     }
 }

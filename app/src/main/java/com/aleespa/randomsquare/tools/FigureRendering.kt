@@ -214,13 +214,18 @@ fun renderFigure(spec: RenderSpec): ImageBitmap? {
     }
 
     val sketchId = spec.figure.sketchId ?: return null
+    // Pannable sketches (Prism) get the current view; the others always render the full image.
+    val view = if (spec.figure.hasPanZoomView) spec.fractal else FractalView()
     val result = SketchRenderer.renderBitmap(
         sketchId = sketchId,
         seed = spec.seed,
         width = finalWidth,
         height = finalHeight,
         bgColor = spec.bgColor,
-        colormap = spec.colormap
+        colormap = spec.colormap,
+        xCenter = view.xCenter,
+        yCenter = view.yCenter,
+        zoom = view.zoom
     )
     return result?.asImageBitmap()
 }

@@ -36,9 +36,11 @@ Java_com_aleespa_randomsquare_SketchRenderer_renderSketch(
     jint width, jint height,
     jint bg_color,
     jfloatArray colormap_t,
-    jintArray colormap_rgb
+    jintArray colormap_rgb,
+    jdouble x_center, jdouble y_center, jdouble zoom
 ) {
     RenderContext ctx(width, height, static_cast<SkColor>(bg_color));
+    ctx.setView({x_center, y_center, zoom});
 
     // Setup colormap
     jsize cmap_len = env->GetArrayLength(colormap_t);

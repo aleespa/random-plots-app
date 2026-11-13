@@ -11,6 +11,15 @@
 struct Point2f { float x, y; };
 
 /**
+ * Pan/zoom window onto the plane, same convention as the fractal shader: a pixel at normalized
+ * device coordinates (u, v) in [-1, 1] (v up) shows the point (cx + u * zoom, cy + v * zoom).
+ * Only sketches that support pan/zoom (Figures.hasPanZoomView) read it; the default is identity.
+ */
+struct PlaneView {
+    double cx = 0.0, cy = 0.0, zoom = 1.0;
+};
+
+/**
  * Per-pixel hit counter for very dense point sets (strange attractors, flow fields): add
  * millions of points cheaply, then render once with RenderContext::drawDensity. Create it with
  * RenderContext::makeDensity() *after* setWorldBounds(); it keeps the mapping it was created with.
@@ -72,6 +81,9 @@ public:
     int width() const { return width_; }
     int height() const { return height_; }
 
+    void setView(const PlaneView& view) { view_ = view; }
+    const PlaneView& view() const { return view_; }
+
     std::vector<uint8_t> encodeJpeg(int quality = 92) const;
 
 private:
@@ -81,5 +93,6 @@ private:
     std::vector<ColorStop> colormap_;
     float wx_min_ = -1, wx_max_ = 1, wy_min_ = -1, wy_max_ = 1;
     SkBlendMode blend_mode_ = SkBlendMode::kSrcOver;
+    PlaneView view_;
     Point2f worldToPixel(Point2f p) const;
 };

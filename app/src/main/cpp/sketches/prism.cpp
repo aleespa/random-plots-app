@@ -191,15 +191,19 @@ public:
         return 0;
     }
 
-    /** Evaluates the formula on a size x size grid over [-1, 1]^2 (y up), using all cores. */
-    std::vector<float> evaluate(int width, int height) const {
+    /**
+     * Evaluates the formula on a width x height grid, using all cores. The grid covers
+     * [-1, 1]^2 (y up) mapped through `view`: (u, v) -> (cx + u * zoom, cy + v * zoom).
+     */
+    std::vector<float> evaluate(int width, int height, const PlaneView& view = {}) const {
         std::vector<float> out((size_t)width * height);
         unsigned threads = std::max(1u, std::min(8u, std::thread::hardware_concurrency()));
+        const float cx = (float)view.cx, cy = (float)view.cy, zoom = (float)view.zoom;
         auto work = [&](int row0, int row1) {
             for (int py = row0; py < row1; ++py) {
-                float y = 1 - 2 * (py + 0.5f) / height;
+                float y = cy + zoom * (1 - 2 * (py + 0.5f) / height);
                 for (int px = 0; px < width; ++px) {
-                    float x = -1 + 2 * (px + 0.5f) / width;
+                    float x = cx + zoom * (-1 + 2 * (px + 0.5f) / width);
                     float v = eval(root, x, y);
                     out[(size_t)py * width + px] = std::isfinite(v) ? clip(v) : 0.0f;
                 }
@@ -318,17 +322,23 @@ inline bool isInteresting(const std::vector<float>& v) {
     return occupied >= kMinBins;
 }
 
-/** Stretches the 2nd..98th percentile range over [-1, 1] so the whole palette is used. */
-inline void stretchContrast(std::vector<float>& v) {
-    std::vector<float> sorted(v);
-    size_t lo_i = sorted.size() * 2 / 100, hi_i = sorted.size() * 98 / 100;
-    std::nth_element(sorted.begin(), sorted.begin() + lo_i, sorted.end());
-    float lo = sorted[lo_i];
-    std::nth_element(sorted.begin(), sorted.begin() + hi_i, sorted.end());
-    float hi = sorted[hi_i];
+/** 2nd and 98th percentile of `v`: the value range stretched over the whole palette. */
+inline std::pair<float, float> contrastRange(std::vector<float> v) {
+    size_t lo_i = v.size() * 2 / 100, hi_i = v.size() * 98 / 100;
+    std::nth_element(v.begin(), v.begin() + lo_i, v.end());
+    float lo = v[lo_i];
+    std::nth_element(v.begin(), v.begin() + hi_i, v.end());
+    return {lo, v[hi_i]};
+}
+
+/** Maps [lo, hi] onto [-1, 1] (clamped) so the whole palette is used. */
+inline void stretchContrast(std::vector<float>& v, std::pair<float, float> range) {
+    auto [lo, hi] = range;
     if (hi - lo < 1e-6f) return;
     for (float& x : v) x = std::clamp((x - lo) / (hi - lo) * 2 - 1, -1.0f, 1.0f);
 }
+
+constexpr int kRangeSampleSize = 128;
 
 }  // namespace prism
 
@@ -342,8 +352,12 @@ public:
             formula.build(rng);
             if (prism::isInteresting(formula.evaluate(prism::kPreviewSize, prism::kPreviewSize))) break;
         }
-        std::vector<float> values = formula.evaluate(ctx.width(), ctx.height());
-        prism::stretchContrast(values);
+        // The formula choice and the colour range come from the default (unzoomed) view, so
+        // panning and zooming move over one fixed image instead of re-picking or recolouring it.
+        auto range = prism::contrastRange(
+            formula.evaluate(prism::kRangeSampleSize, prism::kRangeSampleSize));
+        std::vector<float> values = formula.evaluate(ctx.width(), ctx.height(), ctx.view());
+        prism::stretchContrast(values, range);
         ctx.drawValues(values);
     }
 };
