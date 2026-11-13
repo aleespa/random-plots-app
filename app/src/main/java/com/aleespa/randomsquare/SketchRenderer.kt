@@ -40,6 +40,20 @@ object SketchRenderer {
     ): ByteArray?
 
     /**
+     * Palette-independent render (see tools/ColorField.kt): packed per-pixel field, or null if the
+     * sketch drew something that can't be recoloured per pixel.
+     */
+    external fun renderSketchField(
+        sketchId: Int,
+        seed: Long,
+        width: Int,
+        height: Int,
+        xCenter: Double,
+        yCenter: Double,
+        zoom: Double
+    ): IntArray?
+
+    /**
      * [xCenter]/[yCenter]/[zoom] are the pan/zoom view (same convention as the fractals); only
      * sketches with Figures.hasPanZoomView (Prism) use it, the others ignore it.
      * [Colormaps.FULL_COLOR] asks sketches with Figures.supportsFullColor for RGB output.

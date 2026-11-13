@@ -62,6 +62,9 @@ private:
     uint32_t max_count_ = 0;
 };
 
+/** One pixel of a colour field: palette position, brightness factor, coverage (all in [0, 1]). */
+struct FieldPixel { float t = 0, shade = 1, alpha = 0; };
+
 class RenderContext {
 public:
     RenderContext(int width, int height, SkColor bg_color = SK_ColorBLACK);
@@ -98,6 +101,11 @@ public:
      * alpha 0 are skipped, so the background shows through them.
      */
     void drawPixels(const std::vector<uint32_t>& argb);
+    /**
+     * Per-pixel palette image: colour = colormap(t) * shade, blended over the background by alpha
+     * (alpha 0 leaves the background). Row-major, width() * height().
+     */
+    void drawField(const std::vector<FieldPixel>& pixels);
     /** Like drawValues, but one field per channel (each in [-1, 1]); ignores the colormap. */
     void drawRGB(const std::vector<float>& r, const std::vector<float>& g, const std::vector<float>& b);
     int width() const { return width_; }
@@ -112,6 +120,18 @@ public:
 
     std::vector<uint8_t> encodeJpeg(int quality = 92) const;
 
+    /**
+     * Colour-field mode (Figures.rendersColorField): drawValues, drawDensity and drawField record
+     * a palette-independent field instead of colours, packed per pixel as t (16 bits) | shade (8) |
+     * alpha (8), and Kotlin colours it (tools/ColorField.kt). A colormap or background change then
+     * needs no re-render. Vector primitives can't be recoloured per pixel, so drawing one in this
+     * mode makes the field invalid (fieldValid() is false and the caller renders normally).
+     */
+    void enableFieldMode() { field_mode_ = true; field_.assign((size_t)width_ * height_, 0u); }
+    bool fieldValid() const { return field_mode_ && !field_invalid_; }
+    const std::vector<uint32_t>& field() const { return field_; }
+    static uint32_t packField(float t, float shade, float alpha);
+
 private:
     SkBitmap bitmap_;
     std::unique_ptr<SkCanvas> canvas_;
@@ -121,5 +141,8 @@ private:
     SkBlendMode blend_mode_ = SkBlendMode::kSrcOver;
     PlaneView view_;
     bool full_color_ = false;
+    bool field_mode_ = false, field_invalid_ = false;
+    std::vector<uint32_t> field_;
+    void markVectorDraw() { if (field_mode_) field_invalid_ = true; }
     Point2f worldToPixel(Point2f p) const;
 };

@@ -185,7 +185,7 @@ extern "C" JNIEXPORT jbyteArray JNICALL
 Java_com_aleespa_randomsquare_tools_FractalRenderer_renderInternal(
     JNIEnv* env, jobject thiz, jint type, jint width, jint height, jint maxIter,
     jdouble xCenter, jdouble yCenter, jdouble zoom, jdouble cx, jdouble cy,
-    jfloatArray params, jfloatArray palT, jfloatArray palRGB) {
+    jfloatArray params) {
 
     EGLContextManager egl;
     if (!egl.init()) {
@@ -222,12 +222,6 @@ Java_com_aleespa_randomsquare_tools_FractalRenderer_renderInternal(
     float* pParams = env->GetFloatArrayElements(params, nullptr);
     glUniform1fv(glGetUniformLocation(program, "u_params"), paramSize, pParams);
 
-    jsize palSize = env->GetArrayLength(palT);
-    float* pT = env->GetFloatArrayElements(palT, nullptr);
-    float* pRGB = env->GetFloatArrayElements(palRGB, nullptr);
-    glUniform1fv(glGetUniformLocation(program, "u_palT"), palSize, pT);
-    glUniform3fv(glGetUniformLocation(program, "u_palRGB"), palSize, pRGB);
-    glUniform1i(glGetUniformLocation(program, "u_palSize"), palSize);
 
     glDispatchCompute((width + 15) / 16, (height + 15) / 16, 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
@@ -243,8 +237,6 @@ Java_com_aleespa_randomsquare_tools_FractalRenderer_renderInternal(
     env->SetByteArrayRegion(result, 0, pixels.size(), (const jbyte*)pixels.data());
 
     env->ReleaseFloatArrayElements(params, pParams, JNI_ABORT);
-    env->ReleaseFloatArrayElements(palT, pT, JNI_ABORT);
-    env->ReleaseFloatArrayElements(palRGB, pRGB, JNI_ABORT);
     glDeleteTextures(1, &texture);
     glDeleteFramebuffers(1, &fbo);
     glDeleteProgram(program);

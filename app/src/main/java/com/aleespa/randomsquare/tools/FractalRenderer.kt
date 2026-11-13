@@ -28,36 +28,19 @@ object FractalRenderer {
         type: Int, width: Int, height: Int, maxIter: Int,
         xCenter: Double, yCenter: Double, zoom: Double,
         cx: Double, cy: Double,
-        params: FloatArray,
-        palT: FloatArray, palRGB: FloatArray
+        params: FloatArray
     ): ByteArray?
 
+    /**
+     * Renders a fractal as a colour field (RGBA8: R/G = palette position t, B = shade, A = alpha);
+     * decode it with ColorField.fromRgbaBytes and colour it in Kotlin.
+     */
     fun render(
         type: Int, width: Int, height: Int, maxIter: Int,
         xCenter: Double, yCenter: Double, zoom: Double,
         cx: Double, cy: Double,
-        params: FloatArray,
-        palT: FloatArray, palRGB: FloatArray
-    ): ByteArray? = renderInternal(
-        type, width, height, maxIter, xCenter, yCenter, zoom, cx, cy, params, palT, palRGB
-    )
-
-    fun renderMandelbrot(
-        width: Int, height: Int, maxIter: Int,
-        xCenter: Double, yCenter: Double, zoom: Double,
-        palT: FloatArray, palRGB: FloatArray
-    ): ByteArray? = render(
-        0, width, height, maxIter, xCenter, yCenter, zoom, 0.0, 0.0, FloatArray(10), palT, palRGB
-    )
-
-    fun renderJulia(
-        width: Int, height: Int, maxIter: Int,
-        xCenter: Double, yCenter: Double, zoom: Double,
-        cx: Double, cy: Double,
-        palT: FloatArray, palRGB: FloatArray
-    ): ByteArray? = render(
-        1, width, height, maxIter, xCenter, yCenter, zoom, cx, cy, FloatArray(10), palT, palRGB
-    )
+        params: FloatArray
+    ): ByteArray? = renderInternal(type, width, height, maxIter, xCenter, yCenter, zoom, cx, cy, params)
 
     external fun renderCompositionInternal(
         width: Int, height: Int,

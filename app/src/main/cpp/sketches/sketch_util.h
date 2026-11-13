@@ -72,9 +72,4 @@ inline long densityBudget(const RenderContext& ctx, double per_megapixel, long c
     return std::min(cap, (long)(per_megapixel * ctx.width() * (double)ctx.height() / 1e6));
 }
 
-inline uint32_t argb(SkColor c, float shade) {
-    auto ch = [shade](U8CPU v) { return (uint32_t)std::clamp(std::lround(v * shade), 0L, 255L); };
-    return 0xFF000000u | (ch(SkColorGetR(c)) << 16) | (ch(SkColorGetG(c)) << 8) | ch(SkColorGetB(c));
-}
-
 }  // namespace sketchutil

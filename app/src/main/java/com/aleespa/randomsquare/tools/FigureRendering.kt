@@ -79,6 +79,15 @@ fun renderFigure(spec: RenderSpec): ImageBitmap? {
     val finalWidth = spec.width
     val finalHeight = spec.height
 
+    // Fractals and palette-only sketches: render a colour field once, then colour it here, so a
+    // colormap or background change on the same image skips the native render.
+    if (spec.figure.usesColorField(spec.colormap)) {
+        val field = ColorFieldCache.getOrRender(colorFieldKey(spec)) { renderColorField(spec) }
+        if (field != null) return field.toBitmap(spec.colormap, spec.bgColor).asImageBitmap()
+        if (spec.figure.fractalType != null) return null // GPU renderer unavailable (no OpenGL ES 3.1)
+        // A sketch that couldn't produce a field (it drew vector shapes): render it normally below.
+    }
+
     // GPU composition VM. Compositions with a sketchId (e.g. Prism) are C++ sketches instead.
     if (spec.figure.figureType == FigureType.COMPOSITIONS && spec.figure.sketchId == null) {
         val seed = spec.seed
@@ -188,51 +197,6 @@ fun renderFigure(spec: RenderSpec): ImageBitmap? {
         return bitmap.asImageBitmap()
     }
 
-    if (spec.figure.figureType == FigureType.FRACTAL) {
-        val palSize = spec.colormap.colorlist.size
-        val palT = FloatArray(palSize) { i -> i.toFloat() / (palSize - 1) }
-        val palRGB = FloatArray(palSize * 3)
-        spec.colormap.colorlist.forEachIndexed { i, color ->
-            palRGB[i * 3 + 0] = ((color shr 16) and 0xFF) / 255.0f
-            palRGB[i * 3 + 1] = ((color shr 8) and 0xFF) / 255.0f
-            palRGB[i * 3 + 2] = (color and 0xFF) / 255.0f
-        }
-
-        val maxIter = spec.fractal.iterations
-
-        val type = spec.figure.fractalType ?: return null
-        val params = FloatArray(10)
-        when (spec.figure) {
-            Figures.MULTIBROT -> params[0] = spec.fractal.multibrotD.toFloat()
-            Figures.NEWTON -> spec.fractal.newtonCoeffs.forEachIndexed { i, d ->
-                params[i] = d.toFloat()
-            }
-
-            Figures.LYAPUNOV -> lyapunovSequence(spec.seed, params)
-
-            else -> {}
-        }
-
-        val imageBytes = FractalRenderer.render(
-            type,
-            finalWidth,
-            finalHeight,
-            maxIter,
-            spec.fractal.xCenter,
-            spec.fractal.yCenter,
-            spec.fractal.zoom,
-            spec.fractal.juliaCX,
-            spec.fractal.juliaCY,
-            params,
-            palT,
-            palRGB
-        ) ?: return null // GPU renderer unavailable (no OpenGL ES 3.1)
-        val bitmap = Bitmap.createBitmap(finalWidth, finalHeight, Bitmap.Config.ARGB_8888)
-        val buffer = java.nio.ByteBuffer.wrap(imageBytes)
-        bitmap.copyPixelsFromBuffer(buffer)
-        return bitmap.asImageBitmap()
-    }
-
     val sketchId = spec.figure.sketchId ?: return null
     // Pannable sketches (Prism) get the current view; the others always render the full image.
     val view = if (spec.figure.hasPanZoomView) spec.fractal else FractalView()
@@ -248,4 +212,40 @@ fun renderFigure(spec: RenderSpec): ImageBitmap? {
         zoom = view.zoom
     )
     return result?.asImageBitmap()
+}
+
+/** Everything that changes a colour field: all of [RenderSpec] except the colours. */
+private fun colorFieldKey(spec: RenderSpec): Any {
+    val view = if (spec.figure.hasPanZoomView) spec.fractal else FractalView()
+    return listOf(
+        spec.figure, spec.seed, spec.width, spec.height,
+        view.xCenter, view.yCenter, view.zoom, view.iterations,
+        view.juliaCX, view.juliaCY, view.multibrotD, view.newtonCoeffs.toList(),
+    )
+}
+
+/** Native colour-field render: the fractal shader, or a sketch in field mode. */
+private fun renderColorField(spec: RenderSpec): ColorField? {
+    val type = spec.figure.fractalType
+    if (type != null) {
+        val params = FloatArray(10)
+        when (spec.figure) {
+            Figures.MULTIBROT -> params[0] = spec.fractal.multibrotD.toFloat()
+            Figures.NEWTON -> spec.fractal.newtonCoeffs.forEachIndexed { i, d -> params[i] = d.toFloat() }
+            Figures.LYAPUNOV -> lyapunovSequence(spec.seed, params)
+            else -> {}
+        }
+        val bytes = FractalRenderer.render(
+            type, spec.width, spec.height, spec.fractal.iterations,
+            spec.fractal.xCenter, spec.fractal.yCenter, spec.fractal.zoom,
+            spec.fractal.juliaCX, spec.fractal.juliaCY, params
+        ) ?: return null // GPU renderer unavailable (no OpenGL ES 3.1)
+        return ColorField.fromRgbaBytes(spec.width, spec.height, bytes)
+    }
+    val sketchId = spec.figure.sketchId ?: return null
+    val view = if (spec.figure.hasPanZoomView) spec.fractal else FractalView()
+    val pixels = SketchRenderer.renderSketchField(
+        sketchId, spec.seed, spec.width, spec.height, view.xCenter, view.yCenter, view.zoom
+    ) ?: return null
+    return ColorField(spec.width, spec.height, pixels)
 }

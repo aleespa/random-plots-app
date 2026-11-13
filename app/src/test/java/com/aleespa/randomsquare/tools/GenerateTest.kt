@@ -41,9 +41,10 @@ class GenerateTest {
     @Before
     fun setup() {
         // Mock all native-loading objects BEFORE they are accessed
+        ColorFieldCache.clear()
         mockkObject(FractalRenderer)
         every { FractalRenderer["loadNativeLibrary"]() } returns Unit
-        every { FractalRenderer.render(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns ByteArray(100 * 100 * 4)
+        every { FractalRenderer.render(any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns ByteArray(100 * 100 * 4)
         every { FractalRenderer.renderComposition(any(), any(), any(), any(), any(), any(), any()) } returns ByteArray(100 * 100 * 4)
 
         mockkObject(SketchRenderer)
@@ -144,7 +145,7 @@ class GenerateTest {
         val fakeImageBytes = ByteArray(width * height * 4)
         
         every { 
-            FractalRenderer.render(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) 
+            FractalRenderer.render(any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) 
         } returns fakeImageBytes
 
         visualizeModel.selectedFigure = Figures.MANDELBROT
@@ -167,10 +168,22 @@ class GenerateTest {
                 1.0,
                 any(),
                 any(),
-                any(),
-                any(),
                 any()
             ) 
+        }
+    }
+
+    /** Changing only the colormap recolours the cached colour field instead of re-rendering. */
+    @Test
+    fun testColormapChangeReusesTheRenderedField() {
+        visualizeModel.selectedFigure = Figures.MANDELBROT
+        visualizeModel.selectedColormap = Colormaps.PLASMA_FRACTAL
+        assertNotNull(generateRandomPlot(visualizeModel, 100, 100))
+        visualizeModel.selectedColormap = Colormaps.MAGMA_FRACTAL
+        assertNotNull(generateRandomPlot(visualizeModel, 100, 100))
+
+        verify(exactly = 1) {
+            FractalRenderer.render(any(), any(), any(), any(), any(), any(), any(), any(), any(), any())
         }
     }
 
@@ -200,7 +213,7 @@ class GenerateTest {
     @Test
     fun testGenerateRandomPlot_FractalRendererUnavailable_ReturnsNull() {
         every {
-            FractalRenderer.render(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any())
+            FractalRenderer.render(any(), any(), any(), any(), any(), any(), any(), any(), any(), any())
         } returns null
 
         visualizeModel.selectedFigure = Figures.MANDELBROT

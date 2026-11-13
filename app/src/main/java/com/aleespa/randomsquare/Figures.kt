@@ -32,6 +32,11 @@ enum class Figures(
      * well as use a palette; solid colormaps are not offered.
      */
     val supportsFullColor: Boolean = false,
+    /**
+     * The sketch draws only per-pixel palette output (drawValues, drawDensity, drawField), so it
+     * can render a ColorField and be recoloured without re-rendering. Fractals always do.
+     */
+    val rendersColorField: Boolean = false,
 ) {
 
     MANDELBROT(
@@ -119,7 +124,8 @@ enum class Figures(
         R.drawable.prism,
         { prismMenu(it) },
         sketchId = 15,
-        supportsFullColor = true
+        supportsFullColor = true,
+        rendersColorField = true
     ),
     /** Coloured by hue (phase), so it has no colormap picker. Pans and zooms like Prism. */
     DOMAIN_COLORING(
@@ -256,7 +262,8 @@ enum class Figures(
         R.string.strange_attractor,
         R.drawable.strange_attractor,
         { standardMenu(it) },
-        sketchId = 16
+        sketchId = 16,
+        rendersColorField = true
     ),
     LORENZ_FLOW(
         "lorenz_flow",
@@ -272,7 +279,8 @@ enum class Figures(
         R.string.fractal_flame,
         R.drawable.fractal_flame,
         { standardMenu(it) },
-        sketchId = 22
+        sketchId = 22,
+        rendersColorField = true
     ),
     RANDOM_CIRCLES(
         "random_circles",
@@ -304,7 +312,8 @@ enum class Figures(
         R.string.voronoi,
         R.drawable.voronoi,
         { standardMenu(it) },
-        sketchId = 23
+        sketchId = 23,
+        rendersColorField = true
     ),
     FLOW_FIELD(
         "flow_field",
@@ -312,7 +321,8 @@ enum class Figures(
         R.string.flow_field,
         R.drawable.flow_field,
         { standardMenu(it) },
-        sketchId = 21
+        sketchId = 21,
+        rendersColorField = true
     ),
     ;
 
@@ -323,6 +333,10 @@ enum class Figures(
      */
     val hasPanZoomView: Boolean
         get() = fractalType != null || figureType == FigureType.COMPOSITIONS
+
+    /** Whether rendering with [colormap] goes through a recolourable ColorField. */
+    fun usesColorField(colormap: Colormaps): Boolean =
+        fractalType != null || (rendersColorField && !colormap.isFullColor)
 
     companion object {
         fun fromKey(key: String): Figures {

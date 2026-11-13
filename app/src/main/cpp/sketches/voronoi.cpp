@@ -54,15 +54,14 @@ public:
         }
 
         float ang = U(0, 2 * (float)M_PI), gx = std::cos(ang), gy = std::sin(ang);
-        std::vector<SkColor> colors(n);
+        std::vector<float> tones(n);
         for (int k = 0; k < n; ++k) {
             float grad = 0.5f + (sites[k].x / W - 0.5f) * gx + (sites[k].y / H - 0.5f) * gy;
-            float tone = std::clamp(0.6f * grad + 0.4f * U(0, 1), 0.0f, 1.0f);
-            colors[k] = ctx.getColor(0.1f + 0.9f * tone);
+            tones[k] = 0.1f + 0.9f * std::clamp(0.6f * grad + 0.4f * U(0, 1), 0.0f, 1.0f);
         }
         const float cell_scale = S / std::sqrt((float)n), border = U(1.2f, 3.0f) * S / 480.0f;
 
-        std::vector<uint32_t> pixels((size_t)W * H, 0);  // alpha 0 = border, background shows
+        std::vector<FieldPixel> pixels((size_t)W * H);  // default alpha 0 = border, background shows
         sketchutil::parallelRows(H, [&](int r0, int r1) {
             for (int y = r0; y < r1; ++y) {
                 for (int x = 0; x < W; ++x) {
@@ -74,10 +73,10 @@ public:
                     float d1 = std::sqrt(b1);
                     if (std::sqrt(b2) - d1 < border) continue;
                     float shade = 1 - 0.4f * std::min(1.0f, d1 / cell_scale);
-                    pixels[(size_t)y * W + x] = sketchutil::argb(colors[k1], shade);
+                    pixels[(size_t)y * W + x] = {tones[k1], shade, 1.0f};
                 }
             }
         });
-        ctx.drawPixels(pixels);
+        ctx.drawField(pixels);
     }
 };

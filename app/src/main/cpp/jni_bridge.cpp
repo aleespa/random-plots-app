@@ -36,6 +36,40 @@
 #define LOG_TAG "SketchJNI"
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
+// IDs must match Figures.sketchId in Figures.kt (checked by FiguresTest).
+static std::unique_ptr<SketchBase> makeSketch(int sketch_id) {
+    switch (sketch_id) {
+        case 0: return std::make_unique<NoisyCirclesSketch>();
+        case 1: return std::make_unique<BubblesSketch>();
+        case 2: return std::make_unique<WavesSketch>();
+        case 3: return std::make_unique<ConstellationsSketch>();
+        case 4: return std::make_unique<PolygonGridSketch>();
+        case 5: return std::make_unique<SpiralSketch>();
+        case 6: return std::make_unique<CubismSketch>();
+        case 7: return std::make_unique<ExponentialSumSketch>();
+        case 8: return std::make_unique<PolygonFeedbackSketch>();
+        case 9: return std::make_unique<PolygonTunnelSketch>();
+        case 10: return std::make_unique<RotationsSketch>();
+        case 11: return std::make_unique<OrbitsSketch>();
+        case 12: return std::make_unique<SpirographSketch>();
+        case 13: return std::make_unique<IrrationalSpirographSketch>();
+        case 14: return std::make_unique<RandomEigenSketch>();
+        case 15: return std::make_unique<PrismSketch>();
+        case 16: return std::make_unique<StrangeAttractorSketch>();
+        case 17: return std::make_unique<LorenzFlowSketch>();
+        case 18: return std::make_unique<RandomCirclesSketch>();
+        case 19: return std::make_unique<PhyllotaxisSketch>();
+        case 20: return std::make_unique<TruchetSketch>();
+        case 21: return std::make_unique<FlowFieldSketch>();
+        case 22: return std::make_unique<FractalFlameSketch>();
+        case 23: return std::make_unique<VoronoiSketch>();
+        case 24: return std::make_unique<DomainColoringSketch>();
+        default:
+            LOGE("Unknown sketch_id %d", sketch_id);
+            return nullptr;
+    }
+}
+
 extern "C" {
 
 JNIEXPORT jbyteArray JNICALL
@@ -70,38 +104,8 @@ Java_com_aleespa_randomsquare_SketchRenderer_renderSketch(
     env->ReleaseFloatArrayElements(colormap_t, t_ptr, JNI_ABORT);
     env->ReleaseIntArrayElements(colormap_rgb, rgb_ptr, JNI_ABORT);
 
-    std::unique_ptr<SketchBase> sketch;
-    // IDs must match Figures.sketchId in Figures.kt (checked by FiguresTest).
-    switch (sketch_id) {
-        case 0: sketch = std::make_unique<NoisyCirclesSketch>(); break;
-        case 1: sketch = std::make_unique<BubblesSketch>(); break;
-        case 2: sketch = std::make_unique<WavesSketch>(); break;
-        case 3: sketch = std::make_unique<ConstellationsSketch>(); break;
-        case 4: sketch = std::make_unique<PolygonGridSketch>(); break;
-        case 5: sketch = std::make_unique<SpiralSketch>(); break;
-        case 6: sketch = std::make_unique<CubismSketch>(); break;
-        case 7: sketch = std::make_unique<ExponentialSumSketch>(); break;
-        case 8: sketch = std::make_unique<PolygonFeedbackSketch>(); break;
-        case 9: sketch = std::make_unique<PolygonTunnelSketch>(); break;
-        case 10: sketch = std::make_unique<RotationsSketch>(); break;
-        case 11: sketch = std::make_unique<OrbitsSketch>(); break;
-        case 12: sketch = std::make_unique<SpirographSketch>(); break;
-        case 13: sketch = std::make_unique<IrrationalSpirographSketch>(); break;
-        case 14: sketch = std::make_unique<RandomEigenSketch>(); break;
-        case 15: sketch = std::make_unique<PrismSketch>(); break;
-        case 16: sketch = std::make_unique<StrangeAttractorSketch>(); break;
-        case 17: sketch = std::make_unique<LorenzFlowSketch>(); break;
-        case 18: sketch = std::make_unique<RandomCirclesSketch>(); break;
-        case 19: sketch = std::make_unique<PhyllotaxisSketch>(); break;
-        case 20: sketch = std::make_unique<TruchetSketch>(); break;
-        case 21: sketch = std::make_unique<FlowFieldSketch>(); break;
-        case 22: sketch = std::make_unique<FractalFlameSketch>(); break;
-        case 23: sketch = std::make_unique<VoronoiSketch>(); break;
-        case 24: sketch = std::make_unique<DomainColoringSketch>(); break;
-        default:
-            LOGE("Unknown sketch_id %d", sketch_id);
-            return nullptr;
-    }
+    std::unique_ptr<SketchBase> sketch = makeSketch(sketch_id);
+    if (!sketch) return nullptr;
 
     sketch->render(ctx, static_cast<uint64_t>(seed));
     auto jpeg = ctx.encodeJpeg(92);
@@ -109,6 +113,34 @@ Java_com_aleespa_randomsquare_SketchRenderer_renderSketch(
     jbyteArray result = env->NewByteArray(static_cast<jsize>(jpeg.size()));
     env->SetByteArrayRegion(result, 0, jpeg.size(),
         reinterpret_cast<const jbyte*>(jpeg.data()));
+    return result;
+}
+
+/**
+ * Colour-field render for Figures.rendersColorField sketches: returns the palette-independent
+ * field (RenderContext::enableFieldMode) as packed ints, or null if the sketch drew something that
+ * can't be recoloured per pixel (the caller then falls back to renderSketch).
+ */
+JNIEXPORT jintArray JNICALL
+Java_com_aleespa_randomsquare_SketchRenderer_renderSketchField(
+    JNIEnv* env, jobject,
+    jint sketch_id, jlong seed,
+    jint width, jint height,
+    jdouble x_center, jdouble y_center, jdouble zoom
+) {
+    std::unique_ptr<SketchBase> sketch = makeSketch(sketch_id);
+    if (!sketch) return nullptr;
+    RenderContext ctx(width, height);
+    ctx.setView({x_center, y_center, zoom});
+    ctx.setColormap({{0.0f, 0, 0, 0}, {1.0f, 255, 255, 255}});  // unused by field draws; keeps getColor safe
+    ctx.enableFieldMode();
+    sketch->render(ctx, static_cast<uint64_t>(seed));
+    if (!ctx.fieldValid()) return nullptr;
+
+    const auto& field = ctx.field();
+    jintArray result = env->NewIntArray(static_cast<jsize>(field.size()));
+    env->SetIntArrayRegion(result, 0, static_cast<jsize>(field.size()),
+        reinterpret_cast<const jint*>(field.data()));
     return result;
 }
 

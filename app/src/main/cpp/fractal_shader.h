@@ -13,9 +13,6 @@ uniform vec2 u_center;
 uniform float u_zoom;
 uniform vec2 u_juliaC;
 uniform float u_params[10];
-uniform float u_palT[16];
-uniform vec3 u_palRGB[16];
-uniform int u_palSize;
 
 vec2 complexMul(vec2 a, vec2 b) {
     return vec2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
@@ -42,16 +39,13 @@ vec2 complexCos(vec2 z) {
     return vec2(cos(z.x) * cosh(z.y), -sin(z.x) * sinh(z.y));
 }
 
-vec3 paletteColor(float t) {
-    t = clamp(t, 0.0, 1.0);
-    int i = 0;
-    for (int k = 0; k < u_palSize - 1; ++k) {
-        if (u_palT[k] <= t) i = k;
-    }
-    int j = min(i + 1, u_palSize - 1);
-    float span = u_palT[j] - u_palT[i];
-    float frac = (span > 0.0) ? (t - u_palT[i]) / span : 0.0;
-    return mix(u_palRGB[i], u_palRGB[j], frac);
+// Output is a colour field, not a colour: t in [0, 1] as 16 bits in R (high byte) and G (low
+// byte), B = shade (1), A = coverage (1). Kotlin applies the palette (tools/ColorField.kt), so a
+// colormap change doesn't re-run the shader.
+vec4 packField(float t) {
+    float v = floor(clamp(t, 0.0, 1.0) * 65535.0 + 0.5);
+    float hi = floor(v / 256.0);
+    return vec4(hi / 255.0, (v - hi * 256.0) / 255.0, 1.0, 1.0);
 }
 
 void main() {
@@ -83,7 +77,7 @@ void main() {
         float lambda = lsum / float(u_maxIterations);
         float tl = (isnan(lambda) || isinf(lambda) || lambda >= 0.0)
             ? 0.0 : 0.05 + 0.85 * (1.0 - exp(1.6 * lambda));
-        imageStore(u_image, pos, vec4(paletteColor(tl), 1.0));
+        imageStore(u_image, pos, packField(tl));
         return;
     }
 
@@ -153,8 +147,7 @@ void main() {
         nu = float(iter) + 1.0 - log(log(mag)) / log(exponent);
     }
     float t = (iter < u_maxIterations) ? nu / float(u_maxIterations) : 0.0;
-    vec3 color = paletteColor(t);
-    imageStore(u_image, pos, vec4(color, 1.0));
+    imageStore(u_image, pos, packField(t));
 }
 )";
 
