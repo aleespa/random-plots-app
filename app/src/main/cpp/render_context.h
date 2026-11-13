@@ -78,11 +78,17 @@ public:
      * `values` is row-major, width() * height(), each in [-1, 1] (mapped to t = (v + 1) / 2).
      */
     void drawValues(const std::vector<float>& values);
+    /** Like drawValues, but one field per channel (each in [-1, 1]); ignores the colormap. */
+    void drawRGB(const std::vector<float>& r, const std::vector<float>& g, const std::vector<float>& b);
     int width() const { return width_; }
     int height() const { return height_; }
 
     void setView(const PlaneView& view) { view_ = view; }
     const PlaneView& view() const { return view_; }
+
+    /** True when the user picked full RGB colour instead of a colormap (Colormaps.FULL_COLOR). */
+    void setFullColor(bool full) { full_color_ = full; }
+    bool fullColor() const { return full_color_; }
 
     std::vector<uint8_t> encodeJpeg(int quality = 92) const;
 
@@ -94,5 +100,6 @@ private:
     float wx_min_ = -1, wx_max_ = 1, wy_min_ = -1, wy_max_ = 1;
     SkBlendMode blend_mode_ = SkBlendMode::kSrcOver;
     PlaneView view_;
+    bool full_color_ = false;
     Point2f worldToPixel(Point2f p) const;
 };

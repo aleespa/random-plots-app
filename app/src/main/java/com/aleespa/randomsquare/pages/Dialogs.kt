@@ -288,7 +288,7 @@ fun VisualizeOptionsButtons(
 @Composable
 fun ColormapSelectionDialog(
     selectedColormap: Colormaps,
-    isFractal: Boolean,
+    figure: Figures,
     onColormapChange: (Colormaps) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -318,11 +318,7 @@ fun ColormapSelectionDialog(
                     modifier = Modifier.padding(bottom = Spacing.l)
                 )
 
-                val filteredColormaps = if (isFractal) {
-                    Colormaps.entries.filter { it.isFractalSpecific }
-                } else {
-                    Colormaps.entries.filter { !it.isFractalSpecific }
-                }
+                val filteredColormaps = Colormaps.entries.filter { it.isAvailableFor(figure) }
 
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(3),

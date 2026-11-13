@@ -3,7 +3,10 @@
 // Andrej Bauer's Random Art builds a random formula f(x, y) and evaluates it per pixel. On top of
 // the operators the app's GPU compositions already have (Sum, Product, Mod, Well, Tent, Sin, Mix,
 // Level), Prism adds what his full generator at random-art.org appears to have:
-//   1. Palette colouring: f yields one value per pixel, coloured through the colormap.
+//   1. Palette colouring: f yields one value per pixel, coloured through the colormap. With
+//      full colour (Colormaps.FULL_COLOR) f is evaluated once per RGB channel instead, like the
+//      original Random Art: same structure, but constants, phases and focal scales differ per
+//      channel, so the channels vary together yet not identically.
 //   2. Focal points: distance to a point, to the nearest point, cell edges, rays around a point.
 //   3. Coordinate transforms: a sub-formula is evaluated at rotated, mirrored, n-fold
 //      kaleidoscope, tiled or polar coordinates (symmetry and repetition).
@@ -38,6 +41,7 @@ struct Node {
     int arity = 0;
     int kids[4] = {-1, -1, -1, -1};
     float p[4] = {0, 0, 0, 0};  // op parameters
+    float cp[3] = {0, 0, 0};    // per-channel variation (full colour only), see colorize()
 };
 
 struct Rng {
@@ -105,21 +109,27 @@ public:
         root = build(rng, rng.integers(5, 9), kMaxTransforms);
     }
 
-    float eval(int i, float x, float y) const {
+    /**
+     * Value of node `i` at (x, y). `c` is the RGB channel (0-2) in full colour, or -1 for the
+     * single palette value; channels only change the parameters colorize() varies.
+     */
+    float eval(int i, float x, float y, int c = -1) const {
         const Node& n = nodes[i];
-        auto k = [&](int j) { return eval(n.kids[j], x, y); };
+        auto k = [&](int j) { return eval(n.kids[j], x, y, c); };
+        // Phase offset (Sin, Rays) or log-scale factor (focal leaves) for this channel.
+        const float shift = c < 0 ? 0.0f : n.cp[c];
         switch (n.op) {
             case Op::X: return x;
             case Op::Y: return y;
-            case Op::Const: return n.p[0];
+            case Op::Const: return c < 0 ? n.p[0] : n.cp[c];
             case Op::FocusDist: {
                 const Point2f& f = foci[(int)n.p[0]];
-                return clip(1 - n.p[1] * std::hypot(x - f.x, y - f.y));
+                return clip(1 - n.p[1] * std::exp(shift) * std::hypot(x - f.x, y - f.y));
             }
             case Op::Nearest: {
                 float d = 1e9f;
                 for (const auto& f : foci) d = std::min(d, std::hypot(x - f.x, y - f.y));
-                return clip(1 - n.p[0] * d);
+                return clip(1 - n.p[0] * std::exp(shift) * d);
             }
             case Op::Edges: {
                 float d1 = 1e9f, d2 = 1e9f;
@@ -127,18 +137,18 @@ public:
                     float d = std::hypot(x - f.x, y - f.y);
                     if (d < d1) { d2 = d1; d1 = d; } else if (d < d2) { d2 = d; }
                 }
-                return clip(1 - n.p[0] * (d2 - d1));
+                return clip(1 - n.p[0] * std::exp(shift) * (d2 - d1));
             }
             case Op::Rays: {
                 const Point2f& f = foci[(int)n.p[0]];
-                return std::sin(n.p[1] * std::atan2(y - f.y, x - f.x) + n.p[2]);
+                return std::sin(n.p[1] * std::atan2(y - f.y, x - f.x) + n.p[2] + shift);
             }
             case Op::Well: {
                 float v = k(0);
                 return 1 - 2 / std::pow(1 + v * v, 8.0f);
             }
             case Op::Tent: return 1 - 2 * std::abs(k(0));
-            case Op::Sin: return std::sin(n.p[0] + n.p[1] * k(0));
+            case Op::Sin: return std::sin(n.p[0] + shift + n.p[1] * k(0));
             case Op::Neg: return -k(0);
             case Op::Steps: {
                 float levels = n.p[0];
@@ -146,13 +156,13 @@ public:
                 return std::round(v * levels) / levels * 2 - 1;
             }
             case Op::Rotate: {
-                float c = n.p[0], s = n.p[1];
-                return eval(n.kids[0], c * x - s * y, s * x + c * y);
+                float co = n.p[0], si = n.p[1];
+                return eval(n.kids[0], co * x - si * y, si * x + co * y, c);
             }
             case Op::Mirror: {
                 float nx = n.p[0], ny = n.p[1];
                 float d = std::max(x * nx + y * ny, 0.0f);  // fold the positive half over
-                return eval(n.kids[0], x - 2 * d * nx, y - 2 * d * ny);
+                return eval(n.kids[0], x - 2 * d * nx, y - 2 * d * ny, c);
             }
             case Op::Kaleido: {
                 float sides = n.p[0], cx = n.p[1], cy = n.p[2];
@@ -161,17 +171,17 @@ public:
                 float t = std::atan2(y - cy, x - cx);
                 t = t - sector * std::floor(t / sector);
                 t = std::abs(t - sector / 2);  // mirror inside each sector
-                return eval(n.kids[0], cx + r * std::cos(t), cy + r * std::sin(t));
+                return eval(n.kids[0], cx + r * std::cos(t), cy + r * std::sin(t), c);
             }
             case Op::Torus: {
                 float s = n.p[0];
                 auto wrap = [s](float v) { float w = v * s + 1; return w - 2 * std::floor(w / 2) - 1; };
-                return eval(n.kids[0], wrap(x), wrap(y));
+                return eval(n.kids[0], wrap(x), wrap(y), c);
             }
             case Op::Polar: {
                 float r = std::hypot(x, y) * 2 / std::sqrt(2.0f) - 1;
                 float t = std::atan2(y, x) / kPi;
-                return eval(n.kids[0], r, t);
+                return eval(n.kids[0], r, t, c);
             }
             case Op::Sum: return (k(0) + k(1)) * 0.5f;
             case Op::Prod: return k(0) * k(1);
@@ -195,7 +205,8 @@ public:
      * Evaluates the formula on a width x height grid, using all cores. The grid covers
      * [-1, 1]^2 (y up) mapped through `view`: (u, v) -> (cx + u * zoom, cy + v * zoom).
      */
-    std::vector<float> evaluate(int width, int height, const PlaneView& view = {}) const {
+    std::vector<float> evaluate(int width, int height, const PlaneView& view = {},
+                                int channel = -1) const {
         std::vector<float> out((size_t)width * height);
         unsigned threads = std::max(1u, std::min(8u, std::thread::hardware_concurrency()));
         const float cx = (float)view.cx, cy = (float)view.cy, zoom = (float)view.zoom;
@@ -204,7 +215,7 @@ public:
                 float y = cy + zoom * (1 - 2 * (py + 0.5f) / height);
                 for (int px = 0; px < width; ++px) {
                     float x = cx + zoom * (-1 + 2 * (px + 0.5f) / width);
-                    float v = eval(root, x, y);
+                    float v = eval(root, x, y, channel);
                     out[(size_t)py * width + px] = std::isfinite(v) ? clip(v) : 0.0f;
                 }
             }
@@ -217,6 +228,25 @@ public:
         }
         for (auto& th : pool) th.join();
         return out;
+    }
+
+    /**
+     * Draws the per-channel parameters for full colour. Uses its own Rng, so the formula (and the
+     * palette rendering) for a seed is the same with or without full colour.
+     */
+    void colorize(Rng& rng) {
+        for (Node& n : nodes) {
+            for (float& v : n.cp) {
+                switch (n.op) {
+                    case Op::Const: v = rng.uniform(-1, 1); break;
+                    case Op::Sin: case Op::Rays: v = rng.uniform(-kPi / 2, kPi / 2); break;
+                    case Op::FocusDist: case Op::Nearest: case Op::Edges:
+                        v = rng.uniform(-0.35f, 0.35f);
+                        break;
+                    default: v = 0; break;
+                }
+            }
+        }
     }
 
 private:
@@ -339,6 +369,26 @@ inline void stretchContrast(std::vector<float>& v, std::pair<float, float> range
 }
 
 constexpr int kRangeSampleSize = 128;
+constexpr int kColorAttempts = 8;
+constexpr float kMinColorfulness = 0.22f;
+
+/**
+ * Hasler & Suesstrunk colourfulness of an RGB image with channels in [-1, 1], on a 0-1 scale
+ * (0 = grey, ~0.15 moderately, ~0.3 very colourful).
+ */
+inline float colorfulness(const std::vector<float>& r, const std::vector<float>& g,
+                          const std::vector<float>& b) {
+    double srg = 0, syb = 0, qrg = 0, qyb = 0;
+    for (size_t i = 0; i < r.size(); ++i) {
+        double R = (r[i] + 1) * 0.5, G = (g[i] + 1) * 0.5, B = (b[i] + 1) * 0.5;
+        double rg = R - G, yb = 0.5 * (R + G) - B;
+        srg += rg; syb += yb; qrg += rg * rg; qyb += yb * yb;
+    }
+    double n = (double)r.size();
+    double mrg = srg / n, myb = syb / n;
+    double vrg = std::max(0.0, qrg / n - mrg * mrg), vyb = std::max(0.0, qyb / n - myb * myb);
+    return (float)(std::sqrt(vrg + vyb) + 0.3 * std::sqrt(mrg * mrg + myb * myb));
+}
 
 }  // namespace prism
 
@@ -352,12 +402,53 @@ public:
             formula.build(rng);
             if (prism::isInteresting(formula.evaluate(prism::kPreviewSize, prism::kPreviewSize))) break;
         }
-        // The formula choice and the colour range come from the default (unzoomed) view, so
+        // The formula choice and the colour ranges come from the default (unzoomed) view, so
         // panning and zooming move over one fixed image instead of re-picking or recolouring it.
+        if (ctx.fullColor()) {
+            renderFullColor(ctx, formula, seed);
+            return;
+        }
         auto range = prism::contrastRange(
             formula.evaluate(prism::kRangeSampleSize, prism::kRangeSampleSize));
         std::vector<float> values = formula.evaluate(ctx.width(), ctx.height(), ctx.view());
         prism::stretchContrast(values, range);
         ctx.drawValues(values);
+    }
+
+private:
+    /**
+     * One evaluation per RGB channel, each contrast-stretched on its own. Picks the most
+     * colourful of a few channel variations so formulas with few varied parameters don't come
+     * out grey.
+     */
+    static void renderFullColor(RenderContext& ctx, prism::Formula& formula, uint64_t seed) {
+        constexpr int S = prism::kRangeSampleSize;
+        float best = -1;
+        prism::Formula chosen = formula;
+        std::pair<float, float> ranges[3];
+        for (int attempt = 0; attempt < prism::kColorAttempts; ++attempt) {
+            prism::Rng rng(seed * 0xC2B2AE3D27D4EB4FULL + (uint64_t)attempt);
+            formula.colorize(rng);
+            std::vector<float> ch[3];
+            std::pair<float, float> rs[3];
+            for (int c = 0; c < 3; ++c) {
+                ch[c] = formula.evaluate(S, S, {}, c);
+                rs[c] = prism::contrastRange(ch[c]);
+                prism::stretchContrast(ch[c], rs[c]);
+            }
+            float score = prism::colorfulness(ch[0], ch[1], ch[2]);
+            if (score > best) {
+                best = score;
+                chosen = formula;
+                std::copy(rs, rs + 3, ranges);
+            }
+            if (score >= prism::kMinColorfulness) break;
+        }
+        std::vector<float> ch[3];
+        for (int c = 0; c < 3; ++c) {
+            ch[c] = chosen.evaluate(ctx.width(), ctx.height(), ctx.view(), c);
+            prism::stretchContrast(ch[c], ranges[c]);
+        }
+        ctx.drawRGB(ch[0], ch[1], ch[2]);
     }
 };

@@ -4,8 +4,27 @@ enum class Colormaps(
     val key: String,
     val text: String,
     val colorlist: List<Int>,
-    val isFractalSpecific: Boolean = false
+    val isFractalSpecific: Boolean = false,
+    /**
+     * Not a palette: figures with Figures.supportsFullColor colour each RGB channel on its own.
+     * [colorlist] is only the preview shown in the picker.
+     */
+    val isFullColor: Boolean = false,
 ) {
+    FULL_COLOR(
+        "full_color",
+        "Full Color",
+        listOf(
+            0xFFFF0000.toInt(),
+            0xFFFFFF00.toInt(),
+            0xFF00FF00.toInt(),
+            0xFF00FFFF.toInt(),
+            0xFF0000FF.toInt(),
+            0xFFFF00FF.toInt(),
+            0xFFFF0000.toInt(),
+        ),
+        isFullColor = true
+    ),
     SOLID_WHITE(
         "solid_white",
         "Solid White",
@@ -608,7 +627,23 @@ enum class Colormaps(
     ),
     ;
 
+    /** Whether [figure] can use this colormap (and the colormap picker offers it). */
+    fun isAvailableFor(figure: Figures): Boolean = when {
+        figure.figureType == FigureType.FRACTAL -> isFractalSpecific
+        isFractalSpecific -> false
+        // A solid colour would turn a full-plane figure into a blank image.
+        figure.supportsFullColor -> this != SOLID_WHITE && this != SOLID_BLACK
+        else -> !isFullColor
+    }
+
     companion object {
+        /** Colormap to switch to when the current one is not available for [figure]. */
+        fun defaultFor(figure: Figures): Colormaps = when {
+            figure.figureType == FigureType.FRACTAL -> PLASMA_FRACTAL
+            figure.supportsFullColor -> FULL_COLOR
+            else -> RAINBOW
+        }
+
         fun fromKey(key: String?, isFractal: Boolean = false): Colormaps {
             if (key == null) return if (isFractal) PLASMA_FRACTAL else RAINBOW
 

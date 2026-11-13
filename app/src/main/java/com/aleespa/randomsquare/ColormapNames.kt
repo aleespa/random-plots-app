@@ -11,6 +11,7 @@ import androidx.compose.ui.res.stringResource
  */
 @StringRes
 private fun Colormaps.nameRes(): Int? = when (text) {
+    "Full Color" -> R.string.cm_full_color
     "Solid White" -> R.string.cm_solid_white
     "Solid Black" -> R.string.cm_solid_black
     "Rainbow" -> R.string.cm_rainbow

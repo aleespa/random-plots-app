@@ -31,7 +31,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.data.SettingDarkMode
 import com.aleespa.randomsquare.data.VisualizeModel
@@ -86,10 +85,9 @@ fun Visualize(
     }
 
     if (visualizeModel.showColormapDialog) {
-        val isFractal = visualizeModel.selectedFigure.figureType == FigureType.FRACTAL
         ColormapSelectionDialog(
             selectedColormap = visualizeModel.selectedColormap,
-            isFractal = isFractal,
+            figure = visualizeModel.selectedFigure,
             onColormapChange = {
                 visualizeModel.selectedColormap = it
                 com.aleespa.randomsquare.tools.generateNewPlot(

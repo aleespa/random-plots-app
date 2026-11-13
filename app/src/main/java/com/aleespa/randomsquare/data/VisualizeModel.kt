@@ -144,8 +144,6 @@ class VisualizeModel(
         get() = _selectedFigure
         set(value) {
             if (_selectedFigure == value) return
-            val wasFractal =
-                _selectedFigure.hasPanZoomView
             val isNowFractal =
                 value.hasPanZoomView
             val figureChanged = _selectedFigure != value
@@ -157,14 +155,11 @@ class VisualizeModel(
                 resetFractalSettings()
             }
 
-            // Update colormap if switching between fractal and non-fractal types
+            // Switch colormap if the current one doesn't apply to the new figure (fractal vs
+            // regular palettes, Prism's full colour, no solid colours for Prism).
             // DO NOT UPDATE if we are loading from gallery
-            if (!isFromGallery) {
-                if (isNowFractal && !wasFractal && !selectedColormap.isFractalSpecific) {
-                    selectedColormap = Colormaps.PLASMA_FRACTAL
-                } else if (!isNowFractal && wasFractal && selectedColormap.isFractalSpecific) {
-                    selectedColormap = Colormaps.RAINBOW
-                }
+            if (!isFromGallery && !selectedColormap.isAvailableFor(value)) {
+                selectedColormap = Colormaps.defaultFor(value)
             }
 
             viewModelScope.launch {
@@ -190,11 +185,9 @@ class VisualizeModel(
                     resetFractalSettings()
                 }
 
-                // Ensure initial colormap matches the figure type
-                if (figure.figureType == FigureType.FRACTAL && !selectedColormap.isFractalSpecific) {
-                    selectedColormap = Colormaps.PLASMA_FRACTAL
-                } else if (figure.figureType != FigureType.FRACTAL && selectedColormap.isFractalSpecific) {
-                    selectedColormap = Colormaps.RAINBOW
+                // Ensure initial colormap matches the figure
+                if (!selectedColormap.isAvailableFor(figure)) {
+                    selectedColormap = Colormaps.defaultFor(figure)
                 }
             }
         }

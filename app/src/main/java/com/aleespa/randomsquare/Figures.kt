@@ -27,6 +27,11 @@ enum class Figures(
     val sketchId: Int? = null,
     /** Fractal shader type: must match `u_type` in cpp/fractal_shader.h. Null for non-fractals. */
     val fractalType: Int? = null,
+    /**
+     * Fills the whole plane and can colour each RGB channel on its own (Colormaps.FULL_COLOR) as
+     * well as use a palette; solid colormaps are not offered.
+     */
+    val supportsFullColor: Boolean = false,
 ) {
 
     MANDELBROT(
@@ -104,7 +109,8 @@ enum class Figures(
         R.string.prism,
         R.drawable.prism,
         { prismMenu(it) },
-        sketchId = 15
+        sketchId = 15,
+        supportsFullColor = true
     ),
     CONTINUOUS_SPIROGRAPH(
         "irrational_spirograph",

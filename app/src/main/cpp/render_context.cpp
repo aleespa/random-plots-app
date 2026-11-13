@@ -135,6 +135,22 @@ void RenderContext::drawValues(const std::vector<float>& values) {
     }
 }
 
+void RenderContext::drawRGB(const std::vector<float>& r, const std::vector<float>& g,
+                            const std::vector<float>& b) {
+    size_t n = (size_t)width_ * height_;
+    if (r.size() != n || g.size() != n || b.size() != n) return;
+    auto byte = [](float v) {
+        return (uint8_t)std::lround(std::clamp((v + 1.0f) * 0.5f, 0.0f, 1.0f) * 255.0f);
+    };
+    for (int y = 0; y < height_; ++y) {
+        uint32_t* row = bitmap_.getAddr32(0, y);
+        size_t o = (size_t)y * width_;
+        for (int x = 0; x < width_; ++x) {
+            row[x] = SkPreMultiplyARGB(0xFF, byte(r[o + x]), byte(g[o + x]), byte(b[o + x]));
+        }
+    }
+}
+
 std::vector<uint8_t> RenderContext::encodeJpeg(int quality) const {
     SkDynamicMemoryWStream stream;
     SkJpegEncoder::Options opts;

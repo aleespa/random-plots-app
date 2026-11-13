@@ -130,5 +130,6 @@
     <string name="cm_emerald">Emerald</string>
     <string name="cm_fire">Fire</string>
     <string name="cm_electric">Electric</string>
+    <string name="cm_full_color">Full color</string>
     <string name="prism">Prism</string>
 </resources>

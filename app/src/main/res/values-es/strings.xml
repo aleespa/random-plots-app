@@ -119,6 +119,7 @@
     <string name="cm_emerald">Esmeralda</string>
     <string name="cm_fire">Fuego</string>
     <string name="cm_electric">Eléctrico</string>
+    <string name="cm_full_color">Color completo</string>
     <string name="theme_source">Fuente del tema</string>
     <string name="device">Dispositivo</string>
     <string name="image">Imagen</string>

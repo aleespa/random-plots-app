@@ -35,12 +35,14 @@ object SketchRenderer {
         colormapRGB: IntArray,
         xCenter: Double,
         yCenter: Double,
-        zoom: Double
+        zoom: Double,
+        fullColor: Boolean
     ): ByteArray?
 
     /**
      * [xCenter]/[yCenter]/[zoom] are the pan/zoom view (same convention as the fractals); only
      * sketches with Figures.hasPanZoomView (Prism) use it, the others ignore it.
+     * [Colormaps.FULL_COLOR] asks sketches with Figures.supportsFullColor for RGB output.
      */
     fun renderBitmap(
         sketchId: Int,
@@ -61,7 +63,10 @@ object SketchRenderer {
         }
 
         val bytes =
-            renderSketch(sketchId, seed, width, height, bgColor, palT, palRGB, xCenter, yCenter, zoom)
+            renderSketch(
+                sketchId, seed, width, height, bgColor, palT, palRGB, xCenter, yCenter, zoom,
+                colormap.isFullColor
+            )
                 ?: return null
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
     }

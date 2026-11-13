@@ -48,8 +48,7 @@ data class RenderSpec(
     val width: Int,
     val height: Int,
     val bgColor: Int = android.graphics.Color.BLACK,
-    val colormap: Colormaps =
-        if (figure.figureType == FigureType.FRACTAL) Colormaps.PLASMA_FRACTAL else Colormaps.RAINBOW,
+    val colormap: Colormaps = Colormaps.defaultFor(figure),
     val fractal: FractalView = FractalView.defaultsFor(figure),
 )
 
