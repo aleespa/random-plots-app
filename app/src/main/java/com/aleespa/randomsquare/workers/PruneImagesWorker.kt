@@ -1,5 +1,6 @@
 package com.aleespa.randomsquare.workers
 
+import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import androidx.work.CoroutineWorker
@@ -7,6 +8,7 @@ import androidx.work.WorkerParameters
 import com.aleespa.randomsquare.data.DatabaseProvider
 import java.io.File
 
+/** Removes gallery entries whose image file no longer exists (e.g. deleted outside the app). */
 class PruneImagesWorker(
     appContext: Context,
     workerParams: WorkerParameters
@@ -16,7 +18,8 @@ class PruneImagesWorker(
         val imageDao = DatabaseProvider.getDatabase(applicationContext).imageDao()
         val images = imageDao.getAllImagesList()
 
-        val invalidImages = images.filter { !isUriValid(it.uri) }
+        val resolver = applicationContext.contentResolver
+        val invalidImages = images.filter { !isImageUriValid(resolver, it.uri) }
 
         if (invalidImages.isNotEmpty()) {
             imageDao.deleteImages(invalidImages)
@@ -24,24 +27,21 @@ class PruneImagesWorker(
 
         return Result.success()
     }
+}
 
-    private fun isUriValid(uriString: String): Boolean {
-        return try {
-            val uri = Uri.parse(uriString) ?: return false
-            when (uri.scheme) {
-                "file" -> {
-                    val path = uri.path
-                    if (path != null) File(path).exists() else false
-                }
-
-                "content" -> {
-                    applicationContext.contentResolver.openInputStream(uri)?.use { true } ?: false
-                }
-
-                else -> false
-            }
-        } catch (e: Exception) {
-            false
+/**
+ * Whether a stored image URI still points at a readable image: `file://` URIs must exist,
+ * `content://` URIs must open. Anything else (or a malformed URI) is invalid.
+ */
+internal fun isImageUriValid(contentResolver: ContentResolver, uriString: String): Boolean {
+    return try {
+        val uri = Uri.parse(uriString) ?: return false
+        when (uri.scheme) {
+            "file" -> uri.path?.let { File(it).exists() } ?: false
+            "content" -> contentResolver.openInputStream(uri)?.use { true } ?: false
+            else -> false
         }
+    } catch (e: Exception) {
+        false
     }
 }

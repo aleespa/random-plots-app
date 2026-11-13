@@ -56,6 +56,10 @@ class GenerateTest {
         every { settingsRepository.selectedFigure } returns kotlinx.coroutines.flow.flowOf(Figures.POLYGON_FEEDBACK)
         every { settingsRepository.selectedColormapColors } returns kotlinx.coroutines.flow.flowOf(emptyList())
         every { settingsRepository.bgColor } returns kotlinx.coroutines.flow.flowOf(0)
+        // Stub every flow VisualizeModel collects: a relaxed-mock Flow makes MockK run Kotlin
+        // reflection, which is extremely slow (minutes, then OOM) under Robolectric.
+        every { settingsRepository.themeSource } returns kotlinx.coroutines.flow.emptyFlow()
+        every { settingsRepository.imageResolution } returns kotlinx.coroutines.flow.emptyFlow()
 
         visualizeModel = VisualizeModel(imageRepository, settingsRepository)
         // Set a default colormap that isn't fractal-specific to avoid automatic changes during tests

@@ -3,12 +3,15 @@ package com.aleespa.randomsquare.data
 import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
+import com.aleespa.randomsquare.workers.isImageUriValid
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -30,35 +33,34 @@ class ImageRepositoryTest {
         repository = ImageRepository(imageDao, context)
     }
 
+    /** Filtering is a plain DAO query; invalid entries are pruned by PruneImagesWorker instead. */
     @Test
-    fun getFilteredImages_shouldFilterOutInvalidUrisAndDeleteThemFromDao() {
-        runBlocking {
-            val validFile = File.createTempFile("valid", ".png")
-            val validUri = "file://${validFile.absolutePath.replace("\\", "/")}"
-            val invalidUri = "file:///non/existent/path.png"
-            val contentUri = "content://com.aleespa.provider/image.png"
-            
-            val images = listOf(
-                ImageEntity(id = 1, uri = validUri),
-                ImageEntity(id = 2, uri = invalidUri),
-                ImageEntity(id = 3, uri = contentUri)
-            )
-            
-            coEvery { imageDao.getFilteredImages(any(), any()) } returns images
-            
-            // Mock content resolver for the content URI
-            val inputStream: InputStream = mockk()
-            every { contentResolver.openInputStream(Uri.parse(contentUri)) } returns inputStream
-            every { inputStream.close() } returns Unit
+    fun getFilteredImages_returnsDaoResultsWithoutDeleting() = runBlocking {
+        val images = listOf(
+            ImageEntity(id = 1, uri = "file:///non/existent/path.png"),
+            ImageEntity(id = 2, uri = "content://com.aleespa.provider/image.png")
+        )
+        coEvery { imageDao.getFilteredImages(true, "spiral") } returns images
 
-            val result = repository.getFilteredImages(null, null)
-            
-            assertEquals("Should have 2 valid images", 2, result.size)
-            assertEquals(1, result[0].id)
-            assertEquals(3, result[1].id)
-            
-            coVerify { imageDao.deleteImages(listOf(images[1])) }
-            
+        assertEquals(images, repository.getFilteredImages(true, "spiral"))
+        coVerify(exactly = 0) { imageDao.deleteImages(any()) }
+    }
+
+    @Test
+    fun isImageUriValid_keepsExistingFilesAndOpenableContent_rejectsTheRest() {
+        val validFile = File.createTempFile("valid", ".png")
+        try {
+            val contentUri = "content://com.aleespa.provider/image.png"
+            val inputStream: InputStream = mockk(relaxed = true)
+            every { contentResolver.openInputStream(Uri.parse(contentUri)) } returns inputStream
+            every { contentResolver.openInputStream(Uri.parse("content://gone/image.png")) } returns null
+
+            assertTrue(isImageUriValid(contentResolver, validFile.toURI().toString()))
+            assertTrue(isImageUriValid(contentResolver, contentUri))
+            assertFalse(isImageUriValid(contentResolver, "file:///non/existent/path.png"))
+            assertFalse(isImageUriValid(contentResolver, "content://gone/image.png"))
+            assertFalse(isImageUriValid(contentResolver, "not a uri"))
+        } finally {
             validFile.delete()
         }
     }
