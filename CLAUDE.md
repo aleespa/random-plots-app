@@ -16,7 +16,8 @@ Run from the repo root (on Windows use `gradlew.bat` or `./gradlew` from Git Bas
 ./gradlew testDebugUnitTest             # JVM unit tests (Robolectric + MockK)
 ./gradlew testDebugUnitTest --tests "com.aleespa.randomsquare.tools.GenerateTest"
 ./gradlew testDebugUnitTest --tests "com.aleespa.randomsquare.tools.GenerateTest.someMethod"
-./gradlew connectedDebugAndroidTest     # instrumented tests (needs device)
+./gradlew connectedDebugAndroidTest     # instrumented tests: renders every figure natively (needs a device with OpenGL ES 3.1)
+scripts/export-figure-samples.sh        # renders every figure on the device -> build/figure-samples/<key>.webp (1000x1000)
 ./gradlew lint
 ./gradlew bundleRelease                 # release AAB (R8 minify + resource shrinking)
 ```
@@ -31,7 +32,7 @@ Run from the repo root (on Windows use `gradlew.bat` or `./gradlew` from Git Bas
 
 There are three native render paths. All return encoded image bytes (`ByteArray`) that Kotlin decodes into a `Bitmap`:
 
-1. **Sketches** (`SketchRenderer.renderSketch`, `cpp/jni_bridge.cpp`). Each sketch is a `SketchBase` subclass in `cpp/sketches/` that implements `render(RenderContext&, uint64_t seed)` and draws with Skia. Output is deterministic for a given seed. CMake globs `sketches/*.cpp`, so new files are picked up automatically.
+1. **Sketches** (`SketchRenderer.renderSketch`, `cpp/jni_bridge.cpp`). Each sketch is a `SketchBase` subclass in `cpp/sketches/` that implements `render(RenderContext&, uint64_t seed)` and draws with Skia. Output is deterministic for a given seed. CMake globs `sketches/*.cpp`, so new files are picked up automatically. `RenderContext` (world coordinates via `setWorldBounds`) offers `drawPolyline`, `drawScatter`, `fillPolygon`, `drawCircle` (world-unit radius), `setBlendMode` (e.g. `SkBlendMode::kPlus` for additive glow), and a density renderer for millions of points (attractors, flow fields): `auto d = ctx.makeDensity(); d.add(p); ... ctx.drawDensity(d, gamma)`.
 2. **Fractals** (`tools/FractalRenderer.render`, `cpp/fractalrenderer.cpp` + `fractal_shader.h`). Covers Mandelbrot, Julia, Tricorn, Multibrot and Newton. The type is an int, and the palette is passed as `palT`/`palRGB` float arrays.
 3. **Compositions** (`FractalRenderer.renderComposition`, `composition_shader.h`). A small stack-based VM. Kotlin (`generateRandomPlot` in `tools/generate.kt`) builds a random opcode/param bytecode, and the shader interprets it per pixel. Opcodes 0–10 are X, Y, Const, Sum, Prod, Mod, Well, Tent, Sin, Level and Mix.
 
@@ -44,7 +45,10 @@ There are three native render paths. All return encoded image bytes (`ByteArray`
 1. For a sketch, add `cpp/sketches/<name>.cpp` and register it with the next free case in `jni_bridge.cpp`. For a fractal, add a `u_type` branch in `fractal_shader.h`.
 2. Add an entry to the `Figures` enum in `Figures.kt`: a `key` string, a `FigureType` category, a string resource (en/es/fr), a sample drawable, a menu lambda (`standardMenu` / `fractalMenu` / `newtonMenu` / `compositionMenu` from `pages/visualize/Menus.kt`), and `sketchId = <case>` or `fractalType = <u_type>`. `generate.kt` reads the ID from the enum; there is nothing else to map.
 3. Add the new value to `existingNativeIdsAreUnchanged` in `FiguresTest`.
-4. Optionally add `assets/latex/<key>.tex`. `readTexAssets` loads it by `Figures.key` to show the figure's math with jlatexmath.
+4. Run `scripts/export-figure-samples.sh` with a device connected: `FigureRenderTest` checks the new figure renders natively (non-null, non-blank) and the script pulls its Browse sample to `build/figure-samples/<key>.webp`; copy it to `res/drawable/`.
+5. Optionally add `assets/latex/<key>.tex`. `readTexAssets` loads it by `Figures.key` to show the figure's math with jlatexmath.
+
+Rendering for a figure outside the UI goes through `renderFigure(RenderSpec(...))` (`tools/FigureRendering.kt`); `FractalView.defaultsFor(figure)` is the single source of each fractal's starting view. `generateRandomPlot(visualizeModel, ...)` just builds a `RenderSpec` from the ViewModel.
 
 `Figures.key` is persisted, both in Room (`ImageEntity.imageType`) and in DataStore (the selected figure), and is resolved back with `Figures.fromKey`. Treat existing keys as stable.
 
@@ -58,6 +62,8 @@ There are three native render paths. All return encoded image bytes (`ByteArray`
 - `ads/AdManager` integrates Google Mobile Ads.
 
 ### Testing notes
+
+Instrumented tests (`app/src/androidTest`) load the real native library: `FigureRenderTest` is parameterized over every `Figures` entry. Use a recent emulator image with a host GPU; old images (API 29) only expose OpenGL ES 2.0 and fractals/compositions return null there.
 
 Unit tests run under Robolectric with `systemProperty "is_testing" = "true"`. The `SketchRenderer` and `FractalRenderer` objects check that property and skip `System.loadLibrary`, so tests must `mockkObject(...)` the renderers instead of calling native code. Set the property before touching those objects (see `GenerateTest`'s `@BeforeClass`).
 

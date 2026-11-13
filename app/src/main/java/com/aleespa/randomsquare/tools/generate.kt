@@ -58,173 +58,26 @@ fun generateRandomPlot(
     visualizeModel: VisualizeModel,
     width: Int = -1,
     height: Int = -1
-): ImageBitmap? {
-    val finalWidth = if (width == -1) visualizeModel.imageResolution else width
-    val finalHeight = if (height == -1) visualizeModel.imageResolution else height
-
-    if (visualizeModel.selectedFigure.figureType == FigureType.COMPOSITIONS) {
-        val seed = visualizeModel.randomSeed
-        val rng = java.util.Random(seed)
-        val k = when (visualizeModel.selectedFigure) {
-            Figures.SUPER_RANDOM -> rng.nextInt(35) + 15
-            Figures.SOFT -> rng.nextInt(7) + 8
-            Figures.BLACKWHITE -> 10
-            Figures.NOISE -> 25
-            else -> 15
-        }
-
-        val opcodes = mutableListOf<Int>()
-        val params = mutableListOf<Float>()
-
-        // Op Definitions matching composition_shader.h
-        // 0:X, 1:Y, 2:Const, 3:Sum, 4:Prod, 5:Mod, 6:Well, 7:Tent, 8:Sin, 9:Level, 10:Mix
-
-        val ops0 = when (visualizeModel.selectedFigure) {
-            Figures.BLACKWHITE -> listOf(0, 1) // X, Y
-            else -> listOf(0, 1, 2) // X, Y, Constant
-        }
-
-        val ops1 = when (visualizeModel.selectedFigure) {
-            Figures.SOFT -> listOf(3, 4, 9, 10) // Sum, Prod, Level, Mix
-            Figures.BLACKWHITE -> listOf(
-                3,
-                4,
-                5,
-                6,
-                7,
-                8,
-                10
-            ) // Sum, Prod, Mod, Well, Tent, Sin, Mix
-            Figures.NOISE -> listOf(3, 8) // Sum, Sin
-            else -> listOf(3, 4, 5, 6, 7, 8, 9, 10) // All (Super)
-        }
-
-        fun generateBytecode(depth: Int) {
-            if (depth <= 0) {
-                val op = ops0[rng.nextInt(ops0.size)]
-                opcodes.add(op)
-                if (op == 2) {
-                    params.add(rng.nextFloat() * 2 - 1)
-                    params.add(rng.nextFloat() * 2 - 1)
-                    params.add(rng.nextFloat() * 2 - 1)
-                } else {
-                    params.add(0f); params.add(0f); params.add(0f)
-                }
-            } else {
-                val op = ops1[rng.nextInt(ops1.size)]
-                val arity = when (op) {
-                    6, 7, 8 -> 1
-                    3, 4, 5 -> 2
-                    9, 10 -> 3
-                    else -> 1
-                }
-
-                // For a stack-based VM, we need postfix order
-                if (arity == 1) {
-                    generateBytecode(depth - 1)
-                } else if (arity == 2) {
-                    val split = if (depth > 0) rng.nextInt(depth) else 0
-                    generateBytecode(split)
-                    generateBytecode(depth - 1 - split)
-                } else if (arity == 3) {
-                    val s1 = if (depth > 0) rng.nextInt(depth) else 0
-                    val s2 = if (depth > 0) rng.nextInt(depth) else 0
-                    val sortedSplits = listOf(s1, s2).sorted()
-                    generateBytecode(sortedSplits[0])
-                    generateBytecode(sortedSplits[1] - sortedSplits[0])
-                    generateBytecode(depth - 1 - sortedSplits[1])
-                }
-
-                opcodes.add(op)
-                if (op == 8) { // Sin needs phase and freq
-                    params.add(rng.nextFloat() * Math.PI.toFloat())
-                    val freq = when (visualizeModel.selectedFigure) {
-                        Figures.NOISE -> 2.0f + rng.nextFloat() * 19.0f
-                        Figures.SOFT -> 1.0f + rng.nextFloat() * 11.0f
-                        else -> 1.0f + rng.nextFloat() * 5.0f
-                    }
-                    params.add(freq)
-                    params.add(0f)
-                } else if (op == 9) { // Level needs threshold
-                    params.add(rng.nextFloat() * 2 - 1)
-                    params.add(0f); params.add(0f)
-                } else {
-                    params.add(0f); params.add(0f); params.add(0f)
-                }
-            }
-        }
-
-        generateBytecode(k)
-
-        val imageBytes = FractalRenderer.renderComposition(
-            finalWidth,
-            finalHeight,
-            visualizeModel.fractalXCenter,
-            visualizeModel.fractalYCenter,
-            visualizeModel.fractalZoom,
-            opcodes.toIntArray(),
-            params.toFloatArray()
-        ) ?: return null // GPU renderer unavailable (no OpenGL ES 3.1)
-        val bitmap = Bitmap.createBitmap(finalWidth, finalHeight, Bitmap.Config.ARGB_8888)
-        bitmap.copyPixelsFromBuffer(java.nio.ByteBuffer.wrap(imageBytes))
-        return bitmap.asImageBitmap()
-    }
-
-    if (visualizeModel.selectedFigure.figureType == FigureType.FRACTAL) {
-        val palSize = visualizeModel.selectedColormap.colorlist.size
-        val palT = FloatArray(palSize) { i -> i.toFloat() / (palSize - 1) }
-        val palRGB = FloatArray(palSize * 3)
-        visualizeModel.selectedColormap.colorlist.forEachIndexed { i, color ->
-            palRGB[i * 3 + 0] = ((color shr 16) and 0xFF) / 255.0f
-            palRGB[i * 3 + 1] = ((color shr 8) and 0xFF) / 255.0f
-            palRGB[i * 3 + 2] = (color and 0xFF) / 255.0f
-        }
-
-        val maxIter = visualizeModel.fractalIterations
-
-        val type = visualizeModel.selectedFigure.fractalType ?: return null
-        val params = FloatArray(10)
-        when (visualizeModel.selectedFigure) {
-            Figures.MULTIBROT -> params[0] = visualizeModel.multibrotD.toFloat()
-            Figures.NEWTON -> visualizeModel.newtonCoeffs.forEachIndexed { i, d ->
-                params[i] = d.toFloat()
-            }
-
-            else -> {}
-        }
-
-        val imageBytes = FractalRenderer.render(
-            type,
-            finalWidth,
-            finalHeight,
-            maxIter,
-            visualizeModel.fractalXCenter,
-            visualizeModel.fractalYCenter,
-            visualizeModel.fractalZoom,
-            visualizeModel.juliaCX,
-            visualizeModel.juliaCY,
-            params,
-            palT,
-            palRGB
-        ) ?: return null // GPU renderer unavailable (no OpenGL ES 3.1)
-        val bitmap = Bitmap.createBitmap(finalWidth, finalHeight, Bitmap.Config.ARGB_8888)
-        val buffer = java.nio.ByteBuffer.wrap(imageBytes)
-        bitmap.copyPixelsFromBuffer(buffer)
-        return bitmap.asImageBitmap()
-    }
-
-    val sketchId = visualizeModel.selectedFigure.sketchId ?: return null
-    val result = SketchRenderer.renderBitmap(
-        sketchId = sketchId,
+): ImageBitmap? = renderFigure(
+    RenderSpec(
+        figure = visualizeModel.selectedFigure,
         seed = visualizeModel.randomSeed,
-        width = finalWidth,
-        height = finalHeight,
+        width = if (width == -1) visualizeModel.imageResolution else width,
+        height = if (height == -1) visualizeModel.imageResolution else height,
         bgColor = visualizeModel.bgColor,
-        colormap = visualizeModel.selectedColormap
+        colormap = visualizeModel.selectedColormap,
+        fractal = FractalView(
+            xCenter = visualizeModel.fractalXCenter,
+            yCenter = visualizeModel.fractalYCenter,
+            zoom = visualizeModel.fractalZoom,
+            iterations = visualizeModel.fractalIterations,
+            juliaCX = visualizeModel.juliaCX,
+            juliaCY = visualizeModel.juliaCY,
+            multibrotD = visualizeModel.multibrotD,
+            newtonCoeffs = visualizeModel.newtonCoeffs,
+        ),
     )
-    return result?.asImageBitmap()
-}
-
+)
 
 fun loadImage(
     context: Context, imageFile: Uri, targetWidth: Int = 1200, targetHeight: Int = 1200

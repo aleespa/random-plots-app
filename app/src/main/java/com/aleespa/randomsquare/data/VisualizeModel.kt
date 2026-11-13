@@ -12,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 import com.aleespa.randomsquare.Colormaps
 import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.Figures
+import com.aleespa.randomsquare.tools.FractalView
 import com.aleespa.randomsquare.data.ImageEntity.Builder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -251,22 +252,16 @@ class VisualizeModel(
     }
 
     fun resetFractalSettings() {
-        fractalZoom = 1.0
-        fractalXCenter = if (selectedFigure == Figures.MANDELBROT) -1.0 else 0.0
-        fractalYCenter = 0.0
-        fractalIterations = when (selectedFigure) {
-            Figures.MANDELBROT -> 100
-            Figures.JULIA -> 80
-            Figures.TRICORN -> 80
-            Figures.MULTIBROT -> 100
-            Figures.NEWTON -> 100
-            else -> 150
-        }
+        val defaults = FractalView.defaultsFor(selectedFigure)
+        fractalZoom = defaults.zoom
+        fractalXCenter = defaults.xCenter
+        fractalYCenter = defaults.yCenter
+        fractalIterations = defaults.iterations
         if (selectedFigure == Figures.NEWTON) {
-            newtonCoeffs = doubleArrayOf(-1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0) // z^3 - 1
+            newtonCoeffs = defaults.newtonCoeffs
         }
-        juliaCX = -0.7
-        juliaCY = 0.27015
+        juliaCX = defaults.juliaCX
+        juliaCY = defaults.juliaCY
         updatePolarFromJulia()
     }
 

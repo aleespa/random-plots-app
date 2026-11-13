@@ -3,6 +3,7 @@
 #include "include/core/SkPath.h"
 #include "include/encode/SkJpegEncoder.h"
 #include "include/core/SkStream.h"
+#include "include/core/SkImage.h"
 #include <algorithm>
 #include <cmath>
 
@@ -37,6 +38,7 @@ void RenderContext::drawPolyline(const std::vector<Point2f>& pts, SkColor color,
     paint.setAlphaf(alpha);
     paint.setStrokeWidth(stroke_width * scale);
     paint.setAntiAlias(true);
+    paint.setBlendMode(blend_mode_);
     SkPath path;
     auto p0 = worldToPixel(pts[0]);
     path.moveTo(p0.x, p0.y);
@@ -55,6 +57,7 @@ void RenderContext::drawScatter(const std::vector<Point2f>& pts, SkColor color, 
     paint.setColor(color);
     paint.setAlphaf(alpha);
     paint.setAntiAlias(true);
+    paint.setBlendMode(blend_mode_);
     for (const auto& pt : pts) {
         auto p = worldToPixel(pt);
         canvas_->drawCircle(p.x, p.y, radius * scale, paint);
@@ -68,6 +71,7 @@ void RenderContext::fillPolygon(const std::vector<Point2f>& pts, SkColor color, 
     paint.setColor(color);
     paint.setAlphaf(alpha);
     paint.setAntiAlias(true);
+    paint.setBlendMode(blend_mode_);
     SkPath path;
     auto p0 = worldToPixel(pts[0]);
     path.moveTo(p0.x, p0.y);
@@ -77,6 +81,45 @@ void RenderContext::fillPolygon(const std::vector<Point2f>& pts, SkColor color, 
     }
     path.close();
     canvas_->drawPath(path, paint);
+}
+
+void RenderContext::drawCircle(Point2f center, float radius, SkColor color, float stroke_width, float alpha) {
+    float px_per_unit = (float)width_ / (wx_max_ - wx_min_);
+    float scale = (float)width_ / 1000.0f;
+    SkPaint paint;
+    paint.setStyle(stroke_width > 0 ? SkPaint::kStroke_Style : SkPaint::kFill_Style);
+    if (stroke_width > 0) paint.setStrokeWidth(stroke_width * scale);
+    paint.setColor(color);
+    paint.setAlphaf(alpha);
+    paint.setAntiAlias(true);
+    paint.setBlendMode(blend_mode_);
+    auto c = worldToPixel(center);
+    canvas_->drawCircle(c.x, c.y, radius * px_per_unit, paint);
+}
+
+void RenderContext::drawDensity(const DensityAccumulator& density, float gamma, float alpha) {
+    if (density.maxCount() == 0) return;
+    // Tone-map counts into an overlay: color from the colormap, coverage from the same t, so
+    // sparse areas fade into the background instead of being drawn as solid low-end color.
+    SkBitmap overlay;
+    overlay.allocN32Pixels(width_, height_);
+    overlay.eraseColor(SK_ColorTRANSPARENT);
+    const float inv_log_max = 1.0f / std::log1p((float)density.maxCount());
+    for (int y = 0; y < height_; ++y) {
+        uint32_t* row = overlay.getAddr32(0, y);
+        const uint32_t* counts = density.counts_.data() + (size_t)y * width_;
+        for (int x = 0; x < width_; ++x) {
+            uint32_t n = counts[x];
+            if (n == 0) continue;
+            float t = std::pow(std::log1p((float)n) * inv_log_max, gamma);
+            SkColor c = getColor(t);
+            U8CPU a = (U8CPU)std::lround(std::clamp(t * alpha, 0.0f, 1.0f) * 255.0f);
+            row[x] = SkPreMultiplyARGB(a, SkColorGetR(c), SkColorGetG(c), SkColorGetB(c));
+        }
+    }
+    SkPaint paint;
+    paint.setBlendMode(blend_mode_);
+    canvas_->drawImage(overlay.asImage(), 0, 0, SkSamplingOptions(), &paint);
 }
 
 std::vector<uint8_t> RenderContext::encodeJpeg(int quality) const {
