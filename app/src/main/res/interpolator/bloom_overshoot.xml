@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One soft overshoot for the splash bloom (see animator/bloom_N.xml). -->
+<overshootInterpolator xmlns:android="http://schemas.android.com/apk/res/android"
+    android:tension="1.8" />

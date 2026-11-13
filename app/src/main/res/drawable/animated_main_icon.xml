@@ -1,19 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Splash animation "Bloom": the five squares grow out of the centre one after another (70 ms
+  apart, innermost first), each with a soft overshoot, fading in as they start. 790 ms in total,
+  declared as windowSplashScreenAnimationDuration in the splash themes.
+-->
 <animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:drawable="@drawable/main_icon">
+    android:drawable="@drawable/splash_icon">
     <target
         android:name="group1"
-        android:animation="@animator/fall_1" />
+        android:animation="@animator/bloom_1" />
+    <target
+        android:name="path1"
+        android:animation="@animator/bloom_fade_1" />
     <target
         android:name="group2"
-        android:animation="@animator/fall_2" />
+        android:animation="@animator/bloom_2" />
+    <target
+        android:name="path2"
+        android:animation="@animator/bloom_fade_2" />
     <target
         android:name="group3"
-        android:animation="@animator/fall_3" />
+        android:animation="@animator/bloom_3" />
+    <target
+        android:name="path3"
+        android:animation="@animator/bloom_fade_3" />
     <target
         android:name="group4"
-        android:animation="@animator/fall_4" />
+        android:animation="@animator/bloom_4" />
+    <target
+        android:name="path4"
+        android:animation="@animator/bloom_fade_4" />
     <target
         android:name="group5"
-        android:animation="@animator/fall_5" />
+        android:animation="@animator/bloom_5" />
+    <target
+        android:name="path5"
+        android:animation="@animator/bloom_fade_5" />
 </animated-vector>

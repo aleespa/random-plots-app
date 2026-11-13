@@ -9,6 +9,7 @@
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenAnimatedIcon">@drawable/animated_main_icon</item>
+        <item name="windowSplashScreenAnimationDuration">790</item>
         <item name="windowSplashScreenBackground">@color/splashBackground</item>
         <item name="postSplashScreenTheme">@style/Theme.MyApplication</item>
     </style>
