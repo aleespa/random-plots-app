@@ -27,27 +27,48 @@ struct PlaneView {
 class DensityAccumulator {
 public:
     void add(Point2f world) {
-        int px = (int)((world.x - wx_min_) * sx_);
-        int py = (int)((wy_max_ - world.y) * sy_);
-        if (px < 0 || py < 0 || px >= width_ || py >= height_) return;
-        uint32_t c = ++counts_[(size_t)py * width_ + px];
-        if (c > max_count_) max_count_ = c;
+        size_t i;
+        if (index(world, i)) bump(i);
     }
     /**
      * Like add(), plus a colour coordinate t in [0, 1]: drawDensity then colours each pixel by
      * the mean t of its hits (e.g. which map of a fractal flame landed there) instead of by density.
      */
     void add(Point2f world, float t) {
-        int px = (int)((world.x - wx_min_) * sx_);
-        int py = (int)((wy_max_ - world.y) * sy_);
-        if (px < 0 || py < 0 || px >= width_ || py >= height_) return;
-        size_t i = (size_t)py * width_ + px;
-        if (t_sum_.empty()) t_sum_.assign(counts_.size(), 0.0f);
-        t_sum_[i] += t;
-        uint32_t c = ++counts_[i];
-        if (c > max_count_) max_count_ = c;
+        size_t i;
+        if (!index(world, i)) return;
+        if (t_sum_.empty()) t_sum_.assign(counts_.size(), 0);
+        t_sum_[i] += fixed(t);
+        bump(i);
     }
+
+    /**
+     * Thread-safe adds for sketches that iterate on several threads. Call prepareConcurrent()
+     * before starting the threads and recomputeMax() after they finish. Integer atomics keep the
+     * result identical whatever the thread interleaving.
+     */
+    void prepareConcurrent(bool with_colour) {
+        if (with_colour && t_sum_.empty()) t_sum_.assign(counts_.size(), 0);
+    }
+    void addConcurrent(Point2f world) {
+        size_t i;
+        if (index(world, i)) __atomic_fetch_add(&counts_[i], 1u, __ATOMIC_RELAXED);
+    }
+    void addConcurrent(Point2f world, float t) {
+        size_t i;
+        if (!index(world, i)) return;
+        __atomic_fetch_add(&t_sum_[i], fixed(t), __ATOMIC_RELAXED);
+        __atomic_fetch_add(&counts_[i], 1u, __ATOMIC_RELAXED);
+    }
+    void recomputeMax() {
+        max_count_ = 0;
+        for (uint32_t c : counts_) max_count_ = c > max_count_ ? c : max_count_;
+    }
+
     uint32_t maxCount() const { return max_count_; }
+    bool hasColour() const { return !t_sum_.empty(); }
+    /** Mean colour coordinate of pixel i's hits (requires hasColour() and a non-zero count). */
+    float meanT(size_t i) const { return (float)((double)t_sum_[i] / kFixedOne / counts_[i]); }
 
 private:
     friend class RenderContext;
@@ -55,10 +76,26 @@ private:
         : width_(w), height_(h), wx_min_(x_min), wy_max_(y_max),
           sx_((float)w / (x_max - x_min)), sy_((float)h / (y_max - y_min)),
           counts_((size_t)w * h, 0) {}
+    static constexpr double kFixedOne = 65536.0;  // t is summed in 16.16 fixed point
+    static uint64_t fixed(float t) {
+        float c = t < 0 ? 0 : (t > 1 ? 1 : t);
+        return (uint64_t)(c * (float)kFixedOne + 0.5f);
+    }
+    bool index(Point2f world, size_t& i) const {
+        int px = (int)((world.x - wx_min_) * sx_);
+        int py = (int)((wy_max_ - world.y) * sy_);
+        if (px < 0 || py < 0 || px >= width_ || py >= height_) return false;
+        i = (size_t)py * width_ + px;
+        return true;
+    }
+    void bump(size_t i) {
+        uint32_t c = ++counts_[i];
+        if (c > max_count_) max_count_ = c;
+    }
     int width_, height_;
     float wx_min_, wy_max_, sx_, sy_;
     std::vector<uint32_t> counts_;
-    std::vector<float> t_sum_;  // only allocated when add(p, t) is used
+    std::vector<uint64_t> t_sum_;  // only allocated when colour coordinates are used
     uint32_t max_count_ = 0;
 };
 

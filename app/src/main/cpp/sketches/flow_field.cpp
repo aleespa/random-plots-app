@@ -33,11 +33,15 @@ public:
         const bool by_position = U(0, 1) < 0.5f;
 
         auto density = ctx.makeDensity();
-        sketchutil::FastRng fast(rng());
+        density.prepareConcurrent(true);
+        const uint64_t base_seed = rng();
         const float scale = ctx.width() / 480.0f;
         const int particles = (int)(7000 * scale), steps = (int)(90 * scale);
         const float h = 1.1f / ctx.width();
-        for (int k = 0; k < particles; ++k) {
+        constexpr int kChunks = 8;  // fixed, so the image doesn't depend on the core count
+        sketchutil::parallelChunks(kChunks, [&](int chunk) {
+          sketchutil::FastRng fast(base_seed + 0x9E3779B97F4A7C15ULL * (chunk + 1));
+          for (int k = chunk; k < particles; k += kChunks) {
             float x = fast.uniform(), y = fast.uniform();
             float t = by_position ? x : field(x, y) / (2 * (float)M_PI * turns);
             t = std::clamp(t, 0.0f, 1.0f);
@@ -45,9 +49,11 @@ public:
                 float a = field(x, y);
                 x += std::cos(a) * h; y += std::sin(a) * h;
                 if (x < 0 || x >= 1 || y < 0 || y >= 1) break;
-                density.add({x, y}, t);
+                density.addConcurrent({x, y}, t);
             }
-        }
+          }
+        });
+        density.recomputeMax();
         ctx.drawDensity(density, 0.5f);
     }
 };

@@ -3,6 +3,7 @@
 // the CMake glob and #included by jni_bridge.cpp.
 #include "../render_context.h"
 #include <algorithm>
+#include <atomic>
 #include <cmath>
 #include <cstdint>
 #include <thread>
@@ -63,6 +64,24 @@ void parallelRows(int rows, F fn) {
     for (unsigned t = 0; t < threads; ++t) {
         int r0 = (int)t * chunk, r1 = std::min(rows, r0 + chunk);
         if (r0 < r1) pool.emplace_back(fn, r0, r1);
+    }
+    for (auto& th : pool) th.join();
+}
+
+/**
+ * Runs fn(chunk) for every chunk in [0, chunks) on up to 8 threads. Make each chunk's work depend
+ * only on its index (its own seed and share of the iterations) so the result doesn't depend on
+ * the device's core count.
+ */
+template <class F>
+void parallelChunks(int chunks, F fn) {
+    unsigned threads = std::max(1u, std::min({8u, std::thread::hardware_concurrency(), (unsigned)chunks}));
+    std::atomic<int> next{0};
+    std::vector<std::thread> pool;
+    for (unsigned t = 0; t < threads; ++t) {
+        pool.emplace_back([&] {
+            for (int c = next++; c < chunks; c = next++) fn(c);
+        });
     }
     for (auto& th : pool) th.join();
 }

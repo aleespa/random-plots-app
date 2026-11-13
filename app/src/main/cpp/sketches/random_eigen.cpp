@@ -4,6 +4,7 @@
 #include <complex>
 #include <vector>
 #include <Eigen/Dense>
+#include "sketch_util.h"
 
 class RandomEigenSketch : public SketchBase {
 public:
@@ -26,27 +27,25 @@ public:
         std::uniform_int_distribution<int> dist_idx(0, n - 1);
         for(int i=0; i<3; ++i) idx[i] = {dist_idx(rng), dist_idx(rng)};
 
-        std::vector<Point2f> all_eigvals;
-        all_eigvals.reserve(sample_size * n);
+        // Draw every random angle up front (same sequence as before), then solve the
+        // independent eigenproblems in parallel; sample i always fills slots [i*n, (i+1)*n).
+        std::vector<float> thetas((size_t)sample_size * 3);
+        for (float& theta : thetas) theta = std::uniform_real_distribution<float>(0, 2.0f * M_PI)(rng);
 
-        float sum_x = 0, sum_y = 0;
-
-        for (int i = 0; i < sample_size; ++i) {
-            Eigen::MatrixXcf mt = m;
-            for(int k=0; k<3; ++k) {
-                float theta = std::uniform_real_distribution<float>(0, 2.0f * M_PI)(rng);
-                mt(idx[k].first, idx[k].second) = std::polar(1.0f, theta);
+        std::vector<Point2f> all_eigvals((size_t)sample_size * n);
+        sketchutil::parallelRows(sample_size, [&](int i0, int i1) {
+            for (int i = i0; i < i1; ++i) {
+                Eigen::MatrixXcf mt = m;
+                for (int k = 0; k < 3; ++k) {
+                    mt(idx[k].first, idx[k].second) = std::polar(1.0f, thetas[(size_t)i * 3 + k]);
+                }
+                Eigen::ComplexEigenSolver<Eigen::MatrixXcf> solver(mt, false);
+                auto evals = solver.eigenvalues();
+                for (int j = 0; j < n; ++j) {
+                    all_eigvals[(size_t)i * n + j] = {evals[j].real(), evals[j].imag()};
+                }
             }
-
-            Eigen::ComplexEigenSolver<Eigen::MatrixXcf> solver(mt, false);
-            auto evals = solver.eigenvalues();
-            for(int j=0; j<evals.size(); ++j) {
-                Point2f p = {evals[j].real(), evals[j].imag()};
-                all_eigvals.push_back(p);
-                sum_x += p.x;
-                sum_y += p.y;
-            }
-        }
+        });
 
         // Tracks bounds for dynamic zoom-in (matching bbox_inches='tight')
         float x_min = 1e9, x_max = -1e9, y_min = 1e9, y_max = -1e9;

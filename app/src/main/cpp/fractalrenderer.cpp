@@ -4,6 +4,8 @@
 #include <EGL/eglext.h>
 #include <android/log.h>
 #include <vector>
+#include <map>
+#include <mutex>
 #include <string>
 #include <cmath>
 #include <cstdlib>
@@ -90,6 +92,69 @@ GLuint compileShader(GLenum type, const char* source) {
     return shader;
 }
 
+/**
+ * One EGL context and one compiled program per shader for the whole process. Creating a context
+ * and compiling the composition shader used to cost ~110 ms per render (the dispatch itself is
+ * ~6 ms); now it happens once. An EGL context is current on one thread at a time, so a session
+ * holds a process-wide lock, makes the context current on the calling thread and releases it when
+ * destroyed. If the device has no OpenGL ES 3.1, every session reports !ok() (and stays that way).
+ */
+class GpuSession {
+public:
+    GpuSession() : lock_(mutex()) { ok_ = state().acquire(); }
+    ~GpuSession() {
+        if (ok_) eglMakeCurrent(state().egl.display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+    }
+    bool ok() const { return ok_; }
+    /** The linked compute program for `source` (compiled on first use), or 0 on error. */
+    GLuint program(const char* source) { return state().program(source); }
+
+private:
+    struct State {
+        EGLContextManager egl;
+        bool initialized = false, failed = false;
+        std::map<const char*, GLuint> programs;
+
+        bool acquire() {
+            if (failed) return false;
+            if (!initialized) {
+                if (!egl.init()) {  // init() leaves the new context current
+                    egl.destroy();
+                    failed = true;
+                    return false;
+                }
+                initialized = true;
+                return true;
+            }
+            return eglMakeCurrent(egl.display, egl.surface, egl.surface, egl.context);
+        }
+
+        GLuint program(const char* source) {
+            auto it = programs.find(source);
+            if (it != programs.end()) return it->second;
+            GLuint shader = compileShader(GL_COMPUTE_SHADER, source);
+            if (!shader) return 0;
+            GLuint prog = glCreateProgram();
+            glAttachShader(prog, shader);
+            glLinkProgram(prog);
+            glDeleteShader(shader);
+            GLint linked = 0;
+            glGetProgramiv(prog, GL_LINK_STATUS, &linked);
+            if (!linked) {
+                glDeleteProgram(prog);
+                return 0;
+            }
+            programs[source] = prog;
+            return prog;
+        }
+    };
+    static State& state() { static State s; return s; }
+    static std::mutex& mutex() { static std::mutex m; return m; }
+
+    std::lock_guard<std::mutex> lock_;
+    bool ok_ = false;
+};
+
 struct Instruction {
     int32_t op;
     float v1;
@@ -103,21 +168,13 @@ Java_com_aleespa_randomsquare_tools_FractalRenderer_renderCompositionInternal(
     jdouble xCenter, jdouble yCenter, jdouble zoom,
     jintArray opcodes, jfloatArray params) {
 
-    EGLContextManager egl;
-    if (!egl.init()) {
+    GpuSession gpu;
+    if (!gpu.ok()) {
         LOGE("Failed to init EGL for Composition");
         return nullptr;
     }
-
-    GLuint computeShader = compileShader(GL_COMPUTE_SHADER, COMPOSITION_SHADER_SOURCE);
-    if (!computeShader) {
-        egl.destroy();
-        return nullptr;
-    }
-
-    GLuint program = glCreateProgram();
-    glAttachShader(program, computeShader);
-    glLinkProgram(program);
+    GLuint program = gpu.program(COMPOSITION_SHADER_SOURCE);
+    if (!program) return nullptr;
     glUseProgram(program);
 
     jsize count = env->GetArrayLength(opcodes);
@@ -174,9 +231,6 @@ Java_com_aleespa_randomsquare_tools_FractalRenderer_renderCompositionInternal(
     glDeleteBuffers(1, &ubo);
     glDeleteTextures(1, &texture);
     glDeleteFramebuffers(1, &fbo);
-    glDeleteProgram(program);
-    glDeleteShader(computeShader);
-    egl.destroy();
 
     return result;
 }
@@ -187,21 +241,13 @@ Java_com_aleespa_randomsquare_tools_FractalRenderer_renderInternal(
     jdouble xCenter, jdouble yCenter, jdouble zoom, jdouble cx, jdouble cy,
     jfloatArray params) {
 
-    EGLContextManager egl;
-    if (!egl.init()) {
+    GpuSession gpu;
+    if (!gpu.ok()) {
         LOGE("Failed to init EGL for Fractal");
         return nullptr;
     }
-
-    GLuint computeShader = compileShader(GL_COMPUTE_SHADER, COMPUTE_SHADER_SOURCE);
-    if (!computeShader) {
-        egl.destroy();
-        return nullptr;
-    }
-
-    GLuint program = glCreateProgram();
-    glAttachShader(program, computeShader);
-    glLinkProgram(program);
+    GLuint program = gpu.program(COMPUTE_SHADER_SOURCE);
+    if (!program) return nullptr;
     glUseProgram(program);
 
     GLuint texture;
@@ -239,9 +285,6 @@ Java_com_aleespa_randomsquare_tools_FractalRenderer_renderInternal(
     env->ReleaseFloatArrayElements(params, pParams, JNI_ABORT);
     glDeleteTextures(1, &texture);
     glDeleteFramebuffers(1, &fbo);
-    glDeleteProgram(program);
-    glDeleteShader(computeShader);
-    egl.destroy();
 
     return result;
 }

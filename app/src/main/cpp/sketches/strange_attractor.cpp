@@ -41,12 +41,18 @@ public:
 
         bounds.apply(ctx);
         auto density = ctx.makeDensity();
-        float x = 0.1f, y = 0.1f;
-        long n = sketchutil::densityBudget(ctx, 4.0e6, 30000000L);
-        for (long i = 0; i < n; ++i) {
-            step(x, y);
-            density.add({x, y});
-        }
+        density.prepareConcurrent(false);
+        constexpr int kChunks = 8;  // fixed, so the image doesn't depend on the core count
+        const long per_chunk = sketchutil::densityBudget(ctx, 4.0e6, 30000000L) / kChunks;
+        sketchutil::parallelChunks(kChunks, [&](int k) {
+            float x = 0.1f + 0.013f * k, y = 0.1f - 0.007f * k;  // each chunk follows its own orbit
+            for (int i = 0; i < 100; ++i) step(x, y);  // settle onto the attractor
+            for (long i = 0; i < per_chunk; ++i) {
+                step(x, y);
+                density.addConcurrent({x, y});
+            }
+        });
+        density.recomputeMax();
         ctx.drawDensity(density, 0.55f);
     }
 };

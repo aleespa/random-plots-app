@@ -53,16 +53,22 @@ void RenderContext::drawScatter(const std::vector<Point2f>& pts, SkColor color, 
     markVectorDraw();
     if (pts.empty()) return;
     float scale = (float)width_ / 1000.0f;
+    // One batched drawPoints call: round-capped points of diameter 2r are the same dots as
+    // filled circles, without a draw call per point.
     SkPaint paint;
-    paint.setStyle(SkPaint::kFill_Style);
+    paint.setStyle(SkPaint::kStroke_Style);
+    paint.setStrokeCap(SkPaint::kRound_Cap);
+    paint.setStrokeWidth(2.0f * radius * scale);
     paint.setColor(color);
     paint.setAlphaf(alpha);
     paint.setAntiAlias(true);
     paint.setBlendMode(blend_mode_);
-    for (const auto& pt : pts) {
-        auto p = worldToPixel(pt);
-        canvas_->drawCircle(p.x, p.y, radius * scale, paint);
+    std::vector<SkPoint> pixels(pts.size());
+    for (size_t i = 0; i < pts.size(); ++i) {
+        auto p = worldToPixel(pts[i]);
+        pixels[i] = {p.x, p.y};
     }
+    canvas_->drawPoints(SkCanvas::kPoints_PointMode, SkSpan<const SkPoint>(pixels.data(), pixels.size()), paint);
 }
 
 void RenderContext::fillPolygon(const std::vector<Point2f>& pts, SkColor color, float alpha) {
@@ -137,7 +143,7 @@ void RenderContext::drawDensity(const DensityAccumulator& density, float gamma, 
             uint32_t n = density.counts_[i];
             if (n == 0) continue;
             float t = std::pow(std::log1p((float)n) * inv, gamma);
-            float hue = density.t_sum_.empty() ? t : density.t_sum_[i] / (float)n;
+            float hue = density.hasColour() ? density.meanT(i) : t;
             field_[i] = packField(hue, 1.0f, t * alpha);
         }
         return;
@@ -156,9 +162,7 @@ void RenderContext::drawDensity(const DensityAccumulator& density, float gamma, 
             if (n == 0) continue;
             float t = std::pow(std::log1p((float)n) * inv_log_max, gamma);
             // With colour coordinates, hue comes from their mean and t only sets the intensity.
-            SkColor c = density.t_sum_.empty()
-                ? getColor(t)
-                : getColor(density.t_sum_[(size_t)y * width_ + x] / (float)n);
+            SkColor c = density.hasColour() ? getColor(density.meanT((size_t)y * width_ + x)) : getColor(t);
             U8CPU a = (U8CPU)std::lround(std::clamp(t * alpha, 0.0f, 1.0f) * 255.0f);
             row[x] = SkPreMultiplyARGB(a, SkColorGetR(c), SkColorGetG(c), SkColorGetB(c));
         }

@@ -34,9 +34,8 @@ public:
 
         std::vector<Map> maps;
         int symmetry = 1;
-        sketchutil::FastRng fast(1);
-        // Runs the chaos game for n steps, calling visit(x, y, colour) after a short warm-up.
-        auto run = [&](long n, auto&& visit) {
+        // Runs the chaos game for n steps with `fast`, calling visit(x, y, colour) after a warm-up.
+        auto run = [&](long n, sketchutil::FastRng& fast, auto&& visit) {
             float x = fast.uniform() * 2 - 1, y = fast.uniform() * 2 - 1, cc = fast.uniform();
             for (long i = 0; i < n; ++i) {
                 const Map& m = maps[fast.below((int)maps.size())];
@@ -72,17 +71,24 @@ public:
             }
             static const int kSym[] = {2, 3, 4, 5, 6};
             symmetry = U(0, 1) < 0.65f ? kSym[I(0, 4)] : 1;
-            fast = sketchutil::FastRng(rng());
+            sketchutil::FastRng fast(rng());
             std::vector<float> xs, ys;
-            run(30000, [&](float x, float y, float) { xs.push_back(x); ys.push_back(y); });
+            run(30000, fast, [&](float x, float y, float) { xs.push_back(x); ys.push_back(y); });
             bounds = sketchutil::fitSquare(xs, ys, 0.01f, 0.99f, 0.06f);
             if (sketchutil::occupiedCells(xs, ys, bounds, 80) > 1600) break;
         }
 
         bounds.apply(ctx);
         auto density = ctx.makeDensity();
-        run(sketchutil::densityBudget(ctx, 7.0e6, 25000000L),
-            [&](float x, float y, float cc) { density.add({x, y}, cc); });
+        density.prepareConcurrent(true);
+        const uint64_t base_seed = rng();
+        constexpr int kChunks = 8;  // fixed, so the image doesn't depend on the core count
+        const long per_chunk = sketchutil::densityBudget(ctx, 7.0e6, 25000000L) / kChunks;
+        sketchutil::parallelChunks(kChunks, [&](int k) {
+            sketchutil::FastRng fast(base_seed + 0x9E3779B97F4A7C15ULL * (k + 1));
+            run(per_chunk, fast, [&](float x, float y, float cc) { density.addConcurrent({x, y}, cc); });
+        });
+        density.recomputeMax();
         ctx.drawDensity(density, 0.45f);
     }
 };
