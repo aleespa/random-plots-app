@@ -118,7 +118,8 @@ public:
     void setFullColor(bool full) { full_color_ = full; }
     bool fullColor() const { return full_color_; }
 
-    std::vector<uint8_t> encodeJpeg(int quality = 92) const;
+    /** The image as unpremultiplied RGBA bytes (row-major), the layout Android's ARGB_8888 uses. */
+    std::vector<uint8_t> readRgba() const;
 
     /**
      * Colour-field mode (Figures.rendersColorField): drawValues, drawDensity and drawField record

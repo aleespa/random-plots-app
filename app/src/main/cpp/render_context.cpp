@@ -1,7 +1,6 @@
 #include "render_context.h"
 #include "include/core/SkPaint.h"
 #include "include/core/SkPath.h"
-#include "include/encode/SkJpegEncoder.h"
 #include "include/core/SkStream.h"
 #include "include/core/SkImage.h"
 #include <algorithm>
@@ -217,11 +216,9 @@ void RenderContext::drawPixels(const std::vector<uint32_t>& argb) {
     }
 }
 
-std::vector<uint8_t> RenderContext::encodeJpeg(int quality) const {
-    SkDynamicMemoryWStream stream;
-    SkJpegEncoder::Options opts;
-    opts.fQuality = quality;
-    SkJpegEncoder::Encode(&stream, bitmap_.pixmap(), opts);
-    sk_sp<SkData> data = stream.detachAsData();
-    return std::vector<uint8_t>(data->bytes(), data->bytes() + data->size());
+std::vector<uint8_t> RenderContext::readRgba() const {
+    std::vector<uint8_t> out((size_t)width_ * height_ * 4);
+    SkImageInfo info = SkImageInfo::Make(width_, height_, kRGBA_8888_SkColorType, kUnpremul_SkAlphaType);
+    bitmap_.readPixels(info, out.data(), (size_t)width_ * 4, 0, 0);
+    return out;
 }

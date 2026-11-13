@@ -311,13 +311,13 @@ fun generateNewPlot(
                 Toast.makeText(context, R.string.render_unavailable, Toast.LENGTH_SHORT).show()
                 return@launch
             }
-            val androidBitmap = result.asAndroidBitmap()
-            if (androidBitmap != null) {
-                withContext(Dispatchers.IO) {
-                    setBitmapToCache(context, androidBitmap, "cache_front.png")
-                }
-            }
             visualizeModel.imageBitmapState = result
+            // The PNG only restores the image on the next launch (Visualize.kt): write it after
+            // showing the image instead of making every render wait for it.
+            val androidBitmap = result.asAndroidBitmap()
+            CoroutineScope(Dispatchers.IO).launch {
+                setBitmapToCache(context, androidBitmap, "cache_front.png")
+            }
             if (visualizeModel.selectedFigure == Figures.NEWTON) {
                 visualizeModel.newtonLatexString = withContext(Dispatchers.Default) {
                     generateNewtonLatex(visualizeModel.newtonCoeffs)

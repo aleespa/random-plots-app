@@ -1,7 +1,6 @@
 package com.aleespa.randomsquare
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
 
 object SketchRenderer {
@@ -76,12 +75,16 @@ object SketchRenderer {
             palRGB[i] = color
         }
 
+        // RGBA pixels, width * height * 4 bytes
         val bytes =
             renderSketch(
                 sketchId, seed, width, height, bgColor, palT, palRGB, xCenter, yCenter, zoom,
                 colormap.isFullColor
             )
                 ?: return null
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+        if (bytes.size < width * height * 4) return null
+        return Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).apply {
+            copyPixelsFromBuffer(java.nio.ByteBuffer.wrap(bytes))
+        }
     }
 }

@@ -108,11 +108,11 @@ Java_com_aleespa_randomsquare_SketchRenderer_renderSketch(
     if (!sketch) return nullptr;
 
     sketch->render(ctx, static_cast<uint64_t>(seed));
-    auto jpeg = ctx.encodeJpeg(92);
-
-    jbyteArray result = env->NewByteArray(static_cast<jsize>(jpeg.size()));
-    env->SetByteArrayRegion(result, 0, jpeg.size(),
-        reinterpret_cast<const jbyte*>(jpeg.data()));
+    // Raw RGBA (no JPEG round trip): Kotlin copies it straight into an ARGB_8888 Bitmap.
+    auto rgba = ctx.readRgba();
+    jbyteArray result = env->NewByteArray(static_cast<jsize>(rgba.size()));
+    env->SetByteArrayRegion(result, 0, static_cast<jsize>(rgba.size()),
+        reinterpret_cast<const jbyte*>(rgba.data()));
     return result;
 }
 
