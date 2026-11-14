@@ -76,6 +76,37 @@
                 android:resource="@xml/digit4_widget_info" />
         </receiver>
 
+        <receiver
+            android:name=".widget.ArtWidgetReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/art_widget_info" />
+        </receiver>
+
+        <service
+            android:name=".quick.WallpaperTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_tile_app"
+            android:label="@string/tile_new_wallpaper"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <!-- Target of the "New wallpaper" shortcut: no UI, starts the work and finishes. -->
+        <activity
+            android:name=".quick.WallpaperShortcutActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.NoDisplay" />
+
         <activity
             android:name="com.aleespa.randomsquare.MainActivity"
             android:exported="true"
@@ -86,6 +117,13 @@
                 <action android:name="android.intent.action.SET_WALLPAPER"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
+            <!-- Long-pressing the "New wallpaper" tile opens Settings (figure types). -->
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity>
         <provider
             android:name="androidx.core.content.FileProvider"

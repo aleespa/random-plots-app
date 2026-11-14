@@ -146,4 +146,17 @@
     <string name="browse_previews_description">Cards show the last image you made of each figure. Tapping one reopens it.</string>
     <string name="reset_previews">Reset to samples</string>
     <string name="previews_reset">Previews reset</string>
+    <string name="art_widget_name">Random Art</string>
+    <string name="art_widget_description">A random figure on your home screen. Tap it for a new one.</string>
+    <string name="art_widget_new">New figure</string>
+    <string name="art_widget_open">Open in the app</string>
+    <string name="tile_new_wallpaper">New wallpaper</string>
+    <string name="wallpaper_working">Creating…</string>
+    <string name="shortcut_random_short">Random figure</string>
+    <string name="shortcut_random_long">Open a random figure</string>
+    <string name="shortcut_wallpaper_short">New wallpaper</string>
+    <string name="shortcut_wallpaper_long">Set a random figure as wallpaper</string>
+    <string name="shortcut_gallery_long">Open the gallery</string>
+    <string name="wallpaper_tile_title">New wallpaper tile</string>
+    <string name="wallpaper_tile_description">Figure types the \"New wallpaper\" Quick Settings tile and shortcut choose from.</string>
 </resources>

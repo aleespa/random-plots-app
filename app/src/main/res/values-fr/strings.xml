@@ -146,4 +146,17 @@
     <string name="browse_previews_description">Les cartes affichent la dernière image créée pour chaque figure. Touchez-en une pour la rouvrir.</string>
     <string name="reset_previews">Revenir aux exemples</string>
     <string name="previews_reset">Aperçus réinitialisés</string>
+    <string name="art_widget_name">Art aléatoire</string>
+    <string name="art_widget_description">Une figure aléatoire sur votre écran d\'accueil. Touchez-la pour en voir une autre.</string>
+    <string name="art_widget_new">Nouvelle figure</string>
+    <string name="art_widget_open">Ouvrir dans l\'appli</string>
+    <string name="tile_new_wallpaper">Nouveau fond</string>
+    <string name="wallpaper_working">Création…</string>
+    <string name="shortcut_random_short">Figure aléatoire</string>
+    <string name="shortcut_random_long">Ouvrir une figure aléatoire</string>
+    <string name="shortcut_wallpaper_short">Nouveau fond d\'écran</string>
+    <string name="shortcut_wallpaper_long">Mettre une figure aléatoire en fond d\'écran</string>
+    <string name="shortcut_gallery_long">Ouvrir la galerie</string>
+    <string name="wallpaper_tile_title">Bloc Nouveau fond</string>
+    <string name="wallpaper_tile_description">Types de figures utilisés par le bloc « Nouveau fond » des Réglages rapides et son raccourci.</string>
 </resources>

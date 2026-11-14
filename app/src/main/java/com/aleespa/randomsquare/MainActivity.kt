@@ -1,7 +1,12 @@
 package com.aleespa.randomsquare
 
 import com.aleespa.randomsquare.tools.LastRenders
+import android.content.Intent
 import android.os.Bundle
+import android.service.quicksettings.TileService
+import com.aleespa.randomsquare.data.AppLaunch
+import com.aleespa.randomsquare.tools.imageEntityFromJson
+import org.json.JSONObject
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -41,6 +46,8 @@ class MainActivity : ComponentActivity() {
         // Which figures have a last render, so Browse's first frame already shows them.
         LastRenders.ensureLoaded(applicationContext)
 
+        handleLaunchIntent(intent)
+
         setContent {
             MyApplicationTheme(
                 darkThemeSetting = visualizeModel.settingDarkMode,
@@ -50,6 +57,27 @@ class MainActivity : ComponentActivity() {
                 MainScreen(visualizeModel)
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleLaunchIntent(intent)
+    }
+
+    /** App shortcuts and the art widget start the activity with one of the actions below. */
+    private fun handleLaunchIntent(intent: Intent?) {
+        val visualizeModel = ViewModelProvider(this)[VisualizeModel::class.java]
+        visualizeModel.pendingLaunch = when (intent?.action) {
+            ACTION_RANDOM_FIGURE -> AppLaunch.RandomFigure
+            ACTION_OPEN_GALLERY -> AppLaunch.Gallery
+            TileService.ACTION_QS_TILE_PREFERENCES -> AppLaunch.Settings
+            ACTION_OPEN_RECIPE -> intent.getStringExtra(EXTRA_RECIPE)
+                ?.let { runCatching { imageEntityFromJson(JSONObject(it)) }.getOrNull() }
+                ?.let { AppLaunch.Recipe(it) }
+            else -> return
+        }
+        // Handled once; a configuration change must not replay it.
+        intent.action = Intent.ACTION_MAIN
     }
 
     private fun scheduleImagePruning() {
@@ -63,5 +91,12 @@ class MainActivity : ComponentActivity() {
             ExistingPeriodicWorkPolicy.KEEP,
             pruneRequest
         )
+    }
+
+    companion object {
+        const val ACTION_RANDOM_FIGURE = "com.aleespa.randomsquare.action.RANDOM_FIGURE"
+        const val ACTION_OPEN_GALLERY = "com.aleespa.randomsquare.action.OPEN_GALLERY"
+        const val ACTION_OPEN_RECIPE = "com.aleespa.randomsquare.action.OPEN_RECIPE"
+        const val EXTRA_RECIPE = "recipe"
     }
 }

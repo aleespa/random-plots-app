@@ -17,6 +17,11 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import com.aleespa.randomsquare.data.AppLaunch
+import com.aleespa.randomsquare.tools.openRandomFigure
+import com.aleespa.randomsquare.tools.openRecipe
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -65,6 +70,26 @@ fun MainScreen(
         animationSpec = tween(durationMillis = 300),
         label = "BlurAnimation"
     )
+
+    val context = LocalContext.current
+    LaunchedEffect(visualizeModel.pendingLaunch) {
+        val launch = visualizeModel.pendingLaunch ?: return@LaunchedEffect
+        visualizeModel.pendingLaunch = null
+        visualizeModel.awaitSettingsLoaded()
+        val route = when (launch) {
+            AppLaunch.RandomFigure -> {
+                openRandomFigure(visualizeModel, context)
+                BottomBarScreen.Visualize.route
+            }
+            is AppLaunch.Recipe -> {
+                openRecipe(visualizeModel, launch.image, context)
+                BottomBarScreen.Visualize.route
+            }
+            AppLaunch.Gallery -> BottomBarScreen.Gallery.route
+            AppLaunch.Settings -> "settings"
+        }
+        navController.navigate(route) { launchSingleTop = true }
+    }
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination

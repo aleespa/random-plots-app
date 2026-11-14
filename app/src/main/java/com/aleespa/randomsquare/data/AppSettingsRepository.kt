@@ -8,6 +8,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
+import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.Figures
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -27,6 +29,7 @@ class AppSettingsRepository(private val dataStore: DataStore<Preferences>) {
 
         val COLORMAP_COLORS = stringPreferencesKey("colormap_colors")
         val IMAGE_RESOLUTION = intPreferencesKey("image_resolution")
+        val WALLPAPER_FIGURE_TYPES = stringSetPreferencesKey("wallpaper_figure_types")
     }
 
     // --- Dark Mode and Figure settings remain the same ---
@@ -97,6 +100,22 @@ class AppSettingsRepository(private val dataStore: DataStore<Preferences>) {
             preferences[IMAGE_RESOLUTION] = resolution
         }
     }
+
+    suspend fun saveWallpaperFigureTypes(types: Set<FigureType>) {
+        dataStore.edit { preferences ->
+            preferences[WALLPAPER_FIGURE_TYPES] = types.map { it.name }.toSet()
+        }
+    }
+
+    /** Figure types the "New wallpaper" tile/shortcut picks from; all of them by default. */
+    val wallpaperFigureTypes: Flow<Set<FigureType>> = dataStore.data
+        .map { preferences ->
+            preferences[WALLPAPER_FIGURE_TYPES]
+                ?.mapNotNull { name -> FigureType.entries.find { it.name == name } }
+                ?.toSet()
+                ?.takeIf { it.isNotEmpty() }
+                ?: FigureType.entries.toSet()
+        }
 
     val imageResolution: Flow<Int> = dataStore.data
         .map { preferences ->

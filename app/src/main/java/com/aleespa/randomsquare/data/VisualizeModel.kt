@@ -14,6 +14,7 @@ import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.tools.FractalView
 import com.aleespa.randomsquare.data.ImageEntity.Builder
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,6 +30,14 @@ class VisualizeModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return VisualizeModel(imageRepository, settingsRepository) as T
     }
+}
+
+/** Something to do once the UI is up: from an app shortcut or the art widget (see MainActivity). */
+sealed interface AppLaunch {
+    data object RandomFigure : AppLaunch
+    data object Gallery : AppLaunch
+    data object Settings : AppLaunch
+    data class Recipe(val image: ImageEntity) : AppLaunch
 }
 
 class VisualizeModel(
@@ -59,6 +68,18 @@ class VisualizeModel(
     var showDeleteAllDialog by mutableStateOf(false)
     var showColormapDialog by mutableStateOf(false)
 
+    var pendingLaunch by mutableStateOf<AppLaunch?>(null)
+
+    // Completed by the first DataStore values; a launch must not be overwritten by them.
+    private val figureLoaded = CompletableDeferred<Unit>()
+    private val bgColorLoaded = CompletableDeferred<Unit>()
+
+    /** Waits until the stored figure and background have been read into this model. */
+    suspend fun awaitSettingsLoaded() {
+        figureLoaded.await()
+        bgColorLoaded.await()
+    }
+
     var scrollToTopBrowse by mutableIntStateOf(0)
     var scrollToTopGallery by mutableIntStateOf(0)
 
@@ -71,6 +92,16 @@ class VisualizeModel(
             viewModelScope.launch {
                 settingsRepository.saveImageResolution(value)
             }
+        }
+
+    private var _wallpaperFigureTypes by mutableStateOf(FigureType.entries.toSet())
+    /** Figure types the "New wallpaper" tile and shortcut pick from (at least one). */
+    var wallpaperFigureTypes: Set<FigureType>
+        get() = _wallpaperFigureTypes
+        set(value) {
+            if (value.isEmpty() || _wallpaperFigureTypes == value) return
+            _wallpaperFigureTypes = value
+            viewModelScope.launch { settingsRepository.saveWallpaperFigureTypes(value) }
         }
 
     var fractalZoom by mutableStateOf(1.0)
@@ -140,6 +171,9 @@ class VisualizeModel(
                 _imageResolution = res
             }
         }
+        viewModelScope.launch {
+            settingsRepository.wallpaperFigureTypes.collect { _wallpaperFigureTypes = it }
+        }
     }
 
     private var _selectedFigure by mutableStateOf(Figures.POLYGON_FEEDBACK)
@@ -177,6 +211,7 @@ class VisualizeModel(
                 // Do not overwrite if we are currently loading from gallery
                 if (isFromGallery) {
                     _selectedFigure = figure
+                    figureLoaded.complete(Unit)
                     return@collect
                 }
 
@@ -192,6 +227,7 @@ class VisualizeModel(
                 if (!selectedColormap.isAvailableFor(figure)) {
                     selectedColormap = Colormaps.defaultFor(figure)
                 }
+                figureLoaded.complete(Unit)
             }
         }
     }
@@ -251,6 +287,7 @@ class VisualizeModel(
                 if (!isFromGallery) {
                     _bgColor = color
                 }
+                bgColorLoaded.complete(Unit)
             }
         }
     }

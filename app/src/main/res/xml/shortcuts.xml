@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="random_figure"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_random"
+        android:shortcutShortLabel="@string/shortcut_random_short"
+        android:shortcutLongLabel="@string/shortcut_random_long">
+        <intent
+            android:action="com.aleespa.randomsquare.action.RANDOM_FIGURE"
+            android:targetPackage="com.aleespa.randomsquare"
+            android:targetClass="com.aleespa.randomsquare.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="new_wallpaper"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_wallpaper"
+        android:shortcutShortLabel="@string/shortcut_wallpaper_short"
+        android:shortcutLongLabel="@string/shortcut_wallpaper_long">
+        <intent
+            android:action="com.aleespa.randomsquare.action.NEW_WALLPAPER"
+            android:targetPackage="com.aleespa.randomsquare"
+            android:targetClass="com.aleespa.randomsquare.quick.WallpaperShortcutActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="gallery"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_gallery"
+        android:shortcutShortLabel="@string/gallery"
+        android:shortcutLongLabel="@string/shortcut_gallery_long">
+        <intent
+            android:action="com.aleespa.randomsquare.action.OPEN_GALLERY"
+            android:targetPackage="com.aleespa.randomsquare"
+            android:targetClass="com.aleespa.randomsquare.MainActivity" />
+    </shortcut>
+</shortcuts>

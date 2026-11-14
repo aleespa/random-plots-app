@@ -64,7 +64,8 @@ Rendering for a figure outside the UI goes through `renderFigure(RenderSpec(...)
 - Room: `AppDatabase` (version 3, schemas exported to `app/schemas/`) with `MIGRATION_2_3`. `DatabaseProvider` uses `fallbackToDestructiveMigration` and deletes and recreates the DB on open failure, so **a schema change without a migration silently wipes users' gallery**. Bump the version and add a migration.
 - `workers/PruneImagesWorker` (WorkManager) prunes stored images.
 - `pages/` holds the Compose screens: `visualize` (generate/edit), `gallery`, `browse` (figure catalog plus settings). `MainScreen`/`BottomBarScreen` handle navigation.
-- `widget/` holds the Glance home-screen widgets (random number, dice, coin flip, 4-digit). Each widget is registered as a `<receiver>` in the manifest.
+- `widget/` holds the Glance home-screen widgets: random number, dice, coin flip, 4-digit, and `ArtWidget` (a random figure, rendered on-device; tap for a new one, corner button opens it in the app). Each widget is registered as a `<receiver>` in the manifest.
+- `quick/` holds the "New wallpaper" Quick Settings tile and the no-UI activity behind the matching app shortcut. Static app shortcuts live in `res/xml/shortcuts.xml` (Random figure, New wallpaper, Gallery); `MainActivity` turns their intents (and the widget's) into `VisualizeModel.pendingLaunch`, which `MainScreen` carries out once DataStore settings are loaded. Random renders outside the UI go through `tools/QuickArt`.
 - `ads/AdManager` integrates Google Mobile Ads.
 
 ### Testing notes

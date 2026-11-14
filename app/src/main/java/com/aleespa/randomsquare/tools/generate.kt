@@ -386,14 +386,38 @@ suspend fun reopenLastRender(visualizeModel: VisualizeModel, figure: Figures, co
  * Opens [figure] for the first time (no last render): it starts from its default colours, not
  * the ones chosen for the previous figure, and renders a new image.
  */
-fun openFreshFigure(visualizeModel: VisualizeModel, figure: Figures, context: Context) {
+fun openFreshFigure(
+    visualizeModel: VisualizeModel,
+    figure: Figures,
+    context: Context,
+    colormap: Colormaps = Colormaps.defaultFor(figure),
+) {
     visualizeModel.selectedFigure = figure
-    visualizeModel.selectedColormap = Colormaps.defaultFor(figure)
+    visualizeModel.selectedColormap = colormap
     visualizeModel.bgColor = DEFAULT_BG_COLOR
     // Visualize shows the figure's sample until the render arrives.
     visualizeModel.imageBitmapState = null
     visualizeModel.latexString = readTexAssets(context, figure.key)
     generateNewPlot(visualizeModel, context)
+}
+
+/** Opens a random figure with a random palette (the "Random figure" app shortcut). */
+fun openRandomFigure(visualizeModel: VisualizeModel, context: Context) {
+    val figure = QuickArt.randomFigure()
+    openFreshFigure(visualizeModel, figure, context, QuickArt.randomColormap(figure))
+}
+
+/** Opens the figure [image] describes (e.g. from the art widget) and renders it. */
+fun openRecipe(visualizeModel: VisualizeModel, image: ImageEntity, context: Context) {
+    // Like a gallery image, so selecting the figure does not reset the restored view/colormap.
+    visualizeModel.isFromGallery = true
+    applyImageSettings(visualizeModel, image, context)
+    visualizeModel.isFromGallery = false
+    visualizeModel.saveBgColor()  // skipped while isFromGallery was set
+    visualizeModel.userSeed = false
+    visualizeModel.imageBitmapState = null  // the figure's sample until the render arrives
+    visualizeModel.showInfo = false
+    generateNewPlot(visualizeModel, context, randomizeSeed = false, showAds = false)
 }
 
 /** Background of a figure that has never been rendered (and the stored default). */

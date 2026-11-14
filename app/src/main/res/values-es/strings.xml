@@ -146,4 +146,17 @@
     <string name="browse_previews_description">Las tarjetas muestran la última imagen que creaste de cada figura. Al tocar una, se vuelve a abrir.</string>
     <string name="reset_previews">Restablecer ejemplos</string>
     <string name="previews_reset">Vistas previas restablecidas</string>
+    <string name="art_widget_name">Arte aleatorio</string>
+    <string name="art_widget_description">Una figura aleatoria en tu pantalla de inicio. Tócala para ver otra.</string>
+    <string name="art_widget_new">Nueva figura</string>
+    <string name="art_widget_open">Abrir en la app</string>
+    <string name="tile_new_wallpaper">Nuevo fondo</string>
+    <string name="wallpaper_working">Creando…</string>
+    <string name="shortcut_random_short">Figura aleatoria</string>
+    <string name="shortcut_random_long">Abrir una figura aleatoria</string>
+    <string name="shortcut_wallpaper_short">Nuevo fondo</string>
+    <string name="shortcut_wallpaper_long">Poner una figura aleatoria como fondo</string>
+    <string name="shortcut_gallery_long">Abrir la galería</string>
+    <string name="wallpaper_tile_title">Botón Nuevo fondo</string>
+    <string name="wallpaper_tile_description">Tipos de figura que usan el botón \"Nuevo fondo\" de Ajustes rápidos y su acceso directo.</string>
 </resources>

@@ -14,6 +14,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.FilterChip
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import com.aleespa.randomsquare.FigureType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import android.widget.Toast
@@ -61,6 +68,7 @@ fun SettingsPage(
         Column(
             modifier = Modifier
                 .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
                 .padding(Spacing.screenGutter)
                 .fillMaxSize()
                 .wrapContentWidth(Alignment.CenterHorizontally)
@@ -175,6 +183,42 @@ fun SettingsPage(
                     enabled = LastRenders.stamps.isNotEmpty()
                 ) {
                     Text(stringResource(R.string.reset_previews))
+                }
+            }
+
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = stringResource(R.string.wallpaper_tile_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+                Text(
+                    text = stringResource(R.string.wallpaper_tile_description),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                val selected = visualizeModel.wallpaperFigureTypes
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    FigureType.entries.forEach { type ->
+                        val isOn = type in selected
+                        FilterChip(
+                            selected = isOn,
+                            // The last selected type stays on: the tile needs something to pick.
+                            onClick = {
+                                visualizeModel.wallpaperFigureTypes =
+                                    if (isOn) selected - type else selected + type
+                            },
+                            label = { Text(stringResource(type.stringId).trim()) },
+                            leadingIcon = if (isOn) {
+                                { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(18.dp)) }
+                            } else null
+                        )
+                    }
                 }
             }
         }
