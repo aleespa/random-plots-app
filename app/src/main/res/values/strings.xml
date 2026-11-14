@@ -142,4 +142,8 @@
     <string name="voronoi">Voronoi Mosaic</string>
     <string name="domain_coloring">Domain Coloring</string>
     <string name="lyapunov">Lyapunov Fractal</string>
+    <string name="browse_previews">Browse previews</string>
+    <string name="browse_previews_description">Cards show the last image you made of each figure. Tapping one reopens it.</string>
+    <string name="reset_previews">Reset to samples</string>
+    <string name="previews_reset">Previews reset</string>
 </resources>

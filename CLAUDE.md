@@ -54,6 +54,8 @@ There are three native render paths. All return raw pixels that Kotlin copies in
 
 Rendering for a figure outside the UI goes through `renderFigure(RenderSpec(...))` (`tools/FigureRendering.kt`); `FractalView.defaultsFor(figure)` is the single source of each fractal's starting view. `generateRandomPlot(visualizeModel, ...)` just builds a `RenderSpec` from the ViewModel.
 
+**Last render per figure.** After each Visualize render, `generateNewPlot` hands the image and its settings (the same `ImageEntity` the gallery stores) to `tools/LastRenders`, which writes `files/last/<key>.webp` + `<key>.json` in the background. Browse cards show that preview instead of the bundled sample, and tapping a card calls `reopenLastRender` (restore settings, show the preview, quietly re-render at full quality). Settings > Browse previews clears them.
+
 `Figures.key` is persisted, both in Room (`ImageEntity.imageType`) and in DataStore (the selected figure), and is resolved back with `Figures.fromKey`. Treat existing keys as stable.
 
 ### App state and data

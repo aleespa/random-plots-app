@@ -137,7 +137,8 @@ fun VisualizeBox(
             // Keep the current image while rendering; most renders finish before the indicator
             // would even appear. Pan/zoom re-renders never show it (the image follows the finger).
             val showIndicator = rememberDelayedVisibility(
-                visualizeModel.loadingPlotGenerator && (!isInteractive || visualizeModel.isGeneratingRandom)
+                visualizeModel.loadingPlotGenerator && !visualizeModel.isQuietRender &&
+                    (!isInteractive || visualizeModel.isGeneratingRandom)
             )
             Box(modifier = Modifier.fillMaxSize()) {
                 Crossfade(

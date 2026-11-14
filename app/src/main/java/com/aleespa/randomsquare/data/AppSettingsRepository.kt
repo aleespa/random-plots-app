@@ -1,5 +1,6 @@
 package com.aleespa.randomsquare.data
 
+import com.aleespa.randomsquare.tools.DEFAULT_BG_COLOR
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.datastore.core.DataStore
@@ -119,7 +120,7 @@ class AppSettingsRepository(private val dataStore: DataStore<Preferences>) {
             // 1. First, try to read the color in the new Int format.
             val intColor = preferences[BG_COLOR_INT]
             // Success: The value is already an Int. Return it directly.
-            intColor ?: Color.Black.toArgb() // Default to black
+            intColor ?: DEFAULT_BG_COLOR
         }
 }
 

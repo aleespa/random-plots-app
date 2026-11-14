@@ -50,7 +50,14 @@ import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.pages.SharedImageKeys
 import com.aleespa.randomsquare.pages.sharedImage
 import com.aleespa.randomsquare.getFiguresByType
+import com.aleespa.randomsquare.tools.LastRenders
 import com.aleespa.randomsquare.tools.generateNewPlot
+import com.aleespa.randomsquare.tools.openFreshFigure
+import com.aleespa.randomsquare.tools.reopenLastRender
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import coil3.request.ImageRequest
+import kotlinx.coroutines.launch
 import com.aleespa.randomsquare.tools.readTexAssets
 
 /** Horizontal gutter shared by the section headings, carousels and grids. */
@@ -105,14 +112,17 @@ fun FigureSections(
     visualizeModel: VisualizeModel, navController: NavHostController,
     context: Context = LocalContext.current
 ) {
+    val scope = rememberCoroutineScope()
     val onFigureClick: (Figures) -> Unit = { figure ->
-        visualizeModel.selectedFigure = figure
-        // Visualize shows the figure's sample until the render arrives, so the card grows into
-        // the same picture and the render fades in over it.
-        visualizeModel.imageBitmapState = null
-        visualizeModel.latexString = readTexAssets(context, figure.key)
-        generateNewPlot(visualizeModel, context)
-        navController.navigate(BottomBarScreen.Visualize.route)
+        scope.launch {
+            // Reopen the figure's last render (what its card shows); the first time, generate.
+            // The preview loads off the main thread before navigating, so the card grows into
+            // the same picture.
+            if (!reopenLastRender(visualizeModel, figure, context)) {
+                openFreshFigure(visualizeModel, figure, context)
+            }
+            navController.navigate(BottomBarScreen.Visualize.route)
+        }
     }
 
     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
@@ -195,8 +205,20 @@ private fun FigureGrid(figures: List<Figures>, columns: Int, onFigureClick: (Fig
 /** Sample image with a bottom scrim and the figure name; shared by carousel and grid. */
 @Composable
 private fun FigureCard(figure: Figures, modifier: Modifier) {
+    val context = LocalContext.current
+    // The figure's last render if it has one (keyed by its timestamp so a new one shows at
+    // once), otherwise the bundled sample.
+    val stamp = LastRenders.stamps[figure.key]
+    val model: Any = remember(stamp) {
+        LastRenders.previewFile(context, figure)?.let { file ->
+            ImageRequest.Builder(context)
+                .data(file)
+                .memoryCacheKey("last-${figure.key}-$stamp")
+                .build()
+        } ?: figure.sampleImage
+    }
     val painter = rememberAsyncImagePainter(
-        model = figure.sampleImage,
+        model = model,
         contentScale = ContentScale.Crop,
         filterQuality = FilterQuality.High
     )

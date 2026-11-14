@@ -142,4 +142,8 @@
     <string name="voronoi">Mosaico de Voronoi</string>
     <string name="domain_coloring">Coloreado de dominio</string>
     <string name="lyapunov">Fractal de Lyapunov</string>
+    <string name="browse_previews">Vistas previas</string>
+    <string name="browse_previews_description">Las tarjetas muestran la última imagen que creaste de cada figura. Al tocar una, se vuelve a abrir.</string>
+    <string name="reset_previews">Restablecer ejemplos</string>
+    <string name="previews_reset">Vistas previas restablecidas</string>
 </resources>

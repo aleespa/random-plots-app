@@ -13,6 +13,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
+import android.widget.Toast
+import com.aleespa.randomsquare.tools.LastRenders
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -145,6 +150,31 @@ fun SettingsPage(
                             label = { Text(res.toString()) }
                         )
                     }
+                }
+            }
+
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = stringResource(R.string.browse_previews),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+                Text(
+                    text = stringResource(R.string.browse_previews_description),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                val context = LocalContext.current
+                OutlinedButton(
+                    onClick = {
+                        LastRenders.clear(context)
+                        Toast.makeText(context, R.string.previews_reset, Toast.LENGTH_SHORT).show()
+                    },
+                    enabled = LastRenders.stamps.isNotEmpty()
+                ) {
+                    Text(stringResource(R.string.reset_previews))
                 }
             }
         }

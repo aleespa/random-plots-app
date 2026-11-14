@@ -1,5 +1,6 @@
 package com.aleespa.randomsquare
 
+import com.aleespa.randomsquare.tools.LastRenders
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -37,6 +38,8 @@ class MainActivity : ComponentActivity() {
         val visualizeModel = ViewModelProvider(this, factory)[VisualizeModel::class.java]
 
         scheduleImagePruning()
+        // Which figures have a last render, so Browse's first frame already shows them.
+        LastRenders.ensureLoaded(applicationContext)
 
         setContent {
             MyApplicationTheme(

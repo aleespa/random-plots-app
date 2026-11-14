@@ -17,6 +17,7 @@ import com.aleespa.randomsquare.data.ImageEntity.Builder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -36,6 +37,8 @@ class VisualizeModel(
 ) : ViewModel() {
     var loadingPlotGenerator by mutableStateOf(false)
     var isGeneratingRandom by mutableStateOf(false)
+    /** The current render refreshes what is already shown (see generateNewPlot's `quiet`). */
+    var isQuietRender by mutableStateOf(false)
     var showInfo by mutableStateOf(false)
     var imageBitmapState by mutableStateOf<ImageBitmap?>(null)
     var latexString by mutableStateOf("")
@@ -234,9 +237,17 @@ class VisualizeModel(
             }
         }
 
+    /** Persists the current background (after a restore that skipped saving it). */
+    fun saveBgColor() {
+        val color = _bgColor
+        viewModelScope.launch { settingsRepository.saveBgColor(color) }
+    }
+
     init {
         viewModelScope.launch {
-            settingsRepository.bgColor.collect { color ->
+            // DataStore re-emits on every preference write (e.g. the selected figure); only a
+            // changed colour may overwrite the one on screen, or a stale value comes back.
+            settingsRepository.bgColor.distinctUntilChanged().collect { color ->
                 if (!isFromGallery) {
                     _bgColor = color
                 }

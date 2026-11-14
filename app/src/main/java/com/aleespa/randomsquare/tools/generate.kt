@@ -27,7 +27,9 @@ import com.aleespa.randomsquare.data.ImageEntity
 import com.aleespa.randomsquare.data.VisualizeModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import com.aleespa.randomsquare.pages.SHARED_IMAGE_MS
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
@@ -221,9 +223,12 @@ fun generateNewPlot(
     width: Int = -1,
     height: Int = -1,
     resetGalleryState: Boolean = true,
+    // A re-render the user did not ask for (reopening a figure's last render): no indicator.
+    quiet: Boolean = false,
     onComplete: () -> Unit = {}
 ) {
     visualizeModel.loadingPlotGenerator = true
+    visualizeModel.isQuietRender = quiet
     visualizeModel.isGeneratingRandom = randomizeSeed
     visualizeModel.showInfo = false
     if (randomizeSeed && (visualizeModel.userSeed.not()
@@ -318,6 +323,10 @@ fun generateNewPlot(
             CoroutineScope(Dispatchers.IO).launch {
                 setBitmapToCache(context, androidBitmap, "cache_front.png")
             }
+            // Browse shows it as the figure's card; tapping the card reopens it.
+            if (width == -1 && height == -1 && !quiet) {
+                LastRenders.save(context, builder.build(), androidBitmap)
+            }
             if (visualizeModel.selectedFigure == Figures.NEWTON) {
                 visualizeModel.newtonLatexString = withContext(Dispatchers.Default) {
                     generateNewtonLatex(visualizeModel.newtonCoeffs)
@@ -340,12 +349,63 @@ fun loadSavedImage(
     visualizeModel: VisualizeModel, image: ImageEntity, context: Context
 ) {
     visualizeModel.isFromGallery = true
+    visualizeModel.galleryURI = image.uri
+    visualizeModel.galleryId = image.id
+    applyImageSettings(visualizeModel, image, context)
+    visualizeModel.imageBitmapState = loadImage(context, Uri.parse(image.uri))
+    visualizeModel.showInfo = false
+}
 
+/**
+ * Reopens [figure]'s last render (see [LastRenders]): restores its settings, shows the stored
+ * preview at once, then re-renders it at full quality without an indicator. Returns false if
+ * the figure has never been rendered.
+ */
+suspend fun reopenLastRender(visualizeModel: VisualizeModel, figure: Figures, context: Context): Boolean {
+    val (entity, preview) = LastRenders.load(context, figure) ?: return false
+    // Like a gallery image, so selecting the figure doesn't reset the restored view/colormap.
+    visualizeModel.isFromGallery = true
+    applyImageSettings(visualizeModel, entity, context)
+    visualizeModel.isFromGallery = false
+    visualizeModel.saveBgColor()  // skipped while isFromGallery was set
+    visualizeModel.userSeed = false
+    visualizeModel.imageBitmapState = preview.asImageBitmap()
+    visualizeModel.showInfo = false
+    // Re-render once the shared image transition has finished: rendering uses every core (or
+    // the GPU) and would make the transition drop frames.
+    CoroutineScope(Dispatchers.Main).launch {
+        delay(SHARED_IMAGE_MS + 50L)
+        if (visualizeModel.selectedFigure == figure && !visualizeModel.loadingPlotGenerator) {
+            generateNewPlot(visualizeModel, context, randomizeSeed = false, showAds = false, quiet = true)
+        }
+    }
+    return true
+}
+
+/**
+ * Opens [figure] for the first time (no last render): it starts from its default colours, not
+ * the ones chosen for the previous figure, and renders a new image.
+ */
+fun openFreshFigure(visualizeModel: VisualizeModel, figure: Figures, context: Context) {
+    visualizeModel.selectedFigure = figure
+    visualizeModel.selectedColormap = Colormaps.defaultFor(figure)
+    visualizeModel.bgColor = DEFAULT_BG_COLOR
+    // Visualize shows the figure's sample until the render arrives.
+    visualizeModel.imageBitmapState = null
+    visualizeModel.latexString = readTexAssets(context, figure.key)
+    generateNewPlot(visualizeModel, context)
+}
+
+/** Background of a figure that has never been rendered (and the stored default). */
+val DEFAULT_BG_COLOR = Color.Black.toArgb()
+
+/** Restores the figure and every setting [image] was rendered with. */
+private fun applyImageSettings(
+    visualizeModel: VisualizeModel, image: ImageEntity, context: Context
+) {
     val figure = Figures.fromKey(image.imageType)
     visualizeModel.selectedFigure = figure
 
-    visualizeModel.galleryURI = image.uri
-    visualizeModel.galleryId = image.id
     visualizeModel.bgColor = image.backgroundColor
     visualizeModel.randomSeed = image.randomSeed ?: 0L
 
@@ -394,8 +454,6 @@ fun loadSavedImage(
         }
     }
 
-    visualizeModel.imageBitmapState = loadImage(context, Uri.parse(image.uri))
-    visualizeModel.showInfo = false
 }
 
 fun generate32BitSeed(): Long {

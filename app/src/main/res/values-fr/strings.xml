@@ -142,4 +142,8 @@
     <string name="voronoi">Mosaïque de Voronoï</string>
     <string name="domain_coloring">Coloration de domaine</string>
     <string name="lyapunov">Fractale de Lyapunov</string>
+    <string name="browse_previews">Aperçus</string>
+    <string name="browse_previews_description">Les cartes affichent la dernière image créée pour chaque figure. Touchez-en une pour la rouvrir.</string>
+    <string name="reset_previews">Revenir aux exemples</string>
+    <string name="previews_reset">Aperçus réinitialisés</string>
 </resources>
