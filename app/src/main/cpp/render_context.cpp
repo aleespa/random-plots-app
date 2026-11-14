@@ -7,7 +7,7 @@
 #include <cmath>
 
 RenderContext::RenderContext(int width, int height, SkColor bg_color)
-    : width_(width), height_(height) {
+    : width_(width), height_(height), bg_color_(bg_color) {
     bitmap_.allocN32Pixels(width, height);
     canvas_ = std::make_unique<SkCanvas>(bitmap_);
     canvas_->clear(bg_color);

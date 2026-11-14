@@ -146,6 +146,8 @@ public:
     /** Like drawValues, but one field per channel (each in [-1, 1]); ignores the colormap. */
     void drawRGB(const std::vector<float>& r, const std::vector<float>& g, const std::vector<float>& b);
     int width() const { return width_; }
+    /** The background colour the canvas was cleared to (e.g. to occlude what lies behind a shape). */
+    SkColor background() const { return bg_color_; }
     int height() const { return height_; }
 
     void setView(const PlaneView& view) { view_ = view; }
@@ -174,6 +176,7 @@ private:
     SkBitmap bitmap_;
     std::unique_ptr<SkCanvas> canvas_;
     int width_, height_;
+    SkColor bg_color_;
     std::vector<ColorStop> colormap_;
     float wx_min_ = -1, wx_max_ = 1, wy_min_ = -1, wy_max_ = 1;
     SkBlendMode blend_mode_ = SkBlendMode::kSrcOver;

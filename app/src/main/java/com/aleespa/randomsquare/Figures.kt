@@ -158,7 +158,8 @@ enum class Figures(
         R.string.spiral,
         R.drawable.spiral,
         { standardMenu(it) },
-        sketchId = 5
+        sketchId = 5,
+        rendersColorField = true
     ),
     POLYGON_GRID(
         "polygon_grid",
@@ -246,7 +247,8 @@ enum class Figures(
         R.string.random_eigen,
         R.drawable.random_eigen,
         { standardMenu(it) },
-        sketchId = 14
+        sketchId = 14,
+        rendersColorField = true
     ),
     CUBISM(
         "cubism",

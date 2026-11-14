@@ -75,13 +75,14 @@ class GenerateTest {
 
     @Test
     fun testGenerateRandomPlot_SkiaBackend_AllFigures() {
+        // Sketches that render a colour field (Figures.rendersColorField, e.g. Spiral, Random
+        // Eigenvalues) go through renderSketchField instead and are covered by the colour-field test.
         val skiaFigures = listOf(
             Figures.NOISY_CIRCLES,
             Figures.BUBBLES,
             Figures.WAVES,
             Figures.CONSTELLATIONS,
             Figures.POLYGON_GRID,
-            Figures.SPIRAL,
             Figures.CUBISM,
             Figures.EXPONENTIAL_SUM,
             Figures.POLYGON_FEEDBACK,
@@ -90,7 +91,6 @@ class GenerateTest {
             Figures.ORBITS,
             Figures.SPIROGRAPH,
             Figures.CONTINUOUS_SPIROGRAPH,
-            Figures.RANDOM_EIGENVALUES
         )
 
         for (figure in skiaFigures) {
