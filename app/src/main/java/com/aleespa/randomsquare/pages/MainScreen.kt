@@ -1,5 +1,7 @@
 package com.aleespa.randomsquare.pages
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -14,6 +16,7 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaul
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -21,6 +24,7 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -127,28 +131,71 @@ fun MainScreen(
 }
 
 
+/** Screens that open into Visualize with the shared image transition (see [sharedImage]). */
+private val imageOrigins = setOf(BottomBarScreen.Browse.route, BottomBarScreen.Gallery.route)
+
 @Composable
 fun BottomNavGraph(
     visualizeModel: VisualizeModel = viewModel(),
     navController: NavHostController
 ) {
-    NavHost(
-        navController = navController,
-        startDestination = BottomBarScreen.Browse.route,
-        enterTransition = { fadeIn(animationSpec = tween(200)) },
-        exitTransition = { fadeOut(animationSpec = tween(200)) }
-    ) {
-        composable(route = BottomBarScreen.Browse.route) {
-            Browse(visualizeModel, navController)
-        }
-        composable(route = "settings") {
-            SettingsPage(visualizeModel, navController)
-        }
-        composable(route = BottomBarScreen.Visualize.route) {
-            Visualize(visualizeModel, navController)
-        }
-        composable(route = BottomBarScreen.Gallery.route) {
-            Gallery(visualizeModel, navController)
+    val visualize = BottomBarScreen.Visualize.route
+    // Between Visualize and Browse/Gallery the image flies between thumbnail and frame
+    // (SHARED_IMAGE_MS); the rest of the leaving screen fades out quickly and the arriving one
+    // fades in behind the moving image. Everything else keeps a short crossfade. Navigation runs
+    // the pop transitions under the predictive back gesture.
+    fun isImageHop(from: NavBackStackEntry, to: NavBackStackEntry): Boolean {
+        val a = from.destination.route
+        val b = to.destination.route
+        return (a in imageOrigins && b == visualize) || (a == visualize && b in imageOrigins)
+    }
+    fun fadeInFor(from: NavBackStackEntry, to: NavBackStackEntry) =
+        if (isImageHop(from, to)) fadeIn(tween(SHARED_IMAGE_MS - 150, delayMillis = 100))
+        else fadeIn(tween(200))
+    // Opening Visualize, Browse/Gallery stays put until Visualize has faded in over it, so the
+    // screen never washes out between the two.
+    fun holdThenFadeOutFor(from: NavBackStackEntry, to: NavBackStackEntry) =
+        if (isImageHop(from, to)) fadeOut(tween(100, delayMillis = SHARED_IMAGE_MS - 150))
+        else fadeOut(tween(200))
+    // Going back, the screen underneath is already in place (as Android previews it), so only
+    // Visualize fades and nothing washes out mid-gesture.
+    fun popFadeInFor(from: NavBackStackEntry, to: NavBackStackEntry) =
+        if (isImageHop(from, to)) EnterTransition.None else fadeIn(tween(200))
+    fun fadeOutFor(from: NavBackStackEntry, to: NavBackStackEntry) =
+        if (isImageHop(from, to)) fadeOut(tween(250)) else fadeOut(tween(200))
+    SharedTransitionLayout {
+        CompositionLocalProvider(LocalSharedTransitionScope provides this) {
+            NavHost(
+                navController = navController,
+                startDestination = BottomBarScreen.Browse.route,
+                enterTransition = { fadeInFor(initialState, targetState) },
+                exitTransition = { holdThenFadeOutFor(initialState, targetState) },
+                popEnterTransition = { popFadeInFor(initialState, targetState) },
+                popExitTransition = { fadeOutFor(initialState, targetState) },
+                // Navigation's default for the back gesture shrinks the leaving screen to 70%;
+                // here it fades in place while the shared image flies back to its thumbnail.
+                predictivePopEnterTransition = { popFadeInFor(initialState, targetState) },
+                predictivePopExitTransition = { fadeOutFor(initialState, targetState) },
+            ) {
+                composable(route = BottomBarScreen.Browse.route) {
+                    CompositionLocalProvider(LocalNavAnimatedScope provides this) {
+                        Browse(visualizeModel, navController)
+                    }
+                }
+                composable(route = "settings") {
+                    SettingsPage(visualizeModel, navController)
+                }
+                composable(route = visualize) {
+                    CompositionLocalProvider(LocalNavAnimatedScope provides this) {
+                        Visualize(visualizeModel, navController)
+                    }
+                }
+                composable(route = BottomBarScreen.Gallery.route) {
+                    CompositionLocalProvider(LocalNavAnimatedScope provides this) {
+                        Gallery(visualizeModel, navController)
+                    }
+                }
+            }
         }
     }
 }

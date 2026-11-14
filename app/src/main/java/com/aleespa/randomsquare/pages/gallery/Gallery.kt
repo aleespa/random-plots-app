@@ -3,7 +3,6 @@ package com.aleespa.randomsquare.pages.gallery
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -57,6 +56,9 @@ import com.aleespa.randomsquare.BottomBarScreen
 import com.aleespa.randomsquare.R
 import com.aleespa.randomsquare.data.VisualizeModel
 import com.aleespa.randomsquare.pages.DeleteAllConfirmationDialog
+import com.aleespa.randomsquare.pages.SharedImageKeys
+import com.aleespa.randomsquare.pages.sharedImage
+import androidx.compose.ui.graphics.painter.ColorPainter
 import com.aleespa.randomsquare.pages.visualize.DropDownMenuIcon
 import com.aleespa.randomsquare.ui.components.AppTopBar
 import com.aleespa.randomsquare.ui.theme.Spacing
@@ -79,10 +81,6 @@ fun Gallery(
     LaunchedEffect(Unit) {
         visualizeModel.isFromGallery = false
         visualizeModel.updateFilteredImages()
-    }
-
-    BackHandler {
-        navController.navigate(BottomBarScreen.Browse.route)
     }
 
     Column(modifier = Modifier.safeDrawingPadding()) {
@@ -118,7 +116,7 @@ fun RandomGalleryTopBar(
         topBar = {
             Column {
                 // Gallery is a top-level tab like Browse/Visualize, so no back arrow;
-                // system back still returns to Browse (see BackHandler in Gallery()).
+                // system back pops to Browse, the start destination.
                 AppTopBar(
                     title = stringResource(id = R.string.saved_images),
                     actions = {
@@ -244,13 +242,15 @@ fun ScrollContent(
                     AsyncImage(
                         model = ImageRequest.Builder(context)
                             .data(image.uri)
-                            .crossfade(true)
+                            .crossfade(120)
                             .build(),
+                        placeholder = ColorPainter(MaterialTheme.colorScheme.surfaceContainerHigh),
                         contentDescription = null,
                         // Crop: saved images can have any aspect ratio (wallpaper sizes).
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .aspectRatio(1f)
+                            .sharedImage(SharedImageKeys.gallery(image.id), MaterialTheme.shapes.medium)
                             .clip(MaterialTheme.shapes.medium)
                             .clickable {
                                 loadSavedImage(visualizeModel, image, context)

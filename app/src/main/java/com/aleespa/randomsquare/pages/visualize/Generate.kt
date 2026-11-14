@@ -227,7 +227,7 @@ fun GeneratePlotButton(
                             .height(Sizes.actionButtonHeight),
                         contentPadding = PaddingValues(horizontal = 8.dp),
                     ) {
-                        if (visualizeModel.isSavingLoading) {
+                        if (rememberDelayedVisibility(visualizeModel.isSavingLoading)) {
                             CircularProgressIndicator(
                                 color = MaterialTheme.colorScheme.onSecondaryContainer,
                                 modifier = Modifier.size(20.dp),
@@ -421,7 +421,7 @@ fun FractalActions(
                             .height(Sizes.actionButtonHeight),
                         contentPadding = PaddingValues(horizontal = 8.dp),
                     ) {
-                        if (visualizeModel.isSavingLoading) {
+                        if (rememberDelayedVisibility(visualizeModel.isSavingLoading)) {
                             CircularProgressIndicator(
                                 color = MaterialTheme.colorScheme.onSecondaryContainer,
                                 modifier = Modifier.size(20.dp),

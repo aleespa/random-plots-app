@@ -1,5 +1,9 @@
 package com.aleespa.randomsquare.pages.visualize
 
+import android.os.SystemClock
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,7 +20,9 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -24,13 +30,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.Figures
@@ -38,7 +42,11 @@ import com.aleespa.randomsquare.R
 import androidx.compose.ui.res.stringResource
 import com.aleespa.randomsquare.ui.theme.Spacing
 import com.aleespa.randomsquare.data.VisualizeModel
+import com.aleespa.randomsquare.pages.SharedImageKeys
+import com.aleespa.randomsquare.pages.sharedImage
 import com.aleespa.randomsquare.tools.LatexMathView
+import coil3.compose.rememberAsyncImagePainter
+import kotlinx.coroutines.delay
 import com.aleespa.randomsquare.tools.contrasted
 import com.aleespa.randomsquare.tools.generateNewPlot
 
@@ -57,11 +65,17 @@ fun VisualizeBox(
     var offset by remember { mutableStateOf(Offset.Zero) }
     var scale by remember { mutableStateOf(1f) }
 
+    val sharedKey = if (visualizeModel.isFromGallery) {
+        SharedImageKeys.gallery(visualizeModel.galleryId)
+    } else {
+        SharedImageKeys.figure(visualizeModel.selectedFigure)
+    }
     ElevatedCard(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 8.dp
         ),
         modifier = modifier
+            .sharedImage(sharedKey, CardDefaults.elevatedShape)
             .clickable { visualizeModel.showInfo = !visualizeModel.showInfo }
             .then(
                 if (visualizeModel.selectedFigure.hasPanZoomView
@@ -120,30 +134,49 @@ fun VisualizeBox(
         if (!visualizeModel.showInfo) {
             val isInteractive = visualizeModel.selectedFigure.hasPanZoomView
 
-            if (visualizeModel.loadingPlotGenerator && (!isInteractive || visualizeModel.isGeneratingRandom)) {
-                Box(
+            // Keep the current image while rendering; most renders finish before the indicator
+            // would even appear. Pan/zoom re-renders never show it (the image follows the finger).
+            val showIndicator = rememberDelayedVisibility(
+                visualizeModel.loadingPlotGenerator && (!isInteractive || visualizeModel.isGeneratingRandom)
+            )
+            Box(modifier = Modifier.fillMaxSize()) {
+                Crossfade(
+                    targetState = visualizeModel.imageBitmapState,
+                    // A pan/zoom result must replace the transformed image at once.
+                    animationSpec = if (isInteractive && !visualizeModel.isGeneratingRandom) snap() else tween(150),
+                    label = "image",
                     modifier = Modifier
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    ContainedLoadingIndicator(
-                        containerColor = Color(visualizeModel.bgColor).contrasted(),
-                        indicatorColor = Color(visualizeModel.bgColor)
-                    )
+                        .fillMaxSize()
+                        .graphicsLayer(
+                            scaleX = scale,
+                            scaleY = scale,
+                            translationX = offset.x,
+                            translationY = offset.y
+                        )
+                ) { bitmap ->
+                    if (bitmap != null) {
+                        Image(
+                            painter = BitmapPainter(bitmap),
+                            contentDescription = null,
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    } else {
+                        FigureSample(visualizeModel.selectedFigure)
+                    }
                 }
-            } else {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    ImageWithNullFallback(
-                        imageBitmap = visualizeModel.imageBitmapState,
+                if (showIndicator) {
+                    Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .graphicsLayer(
-                                scaleX = scale,
-                                scaleY = scale,
-                                translationX = offset.x,
-                                translationY = offset.y
-                            )
-                    )
+                            .background(Color.Black.copy(alpha = 0.18f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        ContainedLoadingIndicator(
+                            containerColor = Color(visualizeModel.bgColor).contrasted(),
+                            indicatorColor = Color(visualizeModel.bgColor)
+                        )
+                    }
                 }
             }
         } else {
@@ -164,19 +197,36 @@ fun VisualizeBox(
     }
 }
 
+/** The figure's Browse sample, shown until the first render of a newly opened figure arrives. */
 @Composable
-fun ImageWithNullFallback(imageBitmap: ImageBitmap?, modifier: Modifier = Modifier) {
-    val painter = if (imageBitmap != null) {
-        BitmapPainter(imageBitmap)
-    } else {
-        painterResource(id = R.drawable.cover_random)
-    }
+private fun FigureSample(figure: Figures) {
     Image(
-        painter = painter,
+        painter = rememberAsyncImagePainter(model = figure.sampleImage),
         contentDescription = null,
-        contentScale = ContentScale.Fit,
-        modifier = modifier
+        contentScale = ContentScale.Crop,
+        modifier = Modifier.fillMaxSize()
     )
+}
+
+/**
+ * True while [active] has lasted longer than [showAfterMs]; once shown it stays at least
+ * [minShownMs]. Keeps progress indicators from flashing for work that finishes quickly.
+ */
+@Composable
+fun rememberDelayedVisibility(active: Boolean, showAfterMs: Long = 300, minShownMs: Long = 400): Boolean {
+    var visible by remember { mutableStateOf(false) }
+    var shownAt by remember { mutableLongStateOf(0L) }
+    LaunchedEffect(active) {
+        if (active) {
+            delay(showAfterMs)
+            shownAt = SystemClock.uptimeMillis()
+            visible = true
+        } else if (visible) {
+            delay((minShownMs - (SystemClock.uptimeMillis() - shownAt)).coerceAtLeast(0))
+            visible = false
+        }
+    }
+    return visible
 }
 
 @Composable

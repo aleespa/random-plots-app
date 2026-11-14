@@ -47,6 +47,8 @@ import com.aleespa.randomsquare.BottomBarScreen
 import com.aleespa.randomsquare.FigureType
 import com.aleespa.randomsquare.Figures
 import com.aleespa.randomsquare.data.VisualizeModel
+import com.aleespa.randomsquare.pages.SharedImageKeys
+import com.aleespa.randomsquare.pages.sharedImage
 import com.aleespa.randomsquare.getFiguresByType
 import com.aleespa.randomsquare.tools.generateNewPlot
 import com.aleespa.randomsquare.tools.readTexAssets
@@ -105,6 +107,9 @@ fun FigureSections(
 ) {
     val onFigureClick: (Figures) -> Unit = { figure ->
         visualizeModel.selectedFigure = figure
+        // Visualize shows the figure's sample until the render arrives, so the card grows into
+        // the same picture and the render fades in over it.
+        visualizeModel.imageBitmapState = null
         visualizeModel.latexString = readTexAssets(context, figure.key)
         generateNewPlot(visualizeModel, context)
         navController.navigate(BottomBarScreen.Visualize.route)
@@ -195,7 +200,11 @@ private fun FigureCard(figure: Figures, modifier: Modifier) {
         contentScale = ContentScale.Crop,
         filterQuality = FilterQuality.High
     )
-    Box(modifier = modifier) {
+    Box(
+        modifier = modifier.sharedImage(
+            SharedImageKeys.figure(figure), MaterialTheme.shapes.extraLarge
+        )
+    ) {
         Image(
             modifier = Modifier.fillMaxSize(),
             painter = painter,

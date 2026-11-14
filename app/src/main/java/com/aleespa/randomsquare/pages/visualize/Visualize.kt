@@ -22,11 +22,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -58,7 +64,10 @@ fun Visualize(
     // Use LaunchedEffect to load cache only once when needed,
     // and only if we are NOT viewing an image from the gallery.
     LaunchedEffect(visualizeModel.isFromGallery, visualizeModel.selectedFigure) {
-        if (!visualizeModel.isFromGallery && visualizeModel.imageBitmapState == null) {
+        // Not while a render is on its way (a figure opened from Browse clears the image).
+        if (!visualizeModel.isFromGallery && visualizeModel.imageBitmapState == null &&
+            !visualizeModel.loadingPlotGenerator
+        ) {
             val savedBitmap = loadBitmapFromFile(context, "cache_front.png")
             if (savedBitmap != null) {
                 visualizeModel.imageBitmapState = savedBitmap.asImageBitmap()
@@ -107,15 +116,22 @@ fun Visualize(
         SettingDarkMode.Off -> false
     }
 
+    // The backdrop is a tiny pre-blurred copy of the image, stretched with bilinear filtering:
+    // it looks like a large blur but costs nothing per frame (a live 40 dp blur of the full image
+    // was redrawn on every frame of the screen transitions).
+    val backdrop by produceState<ImageBitmap?>(null, visualizeModel.imageBitmapState) {
+        val source = visualizeModel.imageBitmapState
+        value = source?.let { withContext(Dispatchers.Default) { blurredThumbnail(it.asAndroidBitmap()) } }
+    }
     Box(modifier = Modifier.fillMaxSize()) {
-        visualizeModel.imageBitmapState?.let { bitmap ->
+        backdrop?.let { bitmap ->
             Image(
                 bitmap = bitmap,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
+                filterQuality = FilterQuality.Low,
                 modifier = Modifier
                     .fillMaxSize()
-                    .blur(40.dp)
                     .drawWithContent {
                         drawContent()
                         drawRect(
@@ -205,6 +221,48 @@ private fun TwoPaneVisualize(visualizeModel: VisualizeModel) {
             with(visualizeModel.selectedFigure) {
                 menuType(visualizeModel)
             }
+        }
+    }
+}
+
+/** Side of the backdrop thumbnail's longer edge, in pixels. */
+private const val BackdropSize = 48
+
+/**
+ * A [BackdropSize]-pixel copy of [source] with a three-pass box blur (close to a Gaussian),
+ * meant to be stretched over the whole screen.
+ */
+internal fun blurredThumbnail(source: android.graphics.Bitmap): ImageBitmap {
+    val scale = BackdropSize.toFloat() / maxOf(source.width, source.height)
+    val w = (source.width * scale).toInt().coerceAtLeast(1)
+    val h = (source.height * scale).toInt().coerceAtLeast(1)
+    // Two steps, so the downscale averages pixels instead of sampling a sparse grid.
+    val mid = android.graphics.Bitmap.createScaledBitmap(source, w * 4, h * 4, true)
+    val small = android.graphics.Bitmap.createScaledBitmap(mid, w, h, true)
+    val px = IntArray(w * h)
+    small.getPixels(px, 0, w, 0, 0, w, h)
+    val tmp = IntArray(w * h)
+    repeat(3) {
+        boxBlur(px, tmp, w, h, horizontal = true)
+        boxBlur(tmp, px, w, h, horizontal = false)
+    }
+    val out = android.graphics.Bitmap.createBitmap(w, h, android.graphics.Bitmap.Config.ARGB_8888)
+    out.setPixels(px, 0, w, 0, 0, w, h)
+    return out.asImageBitmap()
+}
+
+private fun boxBlur(src: IntArray, dst: IntArray, w: Int, h: Int, horizontal: Boolean, r: Int = 2) {
+    val lines = if (horizontal) h else w
+    val len = if (horizontal) w else h
+    for (line in 0 until lines) {
+        for (i in 0 until len) {
+            var a = 0; var red = 0; var g = 0; var b = 0; var n = 0
+            for (k in (i - r).coerceAtLeast(0)..(i + r).coerceAtMost(len - 1)) {
+                val c = if (horizontal) src[line * w + k] else src[k * w + line]
+                a += c ushr 24; red += (c shr 16) and 0xFF; g += (c shr 8) and 0xFF; b += c and 0xFF; n++
+            }
+            val idx = if (horizontal) line * w + i else i * w + line
+            dst[idx] = ((a / n) shl 24) or ((red / n) shl 16) or ((g / n) shl 8) or (b / n)
         }
     }
 }
